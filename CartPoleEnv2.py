@@ -9,7 +9,7 @@ from cartpole.Communicator import Communicator
 
 class CartPoleEnv2(gym.Env):
     def __init__(self):
-        self.max_revolutions_to_each_side = 8
+        self.max_revolutions_to_each_side = 9
         # self.angle_step = 10 # degrees
         self.max_time_steps = 200 # episode length
         self.time_steps = 0
