@@ -1,0 +1,7 @@
+aktuell verbaut:
+- Motor: Nema 17 Bipolar 59Ncm von stepperonline, Modell 17HS19-2004S1
+- Driver: AptoFun StepStick Motor Driver A4988
+
+https://webthesis.biblio.polito.it/secure/27644/1/tesi.pdf
+- Motor Wantai 57BYGH420-2 stepper motor
+- Driver: DRV8825 carrier by Pololu
