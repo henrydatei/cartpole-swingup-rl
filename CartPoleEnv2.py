@@ -121,9 +121,9 @@ class CartPoleEnv2(gym.Env):
             if action == 0:
                 pass
             elif action % 2 == 0:
-                self.position_velocity = 55000
+                self.position_velocity = 50000
             else:
-                self.position_velocity = -55000
+                self.position_velocity = -50000
             self.communicator.send_message('v', self.position_velocity)
             time.sleep(0.1)
         else:
