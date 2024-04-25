@@ -5,3 +5,4 @@
 - 11:01 speed zu 50k => bringt auch nix, vielleicht zu hoher Strom (2A RMS; 2.83A Peak)?
 - 11:05 60k speed, 1.51A RMS, 2.14A Peak => hilft auch nicht
 - 11:13, 0.86A Peak, 0.61A RMS => immer noch ungenau, es muss am Motor liegen
+- 11:26-11:33 Motor ausgetauscht, 2.14A Peak, 1.51A RMS, Motor verträgt 1.8A Nennstrom => immerhin jetzt genauer
