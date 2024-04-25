@@ -6,3 +6,4 @@
 - 11:05 60k speed, 1.51A RMS, 2.14A Peak => hilft auch nicht
 - 11:13, 0.86A Peak, 0.61A RMS => immer noch ungenau, es muss am Motor liegen
 - 11:26-11:33 Motor ausgetauscht, 2.14A Peak, 1.51A RMS, Motor verträgt 1.8A Nennstrom => immerhin jetzt genauer
+- 13:07 Kühlung an Motor angebracht, Verbesserung bezüglich Reward-Funktion zu erkennen, 2048 Steps/Episode und insgesamt 50k Steps

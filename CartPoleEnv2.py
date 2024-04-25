@@ -11,7 +11,7 @@ class CartPoleEnv2(gym.Env):
     def __init__(self):
         self.max_revolutions_to_each_side = 9
         # self.angle_step = 10 # degrees
-        self.max_time_steps = 200 # episode length
+        self.max_time_steps = 2048 # episode length
         self.time_steps = 0
 
         # state
