@@ -12,4 +12,5 @@
 30.04.204
 - 10:56: Ankits Reward Funktion mit 5 Winkeln => sieht eigentlich ganz gut aus, in 8000 timesteps (4 Episoden) hat es das Pendel schon nach oben geschafft
 - 12:47: 3 actions, less exploring, Abnutzungserscheinungen => Probleme mit dem Export der Obervations etc.
-- 13:54-57: Test ob Probleme mit Export behoben, aufräumen des Kabelsalates => irgendwie läuft es jetzt nicht mehr, der Motor bewegt sich nicht mehr und der Lüfter für den Motor läuft nur schleppend an. Lüfter für Motor an extra 5V, Lüfter für Rasperry an 3.3V (beides Raspi Extension Board), 5V für Makeblock jetzt auch an Raspi (vorher manchmal an 3.3V Arduino oder gar nicht)
+- 13:54-57: Test ob Probleme mit Export behoben, aufräumen des Kabelsalates => irgendwie läuft es jetzt nicht mehr, der Motor bewegt sich nicht mehr und der Lüfter für den Motor läuft nur schleppend an.
+- 2:24-56: Lüfter für Motor an extra 5V, Lüfter für Rasperry an 3.3V (beides Raspi Extension Board), sonst viel rumprobiert, anderen stepper motor (2A variante) aber Strom auf 1.69A Peak und 1.2A RMS für weniger Hitze. Pole kommt trotzdem nach oben
