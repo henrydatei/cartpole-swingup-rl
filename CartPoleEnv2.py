@@ -15,7 +15,11 @@ class CartPoleEnv2(gym.Env):
         self.time_steps = 0
 
         # state
-        self.angle = 0 # rad
+        self.angle1 = 0 # rad
+        self.angle2 = 0 # rad
+        self.angle3 = 0 # rad
+        self.angle4 = 0 # rad
+        self.angle5 = 0 # rad
         self.angle_velocity = 0 # rad/s
         self.position = 0 # comes from the stepper motor
         self.position_velocity = 0
@@ -23,8 +27,8 @@ class CartPoleEnv2(gym.Env):
         # self.action_space = Discrete(2 * self.max_revolutions_to_each_side * 360/self.angle_step) # possible to go from one end to the other in one step
         self.action_space = Discrete(21) # 0 -> 0 velocity, 1 -> 5000 velocity, 2 -> -5000 velocity, 3 -> 10000 velocity, ..., 19 -> 50000, 20 -> -50000 velocity
         self.observation_space = Box(
-            low=np.array([-math.pi, -np.inf, -12800*self.max_revolutions_to_each_side, -50000]), 
-            high=np.array([math.pi, np.inf, 12800*self.max_revolutions_to_each_side, 50000]), 
+            low=np.array([-math.pi, -math.pi, -math.pi, -math.pi, -math.pi, -np.inf, -12800*self.max_revolutions_to_each_side, -60000]), 
+            high=np.array([math.pi, math.pi, math.pi, math.pi, math.pi, np.inf, 12800*self.max_revolutions_to_each_side, 60000]), 
         )
 
         self.communicator = Communicator("/dev/ttyUSB0", 115200)
@@ -38,7 +42,7 @@ class CartPoleEnv2(gym.Env):
         self.socket.setsockopt(zmq.CONFLATE, 1) # only keep the last message
         self.socket.connect("tcp://localhost:9999")
         self.socket.subscribe("")
-        self.last_message = (-math.pi, 0)
+        self.last_message = (-math.pi, -math.pi, -math.pi, -math.pi, -math.pi, 0)
 
         self.all_observations = []
         self.all_rewards = []
@@ -46,13 +50,13 @@ class CartPoleEnv2(gym.Env):
 
     def get_angle_and_velocity(self):
         message = self.socket.recv_string()
-        angle, angle_velocity, pole_up = message.split(",")
-        if angle == "0" and angle_velocity == "0" and pole_up == "0":
-            angle, angle_velocity = self.last_message
+        angle1, angle2, angle3, angle4, angle5, angle_velocity, pole_up = message.split(",")
+        if angle1 == "0" and angle2 == "0" and angle3 == "0" and angle4 == "0" and angle5 == "0" and angle_velocity == "0" and pole_up == "0":
+            angle1, angle2, angle3, angle4, angle5, angle_velocity = self.last_message
         else:
-            angle, angle_velocity = float(angle), float(angle_velocity)
-            self.last_message = (angle, angle_velocity)
-        return angle, angle_velocity
+            angle1, angle2, angle3, angle4, angle5, angle_velocity = float(angle1), float(angle2), float(angle3), float(angle4), float(angle5), float(angle_velocity)
+            self.last_message = (angle1, angle2, angle3, angle4, angle5, angle_velocity)
+        return angle1, angle2, angle3, angle4, angle5, angle_velocity
     
     def reward_simple(self, angle: float):
         """
@@ -71,6 +75,18 @@ class CartPoleEnv2(gym.Env):
             angle_reward = max(angle_reward, 0.5)  # Clip reward to a maximum value
 
         return angle_reward - position_penalty
+    
+    def reward_ankit(self, x: float, theta1: float, theta2: float, theta3: float, theta4: float, theta5: float):
+        dtheta1 = abs(theta1 - theta2)
+        dtheta2 = abs(theta2 - theta3)
+        dtheta3 = abs(theta3 - theta4)
+        dtheta4 = abs(theta4 - theta5)
+        angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/5) # [exp(-1), exp(1)]
+        rotation_position = abs(x)/12800
+        position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
+        angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
+
+        return angle_reward - position_penalty - angular_velocity_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
@@ -126,7 +142,7 @@ class CartPoleEnv2(gym.Env):
         #     self.communicator.send_message('r', action * 10)
         #     self.position += action * 10
 
-        if math.degrees(abs(self.get_angle_and_velocity()[0])) > 12:
+        if math.degrees(abs(self.get_angle_and_velocity()[4])) > 12:
             # for swing up
             if action == 0:
                 pass
@@ -138,12 +154,12 @@ class CartPoleEnv2(gym.Env):
             time.sleep(0.1)
         else:
             # for stabilization
-            self.position_velocity = math.ceil(action/2) * 2000 * (-1)**(action + 1)
+            self.position_velocity = math.ceil(action/2) * 5000 * (-1)**(action + 1)
             self.communicator.send_message('v', self.position_velocity)
 
-        self.angle, self.angle_velocity = self.get_angle_and_velocity()
+        self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity = self.get_angle_and_velocity()
         self.position = float(self.communicator.send_message('p', 0)[1])
-        observation = np.array([self.angle, self.angle_velocity, self.position, self.position_velocity])
+        observation = np.array([self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity, self.position, self.position_velocity])
 
         # reward
         if not done:
@@ -151,7 +167,8 @@ class CartPoleEnv2(gym.Env):
             # reward = self.reward_kimura_1999(self.position, self.angle, self.angle_velocity)
             # reward = self.reward_swing_up_stabilization(self.angle, self.angle_velocity)
             # reward = self.reward_simple(self.angle)
-            reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
+            # reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
+            reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5)
         else:
             reward = 0
 
@@ -169,10 +186,14 @@ class CartPoleEnv2(gym.Env):
         self.communicator.send_message("a", 1000000)
         self.position = 0
         self.position_velocity = 0
-        self.angle = 0
+        self.angle1 = 0
+        self.angle2 = 0
+        self.angle3 = 0
+        self.angle4 = 0
+        self.angle5 = 0
         self.angle_velocity = 0
         self.time_steps = 0
-        return np.array([self.angle, self.angle_velocity, self.position, self.position_velocity])
+        return np.array([self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity, self.position, self.position_velocity])
     
     def render(self):
         pass

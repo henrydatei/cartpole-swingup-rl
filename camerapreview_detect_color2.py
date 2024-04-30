@@ -24,7 +24,7 @@ blau_max = np.array([120, 255, 255], np.uint8)
 skalierung = 0.25
 
 # center of rotation in the image
-x_ori = int(280*skalierung)
+x_ori = int(290*skalierung)
 y_ori = int(480*skalierung)
 
 # image resolution
@@ -36,8 +36,12 @@ socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:9999")
 
 # for some reason this script is sending a 0 as angle. this is bad because this would corespond to a reward of 1.0 for RL agent, even when the angle is not 0.0
-# solution: average last 3 angles and angular velocities and send this average to the RL agent
-angles = Queue(maxsize=3)
+# solution: average last 5 angles and angular velocities and send this average to the RL agent
+angles = Queue(maxsize=5)
+angles.put((math.pi, time.time())) # start with 180 degrees, pendulum is hanging down
+angles.put((math.pi, time.time())) # start with 180 degrees, pendulum is hanging down
+angles.put((math.pi, time.time())) # start with 180 degrees, pendulum is hanging down
+angles.put((math.pi, time.time())) # start with 180 degrees, pendulum is hanging down
 angles.put((math.pi, time.time())) # start with 180 degrees, pendulum is hanging down
 
 def find_largest_contour(gelb_konturen, blau_konturen):
@@ -163,14 +167,33 @@ while True:
         angles.put((angle, current_time))
         angle_velocity_avg = 0
     
-    # calculate average of last 3 angles and angular velocities
+    # calculate average of last 5 angles and angular velocities
     angle_avg = sum([angle[0] for angle in angles.queue])/len(angles.queue)
 
     # calculate pole up, which is one when angle is 0, otherwise 0. This prevents the message 0,0 is seen as valid when actually no message is the socket
     pole_up = 1 if angle_avg == 0 else 0
     
-    print(math.degrees(angle_avg), angle_velocity_avg, time_diff, pole_up)
-    socket.send_string(str(angle_avg) + "," + str(angle_velocity_avg) + "," + str(pole_up))
+    # print(math.degrees(angle_avg), angle_velocity_avg, time_diff, pole_up)
+    # socket.send_string(str(angle_avg) + "," + str(angle_velocity_avg) + "," + str(pole_up))
+    print(
+        round(math.degrees(angles.queue[0][0]),2), 
+        round(math.degrees(angles.queue[1][0]),2), 
+        round(math.degrees(angles.queue[2][0]),2), 
+        round(math.degrees(angles.queue[3][0]),2), 
+        round(math.degrees(angles.queue[4][0]),2), 
+        round(angle_velocity_avg,2),
+        round(time_diff,4), 
+        pole_up
+    )
+    socket.send_string(
+        str(angles.queue[0][0]) + "," + 
+        str(angles.queue[1][0]) + "," + 
+        str(angles.queue[2][0]) + "," + 
+        str(angles.queue[3][0]) + "," + 
+        str(angles.queue[4][0]) + "," + 
+        str(angle_velocity_avg) + "," +
+        str(pole_up)
+    )
 
     # draw line from center of rotation to center of mass in different colors    
     if type == 'gelb':
