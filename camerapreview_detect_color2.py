@@ -24,7 +24,7 @@ blau_max = np.array([120, 255, 255], np.uint8)
 skalierung = 0.25
 
 # center of rotation in the image
-x_ori = int(290*skalierung)
+x_ori = int(275*skalierung)
 y_ori = int(480*skalierung)
 
 # image resolution
