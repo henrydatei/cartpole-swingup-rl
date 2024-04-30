@@ -21,7 +21,7 @@ class CartPoleEnv2(gym.Env):
         self.position_velocity = 0
 
         # self.action_space = Discrete(2 * self.max_revolutions_to_each_side * 360/self.angle_step) # possible to go from one end to the other in one step
-        self.action_space = Discrete(51) # 0 -> 0 velocity, 1 -> 2000 velocity, 2 -> -2000 velocity, 3 -> 4000 velocity, ..., 49 -> 50000, 50 -> -50000 velocity
+        self.action_space = Discrete(21) # 0 -> 0 velocity, 1 -> 5000 velocity, 2 -> -5000 velocity, 3 -> 10000 velocity, ..., 19 -> 50000, 20 -> -50000 velocity
         self.observation_space = Box(
             low=np.array([-math.pi, -np.inf, -12800*self.max_revolutions_to_each_side, -50000]), 
             high=np.array([math.pi, np.inf, 12800*self.max_revolutions_to_each_side, 50000]), 
@@ -61,6 +61,16 @@ class CartPoleEnv2(gym.Env):
         similar version here: https://ieeexplore.ieee.org/abstract/document/1380086
         """
         return math.cos(angle)
+    
+    def reward_simple_position_penalty_clipping(self, theta: float, x: float, theta_dot: float):
+        angle_reward = math.cos(theta)
+        rotation_position = abs(x)/12800
+        position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1
+
+        if abs(theta_dot) > 2:
+            angle_reward = max(angle_reward, 0.5)  # Clip reward to a maximum value
+
+        return angle_reward - position_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
@@ -140,7 +150,8 @@ class CartPoleEnv2(gym.Env):
             # reward = self.reward_escobar_2020(self.position, self.angle, self.position_velocity/1000)
             # reward = self.reward_kimura_1999(self.position, self.angle, self.angle_velocity)
             # reward = self.reward_swing_up_stabilization(self.angle, self.angle_velocity)
-            reward = self.reward_simple(self.angle)
+            # reward = self.reward_simple(self.angle)
+            reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
         else:
             reward = 0
 
