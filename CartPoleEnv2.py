@@ -25,7 +25,7 @@ class CartPoleEnv2(gym.Env):
         self.position_velocity = 0
 
         # self.action_space = Discrete(2 * self.max_revolutions_to_each_side * 360/self.angle_step) # possible to go from one end to the other in one step
-        self.action_space = Discrete(21) # 0 -> 0 velocity, 1 -> 5000 velocity, 2 -> -5000 velocity, 3 -> 10000 velocity, ..., 19 -> 50000, 20 -> -50000 velocity
+        self.action_space = Discrete(3) # 0 -> 0 velocity, 1 -> 60000 velocity, 2 -> -60000 velocity
         self.observation_space = Box(
             low=np.array([-math.pi, -math.pi, -math.pi, -math.pi, -math.pi, -np.inf, -12800*self.max_revolutions_to_each_side, -60000]), 
             high=np.array([math.pi, math.pi, math.pi, math.pi, math.pi, np.inf, 12800*self.max_revolutions_to_each_side, 60000]), 
@@ -142,20 +142,15 @@ class CartPoleEnv2(gym.Env):
         #     self.communicator.send_message('r', action * 10)
         #     self.position += action * 10
 
-        if math.degrees(abs(self.get_angle_and_velocity()[4])) > 12:
-            # for swing up
-            if action == 0:
-                pass
-            elif action % 2 == 0:
-                self.position_velocity = 60000
-            else:
-                self.position_velocity = -60000
-            self.communicator.send_message('v', self.position_velocity)
-            time.sleep(0.1)
+        if action == 0:
+            pass
+        elif action == 1:
+            self.position_velocity = 60000
         else:
-            # for stabilization
-            self.position_velocity = math.ceil(action/2) * 5000 * (-1)**(action + 1)
-            self.communicator.send_message('v', self.position_velocity)
+            self.position_velocity = -60000
+        self.communicator.send_message('v', self.position_velocity)
+        if math.degrees(abs(self.get_angle_and_velocity()[4])) > 12:
+            time.sleep(0.1)
 
         self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity = self.get_angle_and_velocity()
         self.position = float(self.communicator.send_message('p', 0)[1])

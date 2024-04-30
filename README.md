@@ -7,7 +7,8 @@
 - 11:13, 0.86A Peak, 0.61A RMS => immer noch ungenau, es muss am Motor liegen
 - 11:26-11:33 Motor ausgetauscht, 2.14A Peak, 1.51A RMS, Motor verträgt 1.8A Nennstrom => immerhin jetzt genauer
 - 13:07 Kühlung an Motor angebracht, Verbesserung bezüglich Reward-Funktion zu erkennen, 2048 Steps/Episode und insgesamt 50k Steps
-- 16:51-59 Reward Clipping wenn Winkelgeschwindigkeit zu hoch, Bestafung für Position zu weit von der Mitte entfernt, Training bis 30.4. (etwa 4 Tage, 345000 Sekunden). Aktuelle Geschwindigkeit: 51200 Steps in 11706 Sekunden => 1.5 Millionen Steps => Kamera hat nach 1.3 Millionen Steps nicht mehr funktioniert, es wurden keine Winkel mehr verarbeitet. Neustart der Kamera hat geholfen, Laut Ostap und Ankit soll es wohl zwischendrin ganz gut ausgesehen haben, ironischerweise da, wo der Reward besonders negativ war... (?) Aber zumindest blieb der Cartpole in der Mitte, Pentalty für zu weit außen hat funktioniert
+- 16:51-59 Reward Clipping wenn Winkelgeschwindigkeit zu hoch, Bestafung für Position zu weit von der Mitte entfernt, Training bis 30.4. (etwa 4 Tage, 345000 Sekunden). Aktuelle Geschwindigkeit: 51200 Steps in 11706 Sekunden => 1.5 Millionen Steps => Kamera hat nach 1.3 Millionen Steps nicht mehr funktioniert, es wurden keine Winkel mehr verarbeitet. Neustart der Kamera hat geholfen, Laut Ostap und Ankit soll es wohl zwischendrin ganz gut ausgesehen haben, ironischerweise da, wo der Reward besonders negativ war... Aber zumindest blieb der Cartpole in der Mitte, Pentalty für zu weit außen hat funktioniert
 
 30.04.204
 - 10:56: Ankits Reward Funktion mit 5 Winkeln => sieht eigentlich ganz gut aus, in 8000 timesteps (4 Episoden) hat es das Pendel schon nach oben geschafft
+- 12:47: 3 actions, less exploring, Abnutzungserscheinungen => Probleme mit dem Export der Obervations etc.
