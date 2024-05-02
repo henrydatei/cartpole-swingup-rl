@@ -24,7 +24,7 @@ blau_max = np.array([120, 255, 255], np.uint8)
 skalierung = 0.25
 
 # center of rotation in the image
-x_ori = int(285*skalierung)
+x_ori = int(278*skalierung)
 y_ori = int(480*skalierung)
 
 # image resolution
@@ -162,7 +162,7 @@ while True:
     if angles.full():
         angle_old, time_old = angles.get()
         angles.put((angle, current_time))
-        angle_velocity_avg = ((180-abs(angle)) + (180-abs(angle_old))) / (current_time - time_old)
+        angle_velocity_avg = ((math.pi-abs(angle)) + (math.pi-abs(angle_old))) / (current_time - time_old)
     else:
         angles.put((angle, current_time))
         angle_velocity_avg = 0
@@ -183,7 +183,8 @@ while True:
         round(math.degrees(angles.queue[4][0]),2), 
         round(angle_velocity_avg,2),
         round(time_diff,4), 
-        pole_up
+        pole_up,
+        round(start,2)
     )
     socket.send_string(
         str(angles.queue[0][0]) + "," + 
@@ -192,7 +193,8 @@ while True:
         str(angles.queue[3][0]) + "," + 
         str(angles.queue[4][0]) + "," + 
         str(angle_velocity_avg) + "," +
-        str(pole_up)
+        str(pole_up) + "," +
+        str(start)
     )
 
     # draw line from center of rotation to center of mass in different colors    

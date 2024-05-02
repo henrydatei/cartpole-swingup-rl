@@ -32,11 +32,13 @@ myEnv.reset()
 model.save(os.path.join("models", model_name))
 
 # save observations and rewards
-observations = pd.DataFrame(myEnv.all_observations, columns=['angle1','angle2', 'angle3', 'angle4', 'angle5', 'angle_velocity', 'position', 'position_velocity'])
+observations = pd.DataFrame(myEnv.all_observations, columns=['angle1','angle2', 'angle3', 'angle4', 'angle5', 'angle_velocity', 'position', 'position_velocity', 'pole_up'])
 rewards = pd.DataFrame(myEnv.all_rewards, columns=['reward'])
 times = pd.DataFrame(myEnv.all_times, columns=['time'])
+delays = pd.DataFrame(myEnv.all_delays, columns=['delay'])
 
 # merge observations, rewards and times
 observations = pd.concat([observations, rewards], axis=1)
 observations = pd.concat([observations, times], axis=1)
+observations = pd.concat([observations, delays], axis=1)
 observations.to_csv(os.path.join(log_dir, 'observations_rewards_times.csv'))
