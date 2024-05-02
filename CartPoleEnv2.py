@@ -56,7 +56,7 @@ class CartPoleEnv2(gym.Env):
         if angle1 == "0" and angle2 == "0" and angle3 == "0" and angle4 == "0" and angle5 == "0" and angle_velocity == "0" and pole_up == "0" and angle_start_time == "0":
             angle1, angle2, angle3, angle4, angle5, angle_velocity, pole_up, angle_start_time = self.last_message
         else:
-            angle1, angle2, angle3, angle4, angle5, pole_up, angle_velocity, angle_start_time = float(angle1), float(angle2), float(angle3), float(angle4), float(angle5), float(angle_velocity), int(pole_up), float(angle_start_time)
+            angle1, angle2, angle3, angle4, angle5, angle_velocity, pole_up, angle_start_time = float(angle1), float(angle2), float(angle3), float(angle4), float(angle5), float(angle_velocity), int(pole_up), float(angle_start_time)
             self.last_message = (angle1, angle2, angle3, angle4, angle5, angle_velocity, pole_up, angle_start_time)
         return angle1, angle2, angle3, angle4, angle5, angle_velocity, pole_up, angle_start_time
     

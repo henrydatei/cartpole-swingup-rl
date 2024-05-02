@@ -19,3 +19,4 @@
 2.5.2024
 - 13:08: Fehler in der Berechnug der Angular Velocity behoben, Reward Funktion bestraft Angle Velocity nur, wenn letzter (aka aktuellster) Winkel unter 12° ist, Position Penalty jetzt nur halb so stark, Test mit 10k Steps, 2 Actions (Action 0, die nichts macht, kann man ignorieren) => es scheint durchzulaufen, wirkliches Lernen ist schwierig nach so kurzer Zeit und Winkelgeschwindigkeitsbestimmung ist immer noch nicht richtig
 - 14:22-24: Fehler behoben, hoffentlich diesmal richtig, Zeit von Aufnahme des Bildes bis Verwendung des Winkels -> Delay bestimmen, Pole_up in Observation hinzugefügt => Pole_up und angular_velocity scheinen vertauscht zu sein
+- 15:12: Richtigstellung der Vertauschung
