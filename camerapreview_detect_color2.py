@@ -24,7 +24,7 @@ blau_max = np.array([120, 255, 255], np.uint8)
 skalierung = 0.25
 
 # center of rotation in the image
-x_ori = int(280*skalierung)
+x_ori = int(285*skalierung)
 y_ori = int(480*skalierung)
 
 # image resolution
@@ -162,7 +162,7 @@ while True:
     if angles.full():
         angle_old, time_old = angles.get()
         angles.put((angle, current_time))
-        angle_velocity_avg = (angle - angle_old) / (current_time - time_old)
+        angle_velocity_avg = ((180-abs(angle)) + (180-abs(angle_old))) / (current_time - time_old)
     else:
         angles.put((angle, current_time))
         angle_velocity_avg = 0

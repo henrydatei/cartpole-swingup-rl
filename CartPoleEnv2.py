@@ -25,7 +25,7 @@ class CartPoleEnv2(gym.Env):
         self.position_velocity = 0
 
         # self.action_space = Discrete(2 * self.max_revolutions_to_each_side * 360/self.angle_step) # possible to go from one end to the other in one step
-        self.action_space = Discrete(3) # 0 -> 0 velocity, 1 -> 60000 velocity, 2 -> -60000 velocity
+        self.action_space = Discrete(2) # 1 -> 60000 velocity, 2 -> -60000 velocity
         self.observation_space = Box(
             low=np.array([-math.pi, -math.pi, -math.pi, -math.pi, -math.pi, -np.inf, -12800*self.max_revolutions_to_each_side, -60000]), 
             high=np.array([math.pi, math.pi, math.pi, math.pi, math.pi, np.inf, 12800*self.max_revolutions_to_each_side, 60000]), 
@@ -77,16 +77,19 @@ class CartPoleEnv2(gym.Env):
         return angle_reward - position_penalty
     
     def reward_ankit(self, x: float, theta1: float, theta2: float, theta3: float, theta4: float, theta5: float):
-        dtheta1 = abs(theta1 - theta2)
-        dtheta2 = abs(theta2 - theta3)
-        dtheta3 = abs(theta3 - theta4)
-        dtheta4 = abs(theta4 - theta5)
+        dtheta1 = (180-abs(theta1)) + (180-abs(theta2))
+        dtheta2 = (180-abs(theta2)) + (180-abs(theta3))
+        dtheta3 = (180-abs(theta3)) + (180-abs(theta4))
+        dtheta4 = (180-abs(theta4)) + (180-abs(theta5))
         angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/5) # [exp(-1), exp(1)]
         rotation_position = abs(x)/12800
         position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
-        angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
+        if math.degrees(abs(theta5)) < 12:
+            angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
+        else:
+            angular_velocity_penalty = 0
 
-        return angle_reward - position_penalty - angular_velocity_penalty
+        return angle_reward - 0.5*position_penalty - angular_velocity_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
@@ -143,8 +146,6 @@ class CartPoleEnv2(gym.Env):
         #     self.position += action * 10
 
         if action == 0:
-            pass
-        elif action == 1:
             self.position_velocity = 60000
         else:
             self.position_velocity = -60000
@@ -154,6 +155,7 @@ class CartPoleEnv2(gym.Env):
 
         self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity = self.get_angle_and_velocity()
         self.position = float(self.communicator.send_message('p', 0)[1])
+        
         observation = np.array([self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.angle_velocity, self.position, self.position_velocity])
 
         # reward
