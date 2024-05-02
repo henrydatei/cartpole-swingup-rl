@@ -1,2 +1,3 @@
-time/time_elapsed,time/iterations,time/fps,time/total_timesteps,rollout/ep_len_mean,rollout/ep_rew_mean
-449,1,4,2048,158.41666666666666,23.262872583333333
+version https://git-lfs.github.com/spec/v1
+oid sha256:e8d9890f3833c24fe6eb9728cb8b4da6857da235fc04ec3b2fe7207b6cca8fc7
+size 157
