@@ -4,6 +4,7 @@ import numpy as np
 import math
 import zmq
 import time
+import datetime
 
 from cartpole.Communicator import Communicator
 
@@ -177,8 +178,23 @@ class CartPoleEnv2(gym.Env):
 
         return observation, reward, done, {}
     
+    def office_empty(self):
+        # check if the office is empty
+        weekday = datetime.datetime.today().weekday()
+        if weekday < 5:  # monday to friday
+            # check if the time is between 8:30 and 18:30
+            now = datetime.datetime.now().time()
+            start = datetime.time(8, 30)
+            end = datetime.time(18, 30)
+            if start <= now <= end:
+                return False  # office is occupied
+        return True  # office is empty
+
     def reset(self):
         print("Resetting...")
+        while not self.office_empty():
+            print("Wait 10 minutes...")
+            time.sleep(600) # wait 10 minutes
         self.communicator.send_message("a", 10000) #slow it down a bit
         self.communicator.send_message('m', 0)
         self.communicator.send_message('v', 0)
