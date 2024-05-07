@@ -1,4 +1,4 @@
-\documentclass[a4paper, titlepage, twoside, openright, appendixprefix, numbers=noendperiod]{scrreprt}
+\documentclass[a4paper, titlepage, twoside, openright, appendixprefix, numbers=noendperiod]{scrreport}
 
 % % % % % % % % % % % % % % % % %
 % WICHTIG!
@@ -30,12 +30,12 @@
 \pagenumbering{roman}
 
 % Zusammenfassung, wenn nicht benötigt, auskommentieren!
-\selectlanguage{ngerman}
+% \selectlanguage{ngerman}
 
-\begin{abstract}
-\noindent
-\lipsum[20-21]
-\end{abstract}
+% \begin{abstract}
+% \noindent
+% \lipsum[20-21]
+% \end{abstract}
 
 % FALLS BENÖTIGT: Englische Zusammenfassung (in der Regel nicht in Seminararbeiten gefordert!)
 %\selectlanguage{english}
@@ -45,7 +45,7 @@
 %\end{abstract}
 %\selectlanguage{ngerman}
 
-\cleardoublepage
+% \cleardoublepage
 
 % Erstellen des Inhalts-, Abbildungs- und Tabellenverzeichnisses
 \tableofcontents
@@ -71,24 +71,27 @@
 % Es empfiehlt sich, den Inhalt einzelner Kapitel in separaten Dateien zu halten und diese hier mit \input{file} einzubinden.
 
 %Einleitungskapitel, hier sind derzeit noch nachfolgende Kapitel drin, diese besser in eigene Dateien trennen
-\input{input/einleitung}
-
-%Kapitel mit wichtigen Beispielen
-\input{input/beispiele}
+\input{input/introduction}
+\input{input/related_work}
+\input{input/system_description}
+\input{input/proposed_improvements}
+\input{input/experimental_setup}
+\input{input/results_and_discussion}
+\input{input/conclusion_and_future_work}
 
 %Anhang
 \appendix
 \phantomsection\addcontentsline{toc}{chapter}{Anhang}
-\input{input/anhang}
+\input{input/appendices}
 
 % Festlegen des Bibliografie-Stils, in diesem Fall die deutsche Variante des Standard-Stils plain
 % Für Bachelor- und Masterarbeiten sollte biblatex oder natbib verwendet werden. Eine kurze Suche bei Google führt auf die Paketdokumentationen,
 % aus der sich alles Weitere ergibt.
-\bibliographystyle{gerplain}
+% \bibliographystyle{gerplain}
 
 % Einbinden der Bibliothek
-\bibliography{beispielbib}
-\thispagestyle{empty}
+% \bibliography{beispielbib}
+% \thispagestyle{empty}
 
 % Befehl zum Erstellen der Selbstständigkeitserklärung. Achtung: Es werden die Namen der Autoren, die in titlepage.tex festgelegt wurden, herangezogen und das Datum in \date{} verwendet.
 % Befehl steht nur zur Verfügung, wenn das Paket VOSStatement eingebunden ist.
