@@ -84,7 +84,7 @@ class CartPoleEnv2(gym.Env):
         dtheta2 = (math.pi-abs(theta2)) + (math.pi-abs(theta3))
         dtheta3 = (math.pi-abs(theta3)) + (math.pi-abs(theta4))
         dtheta4 = (math.pi-abs(theta4)) + (math.pi-abs(theta5))
-        angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/5) # [exp(-1), exp(1)]
+        angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/2) # [0.08, 12.18]
         rotation_position = abs(x)/12800
         position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
         if math.degrees(abs(theta5)) < 12:
@@ -92,7 +92,7 @@ class CartPoleEnv2(gym.Env):
         else:
             angular_velocity_penalty = 0
 
-        return angle_reward - 0.5*position_penalty - angular_velocity_penalty
+        return angle_reward - position_penalty - angular_velocity_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """

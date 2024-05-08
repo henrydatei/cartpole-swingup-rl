@@ -21,3 +21,6 @@
 - 14:22-24: Fehler behoben, hoffentlich diesmal richtig, Zeit von Aufnahme des Bildes bis Verwendung des Winkels -> Delay bestimmen, Pole_up in Observation hinzugefügt => Pole_up und angular_velocity scheinen vertauscht zu sein
 - 15:12: Richtigstellung der Vertauschung
 - 16:05-12: mal laufen lassen mit 1.5m steps, sollte jetzt auch nur außerhalb der arbeitszeiten laufen (8:30-18:30 werktags) => kein gutes Ergebnis, Kamera ist nach 1.3m steps nicht mehr gelaufen, simples hin- und herfahren in der Mitte. Nach etwa 200k steps blieb die mean_ep_length auch konstant bei 2048, mean_ep_reward bei rund 750. Das ist rund 2048 * exp(cos(170)), da der Winkel rund 170° Grad ist, bei dem leichten hin- und herfahren.
+
+7.5.2024 (11.5. auf Raspi)
+- 11:00 (00:25 auf Raspi) Umstellung der Raspi Zeit aufs Wochenende, damit Office-Switch umgangen wird. Anpassung der Reward-Funktion, sodass Bereich des angle reward deutlich größer ist, 200k steps sollten reichen, in vorherigen experimenten hat das auch gereicht für eine gewisse konvergenz der ergebnisse.
