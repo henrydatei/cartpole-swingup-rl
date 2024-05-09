@@ -1,11 +1,54 @@
 \chapter{System Description}
 
+- System war schon durch vorheige Experimente weitgehend aufgebaut und besteht aus 3D gedruckten Teilen, einem Stepper Motor, Kamera, 2 metallischen Stangen, Zahnriemen und diversen mechanischen Teilen (siehe Foto)
+- 2 Fotos: von "hinten" und "vorne"
+- Anpassungen wurden im Verlauf der Experimente vorgenommen
+- einige der beweglichen Teile haben sich im Laufe der Experimente verschoben, sodass Klammern angebracht werden mussten, um die Teile zu fixieren
+
 \section{Hardware Components}
-\subsection{Cart and Motor Setup}
-\subsection{Camera and Sensor Integration}
+\subsection{Cart}
+- Detailfoto vom Cart
+- auf einem Holzbrett im Abstand von XX cm 2 Halterungen montiert für Metallstangen, auf denen das Cart fahren kann
+- auf einer Halterung ist eine Umlenkrolle in Form eines Zahnrades montiert, die den Zahnriemen führt, auf der anderen Halterung ist der Stepper Motor montiert
+- mehrere Halterungen für ein Gewinde, an dem das Pendel hängt
+- Pendel ist 3D gedruckt und besteht aus 5 Teilen, die zusammengesteckt werden: 1 blauer breiter Stab und 4 Teile um den Stab, wovon 2 für die Verbindung von Pendel und Gewinde sorgen und 2 für zusätzliches Gewicht am Ende des Pendels sorgen
+- ein Stück Plastik mit gelbem Klebeband ist auch am Pendel befestigt, um es der Kamera zu ermöglichen, das Pendel in jeder Position zu erkennen
+- insgesamt ist das Pendel XX cm lang und wiegt XX g
+- eigentlich verlangt das Cart-Pole-Experiment eine reibungslose Oberfläche, auf der das Cart fahren kann, dieses wurde versucht durch Rollen, die um die Metallstangen angebracht sind, zu erreichen, jedoch war die Oberfläche nicht reibungslos genug, sodass das Cart nicht reibungslos fahren konnte. Es ist leider verhältnismäßig viel Kraft notwendig, um das Cart zu bewegen, was die Experimente erschwert hat.
+
+\subsection{Stepper Motor}
+- Detailfoto vom Stepper Motor
+- Stepper Motor dreht ein Zahnrand, auf dem sich der Zahnriemen befindet, dadurch wird das Cart bewegt
+- bei verschiedenen Experimenten wurden unterschiedliche Stromsträken für den Stepper Motor getestet, der dadurch heiß wurde, deswegen wurde ein Lüfter montiert, der Lüfter ist vom selben Typ wie der Lüfter der einen Raspberry Pi kühlt und wird mit 3.3V betrieben
+- verschiedene Stepper Motoren wurden im Verlauf der Experimente probiert, alle vom Typ NEMA 17, 1 Motor mit der Bezeichnung MOT-AN-S-060-005-042-L-A-AAAA von igus, 2 Motoren mit der Bezeichnung 17HS19-2004S1, wovon einer nicht akkurat war
+- der Motor von igus verträgt eine Stromstärke von 1.8A, die anderen Motoren vertragen 2A
+- die Stromstärke wurde im Verlauf der Experimente verändert, um die beste Leistung zu erzielen, ohne den Motor zu überhitzen
+
+\subsection{Stepper Motor Control}
+- alle Motoren wurden mit einem Makeblock 2H Microstep Driver angesteuert, der mit einem Arduino verbunden ist (genauere Bezeichnung des Arduinos?)
+- der Arduino ist mit einem Raspberry Pi und Microusb verbunden
+- alle Stepper Motoren wurden mit einer Schrittwinkelauflösung von 1.8° betrieben (12800 Schritte pro Umdrehung)
+
+\subsection{Camera}
+- Detailfoto von der Kamera
+- Kamera ist eine Picam, die in einem 3D gedruckten Gehäuse montiert ist, das an dem Cart befestigt ist
+- Kamera ist mit einem Raspberry Pi verbunden, der die Bilder der Kamera verarbeitet
+- Position der Kamera darf sich nicht verändern, da sonst die Winkel des Pendels, die erkannt werden sollen, nicht mehr korrekt sind
+- Einsatz von Klebeband, um die Kamera zu fixieren
 
 \section{Software Architecture}
 \subsection{Reinforcement Learning Agent}
-\subsection{Control Algorithms}
+- Entwicklung einer eigenen Environment auf Basis von OpenAI Gym, die die Cart-Pole-Umgebung nachbildet
+- wichtigste Änderung: Überschreiben der step-Funktion, damit die ausgewählten Aktionen in Nachrichten umgewandelt werden, die an den Arduino gesendet werden, um das Cart zu bewegen
+- Algorithmus: PPO, Implementierung von stable baselines 3
+- Verarbeitung der Bilder der Kamera in einem eigenen Skript, welches unabhängig vom Reinforcement Learning Agent läuft, um die Winkel des Pendels zu bestimmen
+- Senden der Winkel und weiterer Informationen über ZeroMQs Implementeriung eines TCP Sockets an den Reinforcement Learning Agent
+- Vorteil: bessere Nutzung der 4 Kerne des Raspberry Pis (1 Kern für RL Agent, 1 Kern für Bildverarbeitung), Bilder können häufiger gemacht werden, akuratere Bestimmung der Winkelgeschwidigkeit durch mehr Messungen, Reduktion des Delays in den Entscheidungen des RL Agents, da die Bilder nicht mehr verarbeitet werden müssen, bevor der RL Agent eine Aktion auswählt
 
-\section{Limitations of the Initial System}
+\subsection{Control Algorithms}
+- Kommunikation des Raspberry Pi mit dem Arduino über USB als serielle Schnittstellenverbindung
+- eigenes Protokoll, Nachrichten werden in Form von Strings übertragen, Strings haben die Form "<letter,number>", die Buchstaben stehen für die Art der Nachricht, die Zahlen für die Werte
+- folgende Arten von Nachrichten sind möglich: (Tabelle benutzen) "v" um die Geschwindigkeit im Steps/Sekunde festzulegen, "a" für die Beschleunigung in Steps/Sekunde^2, "m" um den Stepper Motor zu einer bestimmten Position - ausgehend von einem Home-Punkt 0, der beim Start des Ardoino gesetzt wird - zu bewegen, "r" für eine Bewegung relativ zur eigenen Position, "h" immer mit dem Wert 0, um die aktuelle Position als Home-Punkt zu setzen, "s" um die Schritte pro Umdrehung zu setzen und "p" immer mit dem Wert 0, um die aktuelle Position des Stepper Motors abzufragen
+- Arduino kennt immer die aktuelle Position durch mitzählen der durchgeführten Schritte und stoppt den Motor automatisch, wenn das Cart das Ende der Stangen erreicht. Dafür ist es notwendig, den Home-Punkt immer in der Mitte des Streckenabschnitts zu setzen, den das Cart zurücklegen soll, um sicherzustellen, dass das Cart immer anhält, wenn es das Ende der Stange erreicht, die maximale Anzahl der Umdrehungen des Stepper Motors bevor das Cart das Ende der Stangen erreicht, wurde mit 9 ermittelt.
+- Der Raspberry Pi sendet die Nachrichten an den Arduino, um das Cart zu bewegen, und durch die Asynchronität des Systems kann der Raspberry Pi in der Zwischenzeit andere Berechnungen durchführen, um die nächste Aktion des Reinforcement Learning Agents zu bestimmen, während das Cart sich bewegt
+- Der Ardoino führt (bei Angabe einer Geschwindigkeit) die Bewegung des Carts solange aus, bis er eine neue Nachricht bekommt oder das Cart das Ende der Stange erreicht hat
