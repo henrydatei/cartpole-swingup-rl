@@ -1,7 +1,32 @@
 \chapter{Experimental Setup}
 
-\section{Test Environment}
+- auf der Suche nach einem System, was das Inverse Cartpole Problem löst, wurde iterativ vorgegangen, das heißt es wurde ein Experiment durchgeführt, die Ergebnisse wurden analysiert und das Experiment wurde angepasst, um die Ergebnisse zu verbessern
+- Fokus der ersten Experimente lag darauf, die Winkelbestimmung mittels Kamera zu verbessern
+- Fokus der späteren Experimente lag darauf, die übrige Hardware, insbesondere den Stepper Motor, zu verbessern
+- Fokus der letzten Experimente lag darauf, die Software zu verbessern, insbesondere die Reward-Funktion des Reinforcement Learning Agents
 
-\section{Evaluation Metrics}
+\section{Determining the angle}
+- in Experimenten vor mir wurde der Winkel des Pendels durch die Erkennung von farbigen Rechtecken auf dem Pendel und auf dem Stück Plastik, welches so am Pendel befestigt ist, dass es auf der anderen Seite des Rotationspunktes des Pendels ist, bestimmt
+- Die Farben waren Gelb und Violett und mithilfe der Mitte der Bounding Box um die erkannten Farben konnte dann der Winkel bestimmt werden, durch eine Verbindung des Mittelpunktes und des Rotationspunktes des Pendels, welcher auch im Bild erkennbar war, aber durch hartcodierte Pixelkoordinaten festgelegt war. Die Kamera durfte sich also nicht bewegen, da sonst wie Winkelbestimmung nicht mehr korrekt war.
+- Problem war bei dieser Art der Erkennung, dass von außen scheinendes Sonnenlicht die Farben veränderte, sodass die Farberkennung nicht mehr funktionierte. insbesondere bei dem Violett war dieser Effekt besonders stark ausgeprägt.
 
-\section{Description of Experiments Conducted}
+- Lösung durch anbringen von Symbolen, hier Kreis und Dreieck, auf dem Pendel und auf dem Stück Plastik, sodass die Farberkennung nicht mehr notwendig war, sondern die Symbole erkannt werden konnten. Das funktioniert robuster bei sich verändernden Farben durch Sonneneintrahlung.
+- Ansatz: Erkennung der verschiedenen geometrischen Figuren anhand ihrer Konturen und Approximation mittels des Douglas-Peucker Algorithmus, Implementation in OpenCV's approxPolyDP(). Wahl von Dreieck und Kreis aufgrund ihrer unterschiedlichen Anzahl von Ecken und sehr unterschiedlichen Konturen.
+- Trotz viel Kalibierung und Ausprobieren von verschiedenen Varianten der Formen (ausgedruckt vs. selbst gezeichnet) war keine zuverlässige Erkennung möglich, es wurden zu viele Elemente im Bild, wie z.B. Schrauben oder Objekte im Hintergrund (Personen, die durch das Bild gehen, Stühle, etc) erkannt, häufig als Kreis
+- Filterung über Momente einer Kontur mittels OpenCV's moments() Funktion, z.B. um nur Formen einer bestimmten Größe zu erkennen, hilft nicht. Idee: Kreise müssen auf einem anderen Weg erkannt werden.
+- Ansatz: Erkennung des Kreises mittels OpenCV's Hough Circle Transform, die zuerst mögliche Mittelpunkte und dann passende Radien bestimmt, um Kreise zu erkennen. Die Bestimmung der Dreiecke ist recht zuverlässig, aber die Bestimmung der Kreise, selbst mit dieser Methode ist stark fehleranfällig, oft werden Kreise nicht erkannt. Da diese Funktion aber in verschiedenen Quellen immer gute Ergebnisse liefert, vermute ich, dass das Bild der Kamera zu viel Rauschen enthält. 
+
+- Da also Erkennung von Formen nicht zuverlässig funktioniert, wurde versucht, wieder zurück zur Erkennung des Winkels mittels Farben zu kommen, diesen Prozess aber zu verbessern.
+- Transformation des Bildes vom RGB-Farbraum in den HSV-Farbraum, der weniger empfindlich für Beleuchtungsänderungen ist
+- Suchen von komplementären Farben im HSV Farbraum liefert zum Beispiel die Farben blau und gelb
+- Zusätzlich wurde Sonneneinstrahlung von außen durch herunterlassen des Sonnenschutzes versucht zu verringern und dauerhafte Beleuchtung des Zimmers mittels künstlichem Licht 
+- Da das Pendel bereits in blauem Plastik gedruckt wurde, wird nur auf dem Stück Plastik ein gelbes Stück Klebeband angebracht
+- das Pendel ist nicht immer komplett zu sehen, weswegen der Einsatz einer Bounding-Box und dann nehmen des Mittelpunktes zu falschen Winkeln führen würde
+- stattdessen Bestimmen des Moments m00 von OpenCV's moments() Funktion, welcher die Koordinates des Schwerpunktes angibt. Dieses Vorgehen verhindert auch Probleme mit der Winekbestimmung, falls Konturen nicht glatte Kanten erkannt werden, z.B. wenn Schatten ungünstig geworfen werden; der Schwerpunkt bleibt relativ an der selben Stelle
+- damit zuverlässige Winkelbestimmung, man kann durch die sichtbare Farbe (gelb oder blau) ermitteln, in welcher Position sich das Pendel gerade befindet.
+
+- Bei diesen Experimenten wurde noch kein RL Agent eingesetzt, sondern die erkennten Winkel direkt auf dem Bildschirm ausgegeben, um die Winkelbestimmung zu überprüfen.
+
+\section{Optimizing Hardware}
+
+\section{Optimizing Software}
