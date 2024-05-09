@@ -20,7 +20,7 @@
 - Detailfoto vom Stepper Motor
 - Stepper Motor dreht ein Zahnrand, auf dem sich der Zahnriemen befindet, dadurch wird das Cart bewegt
 - bei verschiedenen Experimenten wurden unterschiedliche Stromsträken für den Stepper Motor getestet, der dadurch heiß wurde, deswegen wurde ein Lüfter montiert, der Lüfter ist vom selben Typ wie der Lüfter der einen Raspberry Pi kühlt und wird mit 3.3V betrieben
-- verschiedene Stepper Motoren wurden im Verlauf der Experimente probiert, alle vom Typ NEMA 17, 1 Motor mit der Bezeichnung MOT-AN-S-060-005-042-L-A-AAAA von igus, 2 Motoren mit der Bezeichnung 17HS19-2004S1, wovon einer nicht akkurat war
+- verschiedene Stepper Motoren wurden im Verlauf der Experimente probiert, alle vom Typ NEMA 17, 1 Motor mit der Bezeichnung MOT-AN-S-060-005-042-L-A-AAAA von igus, 2 Motoren mit der Bezeichnung 17HS19-2004S1 von stepperonline, wovon einer nicht akkurat war
 - der Motor von igus verträgt eine Stromstärke von 1.8A, die anderen Motoren vertragen 2A
 - die Stromstärke wurde im Verlauf der Experimente verändert, um die beste Leistung zu erzielen, ohne den Motor zu überhitzen
 
@@ -52,3 +52,7 @@
 - Arduino kennt immer die aktuelle Position durch mitzählen der durchgeführten Schritte und stoppt den Motor automatisch, wenn das Cart das Ende der Stangen erreicht. Dafür ist es notwendig, den Home-Punkt immer in der Mitte des Streckenabschnitts zu setzen, den das Cart zurücklegen soll, um sicherzustellen, dass das Cart immer anhält, wenn es das Ende der Stange erreicht, die maximale Anzahl der Umdrehungen des Stepper Motors bevor das Cart das Ende der Stangen erreicht, wurde mit 9 ermittelt.
 - Der Raspberry Pi sendet die Nachrichten an den Arduino, um das Cart zu bewegen, und durch die Asynchronität des Systems kann der Raspberry Pi in der Zwischenzeit andere Berechnungen durchführen, um die nächste Aktion des Reinforcement Learning Agents zu bestimmen, während das Cart sich bewegt
 - Der Ardoino führt (bei Angabe einer Geschwindigkeit) die Bewegung des Carts solange aus, bis er eine neue Nachricht bekommt oder das Cart das Ende der Stange erreicht hat
+
+- weiterhin wurde eine funktion eingebaut, die ermittelt, ob das Büro leer ist, um diese Mitarbeiter nicht durch die Geräusche zu stören, die das Cart macht, wenn es sich bewegt
+- ob das Büro leer ist, hängt aktuell nur von der Zeit ab, aktuell wird davon ausgegangen, dass das Büro von 8:30 am Morgen bis 18:30 am Abend von Montag bis Freitag besetzt ist. Außerhalb dieser Zeiten wird davon ausgegangen, dass das Büro leer ist und das Cart sich bewegen kann ohne jemanden zu stören.
+- Die Überprüfung, ob das Büro leer ist, wird bei jedem reset des RL Agents durchgeführt (Aufruf der reset-Funktion der Gym Environment). Ist das Büro nicht leer, so wird 10 Minuten gewartet, bis erneut geprüft wird.
