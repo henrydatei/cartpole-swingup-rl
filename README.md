@@ -24,3 +24,6 @@
 
 7.5.2024 (11.5. auf Raspi)
 - 11:00 (00:25 auf Raspi) Umstellung der Raspi Zeit aufs Wochenende, damit Office-Switch umgangen wird. Anpassung der Reward-Funktion, sodass Bereich des angle reward deutlich größer ist, 200k steps sollten reichen, in vorherigen experimenten hat das auch gereicht für eine gewisse konvergenz der ergebnisse.
+
+8.5.2024 (Zeit wieder auf Mitternacht auf dem Raspi gesetzt)
+- 13:48 (00:03 auf dem Raspi) weitere starke Reduktion der Position Penalty, Pole bleibt nämlich immer noch unten. Weitere Bestrafung, wenn der Pole unten ist, leider habe ich es nicht hinbekommen, dass die Pentalty mit der Zeit wächst (also bei 200k steps deutlich größer als bei 50k steps), weil ich die aktuelle step-zahl nicht auslesen kann. das ganze über eine datei zu machen, würde den delay weiter vergrößern => pole bleibt nicht immer nur unten, sondern konstantes probieren den pole nach oben zu bekommen: angular vewlocity wird kleiner, cart fährt auch bis an die äußeren grenzen, aber mean episode length nimmt zu, overall mean reward nimmt zu, aber in einzelnen rewards für jede aktion ist kein trend zu erkennen

@@ -16,6 +16,7 @@ myEnv = CartPoleEnv2()
 
 # env.reset()
 
+
 model_name = "PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 log_dir = os.path.join("logs", model_name)
 os.makedirs(log_dir, exist_ok=True)

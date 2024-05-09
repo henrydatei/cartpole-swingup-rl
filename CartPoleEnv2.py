@@ -91,8 +91,12 @@ class CartPoleEnv2(gym.Env):
             angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
         else:
             angular_velocity_penalty = 0
+        if math.degrees(abs(theta5)) > 168:
+            no_swing_up_penalty = 0.01
+        else:
+            no_swing_up_penalty = 0
 
-        return angle_reward - position_penalty - angular_velocity_penalty
+        return angle_reward - 0.1*position_penalty - angular_velocity_penalty - no_swing_up_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
