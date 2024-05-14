@@ -28,5 +28,66 @@
 - Bei diesen Experimenten wurde noch kein RL Agent eingesetzt, sondern die erkennten Winkel direkt auf dem Bildschirm ausgegeben, um die Winkelbestimmung zu überprüfen.
 
 \section{Optimizing Hardware}
+- Bei Experimenten wurde klar, dass das Setup in der Konfiguration, in der es sich bei vorgegangen Experimenten befand, nicht optimal war und nicht in der Lage war, das Pendel nach oben zu bekommen
+- Verschiedene Möglichkeiten der Optimierung wurden identifiziert: das Pendel leichter machen, sodass weniger Kraft nötig ist, um es nach oben zu bekommen, den Strom des Stepper Motors erhöhen, um mehr Kraft zu erzeugen, oder die Geschwindigkeit mit der der Stepper Motor das Cart bewegt, erhöhen
+- Viele dieser Experimente dauerten nur wenige Minuten, da bereit abzusehen war, dass sie nicht erfolgreich sein würden und das Pendel nicht nach oben gebracht werden würde
+
+- Das Pendel wurde leichter gemacht, indem das Gewicht am Ende des Pendels entfernt wurde, sodass das Pendel nur noch aus dem blauen Stab und den 2 Verbindungsstücken besteht. Das Gewicht des Pendels wurde dadurch von XX g auf YY g reduziert % TODO: Gewicht des Pendels bestimmen
+- Wenn das Pendel leichter ist, hat die Trägheit des Pendels aber nicht ausgereicht, um das Pendel nach oben zu bekommen, sodass das diese Möglichkeit nicht weiter verfolgt wurde
+
+- In seiner urprünglichen Kofiguration wurde der Stepper Motor vom Stepper Motor Driver mit einem Strom von 0.61 A (RMS, Root Mean Square) betrieben, was einen Peakstrom von 0.86 A bedeutet
+- Der verbautete Motor MOT-AN-S-060-005-042-L-A-AAAA von igus verträgt eine Stromstärke von 1.8 A, der Stepper Motor Driver kann maximal einen RMS Strom von 2 A liefern (Peak 2.83 A), sodass sich für den Einbau von dem Stepper Motor 17HS19-2004S1 von stepperonline entschieden wurde, der eine Stromstärke von 2 A verträgt
+- das führte zu weiteren Problemen, zum einen wurde der Stepper Motor sehr heiss, sodass ein Lüfter montiert werden musste, der den Stepper Motor kühlt, zum anderen war der Motor nicht akkurat, sodass die berechnete Position des Arduino nicht mit der tatsächlichen Position des Carts übereinstimmte. Geringere Ströme wurden getestet, um den Motor nicht zu überhitzen, aber auch diese führten zu keiner Verbesserung der Genauigkeit des Motors
+- Einbau eines anderen Stepper Motors vom Typ 17HS19-2004S1 von stepperonline, dieser ist akkurat, auch bei hohen Strömen, und verträgt einen Strom von 2 A. 
+- Experimente mit verschiedenen Strömen lieferten einen RMS Strom von 1.2 A (Peak 1.69 A) als guten Tradeoff zwischen Kraft des Motors und Überhitzung des Motors
+
+- Je höher die Geschwindigkeit des Stepper Motors gewählt wird, desto geringer wird die Genauigkeit. Verschiedene Experimente lieferten eine maximale Geschwindigkeit von 60000 Steps/Sekunde, bei der der Motor noch akkurat war. Die maximale Beschleunigung wurde mit 1000000 Steps/Sekunde^2 ermittelt, bei der der Motor noch akkurat war. Bei höheren Werten ist der Stepper Motor nicht mehr in der Lage alle Schritte auszuführen, die ihm gesendet werden, sodass die Genauigkeit leidet.
 
 \section{Optimizing Software}
+- Zur Software gehören 2 Teile: zum einen der Umgang mit den bestimmten Winkeln des Pendels, zum anderen der RL Agent und dort insbesondere die Reward-Funktion
+
+- welche Informationen aus den Kamerabildern genutzt werden, hing immer größtenteils von der Reward-Funktion ab, aber grundlegend wurde immer der Winkel und die Winkelgeschwidigkeit ermittelt.
+- verschiedene Methoden zur Winkelbestimmung wurden in der Section Determining the angle beschrieben, für die Winkelgeschwindigkeit wurde die Differenz der Winkel in den letzten 2 Frames genommen und deren Zeitdifferenz genutzt, um die Winkelgeschwindigkeit zu bestimmen
+- es wurde auch versucht die Winkelgeschwidigkeit über eine FIFO-Queue zu bestimmen, die entweder die letzten 3 oder 5 Winkel mit Zeitstempel enthält, um so die Winkelgeschwidigkeit über einen größeren Zeitraum zu bestimmen und so zu Glätten
+- alle relevanten Informationen (z.B. aktuelle Zeit, 1-5 letzten Winkel, Winkelgeschwidigkeit) wurden dann über ZeroMQ in eine Queue der Länge 1 gelegt, die der RL Agent abfragen konnte, um die aktuellste Beobachtung zu erhalten
+- es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
+
+- verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
+- simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004)
+- H. Kimura & S. Kobayashi (1999) haben folgende Reward-Funktion vorgeschlagen: \begin{align}
+    r_{Kimura,Kobayashi} = \begin{cases}
+        -1 & \vert\theta\vert \ge 0.8\pi \\
+        -3 & \vert\dot{\theta}\vert \ge 10 \\
+        1 & \vert\theta\vert < 0.133\pi \land \vert\dot{\theta}\vert < 2 \\ 
+        0 & \text{sonst}
+    \end{cases}
+\end{align} hier mit $\theta$ als Winkel in Radiant und $\dot{\theta}$ als Winkelgeschwindigkeit in Radiant pro Sekunde.
+- Escobar et al. (2020) haben folgende Reward-Funktion vorgeschlagen, die leicht modifiziert wurde, um sie an das Setup anzupassen. Im originalen Paper fließt die verwendete Kraft ein, um den RL Agent zu motivieren, mit möglichst wenig Kraft das Ziel zu erreichen. Ein zweiter Teil der Reward-Funktion liefert einen negativen Reward, wenn das Cart sich außerhalb des zulässigen Bereiches befindet. Das ist bei diesem Setup nicht möglich, weswegen dieser Teil der Reward-Funktion weggelassen wurde. \begin{align}
+    r_{Escobar} = -0.01\left(0.01\cdot\vert x\vert^2 + 0.1\cdot\vert\theta\vert^2 + 5\cdot\vert \dot{x}\vert^2\right)
+\end{align} wobei $x$ die Position und $\dot{x}$ die Geschwindigkeit des Carts ist. 
+- Aufgrund von hohen Winkelgeschwindigkeiten, die zwar nötig sind, um den Pole nach oben zu bekommen, aber in der Balancierungsphase, wenn der Pole oben ist, hinderlich sind, wurde noch eine Reward-Funktionen getestet, die hohe Winkelgeschwindigkeiten nur bis einem bestimmten Punkt fördern. \begin{align}
+    r_{highVelocity} = \begin{cases}
+        \cos(\theta) & \vert\theta\vert \le 12^\circ \\
+        \left|\frac{\dot{\theta}}{100}\right| & \vert\theta\vert > 12^\circ
+    \end{cases}
+\end{align}
+- Aus vorgegangen Experimenten hatte sich auch eine Reward-Funktion ergeben, diese nutzt die letzten 5 Winkel und bestimmt eine Winkeländerung. Zugleich besteht diese Reward-Funktion aus mehreren Teilen, die den Winkel belohnen, zu hohe Winkelgeschwindigkeiten bestrafen, den RL Agent bestrafen, wenn sich das Cart zu weit aus der mittleren Position bewegt und den RL Agent bestraft, wenn der Winkel mit fortgeschrittenem Training unten bleibt. \begin{align}
+    angle_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{2}\right) \\
+    angular_velocity_penalty &= \begin{cases}
+        angle_reward\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
+        0 & \text{sonst}
+    \end{cases} \\
+    no_swing_up_penalty &= \begin{cases}
+        \frac{time steps since training start}{50000} & \vert\theta_5\vert \ge 168^\circ \\
+        0 & \text{sonst}
+    \end{cases} \\
+    r_{complex} &= angle_reward - position_penalty - angular_velocity_penalty - no_swing_up_penalty
+\end{align}
+wobei $\theta_5$ der aktuellste Winkel ist und $\Delta\theta_i$ für $i=1,...,4$ die absolute Änderung von $\theta_i$ zu $\theta_{i+1}$ ist. 
+
+- verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
+- in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen
+- Erweiterung auf mehr Aktionen, die das Cart in 10$^\circ$ Abstufungen mit einer Aktion von ganz links nach ganz rechts bewegen können (insgesamt 648 Aktionen möglich)
+- Aktionen sind Geschwindigkeiten, die das Cart in Steps/Sekunde bewegen, wobei die Geschwindigkeit und Vorzeichen in 1000er Schritten von 0 bis 60000 Steps/Sekunde gewählt werden kann
+- Reduktion auf 2000er Schritte und 5000er Schritte, um die Anzahl der Aktionen zu reduzieren, da die Anzahl der Aktionen die Trainingszeit erhöht
+- Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.

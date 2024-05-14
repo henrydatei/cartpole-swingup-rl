@@ -8,12 +8,12 @@
 \section{Hardware Components}
 \subsection{Cart}
 - Detailfoto vom Cart
-- auf einem Holzbrett im Abstand von XX cm 2 Halterungen montiert für Metallstangen, auf denen das Cart fahren kann
+- auf einem Holzbrett im Abstand von 95 cm 2 Halterungen montiert für Metallstangen, auf denen das Cart fahren kann
 - auf einer Halterung ist eine Umlenkrolle in Form eines Zahnrades montiert, die den Zahnriemen führt, auf der anderen Halterung ist der Stepper Motor montiert
 - mehrere Halterungen für ein Gewinde, an dem das Pendel hängt
 - Pendel ist 3D gedruckt und besteht aus 5 Teilen, die zusammengesteckt werden: 1 blauer breiter Stab und 4 Teile um den Stab, wovon 2 für die Verbindung von Pendel und Gewinde sorgen und 2 für zusätzliches Gewicht am Ende des Pendels sorgen
 - ein Stück Plastik mit gelbem Klebeband ist auch am Pendel befestigt, um es der Kamera zu ermöglichen, das Pendel in jeder Position zu erkennen
-- insgesamt ist das Pendel XX cm lang und wiegt XX g
+- insgesamt ist das Pendel 35 cm lang und wiegt XX g % TODO: Gewicht des Pendels bestimmen
 - eigentlich verlangt das Cart-Pole-Experiment eine reibungslose Oberfläche, auf der das Cart fahren kann, dieses wurde versucht durch Rollen, die um die Metallstangen angebracht sind, zu erreichen, jedoch war die Oberfläche nicht reibungslos genug, sodass das Cart nicht reibungslos fahren konnte. Es ist leider verhältnismäßig viel Kraft notwendig, um das Cart zu bewegen, was die Experimente erschwert hat.
 
 \subsection{Stepper Motor}
@@ -42,6 +42,7 @@
 - wichtigste Änderung: Überschreiben der step-Funktion, damit die ausgewählten Aktionen in Nachrichten umgewandelt werden, die an den Arduino gesendet werden, um das Cart zu bewegen
 - Algorithmus: PPO, Implementierung von stable baselines 3
 - Verarbeitung der Bilder der Kamera in einem eigenen Skript, welches unabhängig vom Reinforcement Learning Agent läuft, um die Winkel des Pendels zu bestimmen
+- Winkel starten bei 0 in der oberen Position und gehen bis 180 Grad in der unteren Position, auf der linken Seite des Pendels von 0 bis 180 Grad, auf der rechten Seite von 0 bis -180 Grad
 - Senden der Winkel und weiterer Informationen über ZeroMQs Implementeriung eines TCP Sockets an den Reinforcement Learning Agent
 - Vorteil: bessere Nutzung der 4 Kerne des Raspberry Pis (1 Kern für RL Agent, 1 Kern für Bildverarbeitung), Bilder können häufiger gemacht werden, akuratere Bestimmung der Winkelgeschwidigkeit durch mehr Messungen, Reduktion des Delays in den Entscheidungen des RL Agents, da die Bilder nicht mehr verarbeitet werden müssen, bevor der RL Agent eine Aktion auswählt
 
