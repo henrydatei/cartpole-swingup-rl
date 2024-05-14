@@ -14,6 +14,7 @@ class CartPoleEnv2(gym.Env):
         # self.angle_step = 10 # degrees
         self.max_time_steps = 2048 # episode length
         self.time_steps = 0
+        self.overall_time_steps = 0
 
         # state
         self.angle1 = 0 # rad
@@ -79,7 +80,7 @@ class CartPoleEnv2(gym.Env):
 
         return angle_reward - position_penalty
     
-    def reward_ankit(self, x: float, theta1: float, theta2: float, theta3: float, theta4: float, theta5: float):
+    def reward_ankit(self, x: float, theta1: float, theta2: float, theta3: float, theta4: float, theta5: float, overall_time: int):
         dtheta1 = (math.pi-abs(theta1)) + (math.pi-abs(theta2))
         dtheta2 = (math.pi-abs(theta2)) + (math.pi-abs(theta3))
         dtheta3 = (math.pi-abs(theta3)) + (math.pi-abs(theta4))
@@ -92,7 +93,7 @@ class CartPoleEnv2(gym.Env):
         else:
             angular_velocity_penalty = 0
         if math.degrees(abs(theta5)) > 168:
-            no_swing_up_penalty = 0.01
+            no_swing_up_penalty = overall_time/50000
         else:
             no_swing_up_penalty = 0
 
@@ -146,6 +147,7 @@ class CartPoleEnv2(gym.Env):
         else:
             done = False
         self.time_steps += 1
+        self.overall_time_steps += 1
 
         # update state
         # if not done:
@@ -172,7 +174,7 @@ class CartPoleEnv2(gym.Env):
             # reward = self.reward_swing_up_stabilization(self.angle, self.angle_velocity)
             # reward = self.reward_simple(self.angle)
             # reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
-            reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5)
+            reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.overall_time_steps)
         else:
             reward = 0
 
