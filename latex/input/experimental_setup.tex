@@ -8,40 +8,32 @@
 \section{Determining the angle}
 - in Experimenten vor mir wurde der Winkel des Pendels durch die Erkennung von farbigen Rechtecken auf dem Pendel und auf dem Stück Plastik, welches so am Pendel befestigt ist, dass es auf der anderen Seite des Rotationspunktes des Pendels ist, bestimmt
 - Die Farben waren Gelb und Violett und mithilfe der Mitte der Bounding Box um die erkannten Farben konnte dann der Winkel bestimmt werden, durch eine Verbindung des Mittelpunktes und des Rotationspunktes des Pendels, welcher auch im Bild erkennbar war, aber durch hartcodierte Pixelkoordinaten festgelegt war. Die Kamera durfte sich also nicht bewegen, da sonst wie Winkelbestimmung nicht mehr korrekt war.
-- Problem war bei dieser Art der Erkennung, dass von außen scheinendes Sonnenlicht die Farben veränderte, sodass die Farberkennung nicht mehr funktionierte. insbesondere bei dem Violett war dieser Effekt besonders stark ausgeprägt.
 
-- Lösung durch anbringen von Symbolen, hier Kreis und Dreieck, auf dem Pendel und auf dem Stück Plastik, sodass die Farberkennung nicht mehr notwendig war, sondern die Symbole erkannt werden konnten. Das funktioniert robuster bei sich verändernden Farben durch Sonneneintrahlung.
+- weitere Experimente: Anbringen von Symbolen, hier Kreis und Dreieck, auf dem Pendel und auf dem Stück Plastik, sodass die Farberkennung nicht mehr notwendig war, sondern die Symbole erkannt werden konnten.
 - Ansatz: Erkennung der verschiedenen geometrischen Figuren anhand ihrer Konturen und Approximation mittels des Douglas-Peucker Algorithmus, Implementation in OpenCV's approxPolyDP(). Wahl von Dreieck und Kreis aufgrund ihrer unterschiedlichen Anzahl von Ecken und sehr unterschiedlichen Konturen.
-- Trotz viel Kalibierung und Ausprobieren von verschiedenen Varianten der Formen (ausgedruckt vs. selbst gezeichnet) war keine zuverlässige Erkennung möglich, es wurden zu viele Elemente im Bild, wie z.B. Schrauben oder Objekte im Hintergrund (Personen, die durch das Bild gehen, Stühle, etc) erkannt, häufig als Kreis
-- Filterung über Momente einer Kontur mittels OpenCV's moments() Funktion, z.B. um nur Formen einer bestimmten Größe zu erkennen, hilft nicht. Idee: Kreise müssen auf einem anderen Weg erkannt werden.
-- Ansatz: Erkennung des Kreises mittels OpenCV's Hough Circle Transform, die zuerst mögliche Mittelpunkte und dann passende Radien bestimmt, um Kreise zu erkennen. Die Bestimmung der Dreiecke ist recht zuverlässig, aber die Bestimmung der Kreise, selbst mit dieser Methode ist stark fehleranfällig, oft werden Kreise nicht erkannt. Da diese Funktion aber in verschiedenen Quellen immer gute Ergebnisse liefert, vermute ich, dass das Bild der Kamera zu viel Rauschen enthält. 
+- Filterung über Momente einer Kontur mittels OpenCV's moments() Funktion, z.B. um nur Formen einer bestimmten Größe zu erkennen
+- Erkennung der Kreise auf anderem Weg: Erkennung des Kreises mittels OpenCV's Hough Circle Transform, die zuerst mögliche Mittelpunkte und dann passende Radien bestimmt, um Kreise zu erkennen. 
 
-- Da also Erkennung von Formen nicht zuverlässig funktioniert, wurde versucht, wieder zurück zur Erkennung des Winkels mittels Farben zu kommen, diesen Prozess aber zu verbessern.
+- nächste Experimente versuchen den Weg der Farberkennung zu verbessern
 - Transformation des Bildes vom RGB-Farbraum in den HSV-Farbraum, der weniger empfindlich für Beleuchtungsänderungen ist
 - Suchen von komplementären Farben im HSV Farbraum liefert zum Beispiel die Farben blau und gelb
-- Zusätzlich wurde Sonneneinstrahlung von außen durch herunterlassen des Sonnenschutzes versucht zu verringern und dauerhafte Beleuchtung des Zimmers mittels künstlichem Licht 
+- Zusätzlich wurde Sonneneinstrahlung von außen durch Herunterlassen des Sonnenschutzes versucht zu verringern und dauerhafte Beleuchtung des Zimmers mittels künstlichem Licht 
 - Da das Pendel bereits in blauem Plastik gedruckt wurde, wird nur auf dem Stück Plastik ein gelbes Stück Klebeband angebracht
 - das Pendel ist nicht immer komplett zu sehen, weswegen der Einsatz einer Bounding-Box und dann nehmen des Mittelpunktes zu falschen Winkeln führen würde
-- stattdessen Bestimmen des Moments m00 von OpenCV's moments() Funktion, welcher die Koordinates des Schwerpunktes angibt. Dieses Vorgehen verhindert auch Probleme mit der Winekbestimmung, falls Konturen nicht glatte Kanten erkannt werden, z.B. wenn Schatten ungünstig geworfen werden; der Schwerpunkt bleibt relativ an der selben Stelle
-- damit zuverlässige Winkelbestimmung, man kann durch die sichtbare Farbe (gelb oder blau) ermitteln, in welcher Position sich das Pendel gerade befindet.
-
-- Bei diesen Experimenten wurde noch kein RL Agent eingesetzt, sondern die erkennten Winkel direkt auf dem Bildschirm ausgegeben, um die Winkelbestimmung zu überprüfen.
+- stattdessen Bestimmen des Moments m00 von OpenCV's moments() Funktion, welcher die Koordinates des Schwerpunktes angibt. Dieses Vorgehen verhindert auch Probleme mit der Winkelbestimmung, falls Konturen nicht glatte Kanten erkannt werden, z.B. wenn Schatten ungünstig geworfen werden; der Schwerpunkt bleibt relativ an der selben Stelle
 
 \section{Optimizing Hardware}
 - Bei Experimenten wurde klar, dass das Setup in der Konfiguration, in der es sich bei vorgegangen Experimenten befand, nicht optimal war und nicht in der Lage war, das Pendel nach oben zu bekommen
 - Verschiedene Möglichkeiten der Optimierung wurden identifiziert: das Pendel leichter machen, sodass weniger Kraft nötig ist, um es nach oben zu bekommen, den Strom des Stepper Motors erhöhen, um mehr Kraft zu erzeugen, oder die Geschwindigkeit mit der der Stepper Motor das Cart bewegt, erhöhen
-- Viele dieser Experimente dauerten nur wenige Minuten, da bereit abzusehen war, dass sie nicht erfolgreich sein würden und das Pendel nicht nach oben gebracht werden würde
+- Viele dieser Experimente dauerten nur wenige Minuten, da bereits abzusehen war, dass sie nicht erfolgreich sein würden und das Pendel nicht nach oben gebracht werden würde
 
 - Das Pendel wurde leichter gemacht, indem das Gewicht am Ende des Pendels entfernt wurde, sodass das Pendel nur noch aus dem blauen Stab und den 2 Verbindungsstücken besteht. Das Gewicht des Pendels wurde dadurch von XX g auf YY g reduziert % TODO: Gewicht des Pendels bestimmen
-- Wenn das Pendel leichter ist, hat die Trägheit des Pendels aber nicht ausgereicht, um das Pendel nach oben zu bekommen, sodass das diese Möglichkeit nicht weiter verfolgt wurde
 
 - In seiner urprünglichen Kofiguration wurde der Stepper Motor vom Stepper Motor Driver mit einem Strom von 0.61 A (RMS, Root Mean Square) betrieben, was einen Peakstrom von 0.86 A bedeutet
-- Der verbautete Motor MOT-AN-S-060-005-042-L-A-AAAA von igus verträgt eine Stromstärke von 1.8 A, der Stepper Motor Driver kann maximal einen RMS Strom von 2 A liefern (Peak 2.83 A), sodass sich für den Einbau von dem Stepper Motor 17HS19-2004S1 von stepperonline entschieden wurde, der eine Stromstärke von 2 A verträgt
-- das führte zu weiteren Problemen, zum einen wurde der Stepper Motor sehr heiss, sodass ein Lüfter montiert werden musste, der den Stepper Motor kühlt, zum anderen war der Motor nicht akkurat, sodass die berechnete Position des Arduino nicht mit der tatsächlichen Position des Carts übereinstimmte. Geringere Ströme wurden getestet, um den Motor nicht zu überhitzen, aber auch diese führten zu keiner Verbesserung der Genauigkeit des Motors
-- Einbau eines anderen Stepper Motors vom Typ 17HS19-2004S1 von stepperonline, dieser ist akkurat, auch bei hohen Strömen, und verträgt einen Strom von 2 A. 
-- Experimente mit verschiedenen Strömen lieferten einen RMS Strom von 1.2 A (Peak 1.69 A) als guten Tradeoff zwischen Kraft des Motors und Überhitzung des Motors
+- Testen verschiedener Stepper Motoren: 1x MOT-AN-S-060-005-042-L-A-AAAA von igus und 2x 17HS19-2004S1 von stepperonline bei verschiedenen Strömen
+- Der verbautete Motor MOT-AN-S-060-005-042-L-A-AAAA von igus verträgt eine Stromstärke von 1.8 A, der Stepper Motor Driver kann maximal einen RMS Strom von 2 A liefern (Peak 2.83 A), der Stepper Motor 17HS19-2004S1 von stepperonline verträgt eine Stromstärke von 2 A 
 
-- Je höher die Geschwindigkeit des Stepper Motors gewählt wird, desto geringer wird die Genauigkeit. Verschiedene Experimente lieferten eine maximale Geschwindigkeit von 60000 Steps/Sekunde, bei der der Motor noch akkurat war. Die maximale Beschleunigung wurde mit 1000000 Steps/Sekunde^2 ermittelt, bei der der Motor noch akkurat war. Bei höheren Werten ist der Stepper Motor nicht mehr in der Lage alle Schritte auszuführen, die ihm gesendet werden, sodass die Genauigkeit leidet.
+- Experimente mit verschiedenen Geschwindigkeiten und Beschleunigungen des Stepper Motors, um die beste Leistung zu erzielen. Das Cart wurde immer mit maximaler Geschwindigkeit und zufälligen Actions (links oder rechts) getestet, um zu schauen, ob das Pendel nach oben gebracht werden kann. Geteste Geschwindigkeiten 50000 Steps/Sekunde - 70000 Steps/Sekunde in 5000er Schritten, geteste Beschleunigungen 1000000 Steps/Sekunde^2 - 10000000 Steps/Sekunde^2 in 1000000er Schritten
 
 \section{Optimizing Software}
 - Zur Software gehören 2 Teile: zum einen der Umgang mit den bestimmten Winkeln des Pendels, zum anderen der RL Agent und dort insbesondere die Reward-Funktion
@@ -51,6 +43,7 @@
 - es wurde auch versucht die Winkelgeschwidigkeit über eine FIFO-Queue zu bestimmen, die entweder die letzten 3 oder 5 Winkel mit Zeitstempel enthält, um so die Winkelgeschwidigkeit über einen größeren Zeitraum zu bestimmen und so zu Glätten
 - alle relevanten Informationen (z.B. aktuelle Zeit, 1-5 letzten Winkel, Winkelgeschwidigkeit) wurden dann über ZeroMQ in eine Queue der Länge 1 gelegt, die der RL Agent abfragen konnte, um die aktuellste Beobachtung zu erhalten
 - es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
+- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist
 
 - verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
 - simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004)

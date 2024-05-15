@@ -2,6 +2,38 @@
 
 \section{Results of the Experiments}
 
+\subsection{First Set of Experiments: Determining the angle}
+- Bei diesen Experimenten wurde noch kein RL Agent eingesetzt, sondern die erkennten Winkel direkt auf dem Bildschirm ausgegeben, um die Winkelbestimmung zu überprüfen.
+- Problem bei Erkennung der farbigen Rechtecke auf Pendel und Stück Plastik,  dass von außen scheinendes Sonnenlicht die Farben veränderte, sodass die Farberkennung nicht mehr funktionierte. insbesondere bei dem Violett war dieser Effekt besonders stark ausgeprägt.
+- Lösung durch anbringen von Symbolen, die verändern ihre Farbe nicht
+- Trotz viel Kalibierung und Ausprobieren von verschiedenen Varianten der Formen (ausgedruckt vs. selbst gezeichnet) war keine zuverlässige Erkennung möglich, es wurden zu viele Elemente im Bild, wie z.B. Schrauben oder Objekte im Hintergrund (Personen, die durch das Bild gehen, Stühle, etc) erkannt, häufig als Kreis
+- auch Filterung über OpenCVs moment() funktion liefert keine zuverlässige Erkennung
+- Erkennung der Kreise über Hough Circle Transformation: Die Bestimmung der Dreiecke ist recht zuverlässig, aber die Bestimmung der Kreise, selbst mit dieser Methode ist stark fehleranfällig, oft werden Kreise nicht erkannt. Da diese Funktion aber in verschiedenen Quellen immer gute Ergebnisse liefert, vermute ich, dass das Bild der Kamera zu viel Rauschen enthält.
+- verbesserter Ansatz zur Farberkennung liefert zuverlässige Winkel
+
+\subsection{Second Set of Experiments: Optimizing Hardware}
+- Pendel leichter machen hat nichts gebracht: Wenn das Pendel leichter ist, hat die Trägheit des Pendels aber nicht ausgereicht, um das Pendel nach oben zu bekommen
+
+- bei hohen Strömen (1.51 A RMS, 2.14 A Peak und 2 A RMS, 2.83 A Peak) wird der Stepper Motor sehr heiß, weswegen ein Lüfter montiert wurde, der den Motor kühlt
+- einer der zwei Stepper Motoren von stepperonline war nicht akkurat, die berechnete Position des Arduino hat nicht mit der tatsächlichen Position des Carts übereingestimmt
+- geringe Ströme bei diesem Motor führen zu keiner Verbesserung des Motors bezüglich der Genauigkeit
+- der andere Motor von stepperonline war akkurat, auch bei höhen Strömen
+- Experimente mit verschiedenen Strömen lieferten einen RMS Strom von 1.2 A (Peak 1.69 A) als guten Tradeoff zwischen Kraft des Motors und Überhitzung des Motors für den Stepper Motor von stepperonline
+- der Lüfter kann dann mit 3.3V betrieben werden und ist damit relativ leise
+
+- Erkenntnisse aus Experimenten mit maximaler Geschwindigkeit: Je höher die Geschwindigkeit des Stepper Motors gewählt wird, desto geringer wird die Genauigkeit. Verschiedene Experimente lieferten eine maximale Geschwindigkeit von 60000 Steps/Sekunde, bei der der Motor noch akkurat war. Die maximale Beschleunigung wurde mit 1000000 Steps/Sekunde^2 ermittelt, bei der der Motor noch akkurat war. Bei höheren Werten ist der Stepper Motor nicht mehr in der Lage alle Schritte auszuführen, die ihm gesendet werden, sodass die Genauigkeit leidet.
+
+\subsection{Third Set of Experiments: Optimizing Software}
+- Durch Einsatz der FIFO-Queue nahm die Winkelgeschwindigkeit weniger extreme Werte an, siehe Abbildung \ref{fig:before_after_smoothing}. Die Werte vor der Glättung gehen betragsmäßig bis rund 700 rad/s, mit Ausreißern sogar bis 1400 rad/s. Nach der Glättung über die letzten 3 Winkel liegen die Werte bei maximal 400 rad/s.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/before_smoothing.png}
+    \includegraphics[width=0.4\textwidth]{img/after_smoothing.png}
+    \caption{Comparison of the angle speed with and without the FIFO-Queue of Length 3}
+    \label{fig:before_after_smoothing}
+\end{figure}
+- Der Einstz des Flags, welches 1 ist, wenn der Pole oben ist, um zu unterscheiden, ob der Winkel und Winkelgeschwindigkeit Null sind weil der Pole oben ist, oder weil der RL Agent die Nachrichten der Kamera schneller abruft, als diese neue Winkel bestimmen kann, hat funktioniert. Ohne diese Fehlerkorrektur tauchte dieses Problem in einem Datensatz bei 85 von 10240 Beobachtungen auf (0.83\%)
+
 \section{Challenges and Limitations of Experiments}
 
 \subsection{Delays from the Camera}
