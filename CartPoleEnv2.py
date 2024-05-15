@@ -86,18 +86,18 @@ class CartPoleEnv2(gym.Env):
         dtheta3 = (math.pi-abs(theta3)) + (math.pi-abs(theta4))
         dtheta4 = (math.pi-abs(theta4)) + (math.pi-abs(theta5))
         angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/2) # [0.08, 12.18]
-        rotation_position = abs(x)/12800
-        position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
+        # rotation_position = abs(x)/12800
+        # position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
         if math.degrees(abs(theta5)) < 12:
             angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
         else:
             angular_velocity_penalty = 0
-        if math.degrees(abs(theta5)) > 168:
-            no_swing_up_penalty = overall_time/50000
-        else:
-            no_swing_up_penalty = 0
+        # if math.degrees(abs(theta5)) > 168:
+        #     no_swing_up_penalty = overall_time/50000
+        # else:
+        #     no_swing_up_penalty = 0
 
-        return angle_reward - 0.1*position_penalty - angular_velocity_penalty - no_swing_up_penalty
+        return angle_reward - angular_velocity_penalty
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
@@ -141,9 +141,9 @@ class CartPoleEnv2(gym.Env):
             done = True
         # elif self.position + action * 10 > 360*self.max_revolutions_to_each_side or self.position + action * 10 < -360*self.max_revolutions_to_each_side:
         #     done = True
-        elif abs(float(self.communicator.send_message('p', 0)[1])) >= 12800*self.max_revolutions_to_each_side:
-            print("Position limit reached")
-            done = True
+        # elif abs(float(self.communicator.send_message('p', 0)[1])) >= 12800*self.max_revolutions_to_each_side:
+        #     print("Position limit reached")
+        #     done = True
         else:
             done = False
         self.time_steps += 1
@@ -158,6 +158,12 @@ class CartPoleEnv2(gym.Env):
             self.position_velocity = 60000
         else:
             self.position_velocity = -60000
+
+        if float(self.communicator.send_message('p', 0)[1]) >= 12800*self.max_revolutions_to_each_side and self.position_velocity > 0:
+            self.position_velocity = 0
+        if float(self.communicator.send_message('p', 0)[1]) <= -12800*self.max_revolutions_to_each_side and self.position_velocity < 0:
+            self.position_velocity = 0
+
         self.communicator.send_message('v', self.position_velocity)
         if math.degrees(abs(self.get_angle_and_velocity()[4])) > 12:
             time.sleep(0.1)
