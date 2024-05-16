@@ -1,5 +1,30 @@
-\chapter{Related Work}
+\chapter{Background and Literature Review}
 
-\section{Historical Development of the Cart-Pole Problem}
+\section{Fundamentals of Reinforcement Learning}
+- Reinforcement learning (RL) is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize cumulative reward. This approach is inspired by behaviorist psychology, where learning is achieved through interactions with the environment and is reinforced by rewards and punishments. RL has gained significant attention due to its successful applications in various domains such as robotics, game playing, and autonomous systems. (Sutton & Barto, 1998)
 
-\section{Recent Advances in Reinforcement Learning for Cart-Pole}
+- Fundamental Concepts of Reinforcement Learning
+- Agent and Environment: In RL, the learning process involves an agent and an environment. The agent interacts with the environment by performing actions, and the environment responds by providing feedback in the form of rewards or penalties. The objective of the agent is to learn a policy that maximizes the total reward over time (Sutton & Barto, 1998).
+- State (S): Represents the current situation or configuration of the environment.
+- Action (A): The set of all possible moves the agent can make.
+- Reward (R): The feedback from the environment based on the action taken by the agent.
+- The agent's goal is to find a policy, π, that maps states to actions in a way that maximizes the expected cumulative reward, known as the return (Sutton & Barto, 1998).
+- Policy (π): A policy is a strategy used by the agent to decide the next action based on the current state.
+- Value Function (V): The value function estimates the expected return (total reward) starting from a state and following a particular policy. It helps in evaluating the goodness of states (Szepesvári, 2010).
+- Model-Free RL: The agent learns a policy or value function without understanding the underlying model of the environment. Examples include Q-Learning (Watkins & Dayan, 1992) and PPO (Pan et al 2018).
+- Model-Based RL: The agent learns a model of the environment (transition probabilities and reward function) and uses it to plan actions (Kaelbling, Littman, & Moore, 1996).
+
+- Key Algorithms in Reinforcement Learning
+- Dynamic Programming: Dynamic programming (DP) methods require a complete model of the environment. They are used to compute optimal policies by iteratively improving value functions. Examples include Policy Iteration and Value Iteration.
+- Monte Carlo (MC) methods learn directly from episodes of experience. They do not require knowledge of the environment's model and estimate value functions based on sample returns .
+- Temporal-Difference (TD) learning combines ideas from DP and MC methods. It updates value estimates based on the difference between consecutive estimates. (Sutton & Barto, 1998)
+
+- Exploration vs. Exploitation: One of the central challenges in RL is the trade-off between exploration (trying new actions to discover their effects) and exploitation (choosing actions that are known to yield high rewards). Various strategies such as ε-greedy, softmax, and Upper Confidence Bound (UCB) are employed to balance this trade-off (Auer, Cesa-Bianchi, & Fischer, 2002).
+
+- Deep Reinforcement Learning: With the advent of deep learning, RL has evolved into deep reinforcement learning (DRL), where neural networks are used to approximate value functions or policies. Notable advancements include: Deep Q-Network (DQN): Combines Q-Learning with deep neural networks to handle high-dimensional state spaces, such as those in Atari games (Mnih et al., 2015). Actor-Critic Methods: Use two neural networks, one for the policy (actor) and one for the value function (critic). Examples include A3C (Asynchronous Advantage Actor-Critic) and PPO (Proximal Policy Optimization) (Mnih et al., 2016; Schulman et al., 2017).
+
+(hier kommt auch eine kurze Erklärung zum PPO Algorithmus hin)
+
+\section{The Cart-Pole Problem and Swing-Up Dynamics}
+
+\section{Review of Related Work in Real-World Environments}
