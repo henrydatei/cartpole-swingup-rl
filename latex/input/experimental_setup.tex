@@ -45,6 +45,13 @@
 - es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
 - Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist
 
+- verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
+- in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen
+- Erweiterung auf mehr Aktionen, die das Cart in 10$^\circ$ Abstufungen mit einer Aktion von ganz links nach ganz rechts bewegen können (insgesamt 648 Aktionen möglich)
+- Aktionen sind Geschwindigkeiten, die das Cart in Steps/Sekunde bewegen, wobei die Geschwindigkeit und Vorzeichen in 1000er Schritten von 0 bis 60000 Steps/Sekunde gewählt werden kann
+- Reduktion auf 2000er Schritte und 5000er Schritte, um die Anzahl der Aktionen zu reduzieren, da die Anzahl der Aktionen die Trainingszeit erhöht
+- Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.
+
 - verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
 - simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004)
 - H. Kimura & S. Kobayashi (1999) haben folgende Reward-Funktion vorgeschlagen: \begin{align}
@@ -65,7 +72,7 @@
     \end{cases}
 \end{align}
 - Aus vorgegangen Experimenten hatte sich auch eine Reward-Funktion ergeben, diese nutzt die letzten 5 Winkel und bestimmt eine Winkeländerung. Zugleich besteht diese Reward-Funktion aus mehreren Teilen, die den Winkel belohnen, zu hohe Winkelgeschwindigkeiten bestrafen, den RL Agent bestrafen, wenn sich das Cart zu weit aus der mittleren Position bewegt und den RL Agent bestraft, wenn der Winkel mit fortgeschrittenem Training unten bleibt. \begin{align}
-    angle_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{2}\right) \\
+    angle_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{\alpha}\right) \\
     angular_velocity_penalty &= \begin{cases}
         angle_reward\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
         0 & \text{sonst}
@@ -74,13 +81,6 @@
         \frac{time steps since training start}{50000} & \vert\theta_5\vert \ge 168^\circ \\
         0 & \text{sonst}
     \end{cases} \\
-    r_{complex} &= angle_reward - position_penalty - angular_velocity_penalty - no_swing_up_penalty
+    r_{complex} &= angle_reward - \beta\cdot position_penalty - \gamma\cdot angular_velocity_penalty - \delta\cdot no_swing_up_penalty
 \end{align}
-wobei $\theta_5$ der aktuellste Winkel ist und $\Delta\theta_i$ für $i=1,...,4$ die absolute Änderung von $\theta_i$ zu $\theta_{i+1}$ ist. 
-
-- verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
-- in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen
-- Erweiterung auf mehr Aktionen, die das Cart in 10$^\circ$ Abstufungen mit einer Aktion von ganz links nach ganz rechts bewegen können (insgesamt 648 Aktionen möglich)
-- Aktionen sind Geschwindigkeiten, die das Cart in Steps/Sekunde bewegen, wobei die Geschwindigkeit und Vorzeichen in 1000er Schritten von 0 bis 60000 Steps/Sekunde gewählt werden kann
-- Reduktion auf 2000er Schritte und 5000er Schritte, um die Anzahl der Aktionen zu reduzieren, da die Anzahl der Aktionen die Trainingszeit erhöht
-- Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.
+wobei $\theta_5$ der aktuellste Winkel ist und $\Delta\theta_i$ für $i=1,...,4$ die absolute Änderung von $\theta_i$ zu $\theta_{i+1}$ ist. $\alpha$ bis $\delta$ erlauben eine unterschiedliche Gewichtung der einzelnen Teile der Reward-Funktion.
