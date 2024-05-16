@@ -178,10 +178,10 @@ class CartPoleEnv2(gym.Env):
 
         # reward
         if not done:
-            # reward = self.reward_escobar_2020(self.position, self.angle, self.position_velocity/1000)
+            reward = self.reward_escobar_2020(self.position, self.angle5, self.position_velocity/3000)
             # reward = self.reward_kimura_1999(self.position, self.angle, self.angle_velocity)
             # reward = self.reward_swing_up_stabilization(self.angle, self.angle_velocity)
-            reward = self.reward_simple(self.angle5)
+            # reward = self.reward_simple(self.angle)
             # reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
             # reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.overall_time_steps)
         else:

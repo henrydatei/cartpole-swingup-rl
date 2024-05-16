@@ -36,3 +36,6 @@
 
 15.05.2024
 - 13:17 - 39: deaktivieren der angle velocity pentality. jetzt auch mal probieren, ob er alle 2048 steps alles abspeichert, damit nix verloren geht (leider verpennt über die nacht 200k steps laufen zu lassen, es hat nur 5k steps gemacht)
+
+16.05.2024
+- 11:42: Queue für Experimente machen, weil Ergebnisse von Reward-Funktionen aus Literatur sehen so aus, als hätte der Motor nicht ausreichend Kraft gehabt. Deswegen jetzt noch mal Escobar, Kimura, Simple, Swing up stabilisation und Ankit (nur mit angle reward, keine penalties) laufen lassen über das Wochenende mit je 200k steps (erster Test nur mit 5k steps um zu schauen ob alles läuft) => scheint zu funktionieren

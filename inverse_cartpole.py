@@ -5,7 +5,7 @@ import datetime
 import os
 import pandas as pd
 
-model_name = "PPO_CartPoleEnv2_5k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+model_name = "PPO_CartPoleEnv2_1m_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 log_dir = os.path.join("logs", model_name)
 os.makedirs(log_dir, exist_ok=True)
 os.makedirs('models', exist_ok=True)
@@ -16,7 +16,7 @@ myEnv.log_dir = log_dir
 new_logger = configure(log_dir,['stdout','csv', 'tensorboard'])
 model = PPO("MlpPolicy", myEnv, verbose=1)
 model.set_logger(new_logger)
-model.learn(total_timesteps=5000)
+model.learn(total_timesteps=1000000)
 
 myEnv.reset()
 
