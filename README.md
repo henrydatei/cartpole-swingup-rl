@@ -33,3 +33,6 @@
 
 14.05.2024
 - 10:39-42: deaktivieren der no swing up pentality und position pentality. das cart kann jetzt die ganze länge benutzen, wenn es den rand erreicht bricht die episode nicht ab, sondern jede aktion, die das cart weiter an den rand treiben würde, wird anulliert. => nix gelernt, die ganze Länge wird benutzt, aber Häufigkeit der kleinen Winkel nimmt ab, mean Reward nimmt stark ab
+
+15.05.2024
+- 13:17 - 39: deaktivieren der angle velocity pentality. jetzt auch mal probieren, ob er alle 2048 steps alles abspeichert, damit nix verloren geht (leider verpennt über die nacht 200k steps laufen zu lassen, es hat nur 5k steps gemacht)

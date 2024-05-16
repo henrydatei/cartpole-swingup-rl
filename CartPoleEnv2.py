@@ -5,6 +5,8 @@ import math
 import zmq
 import time
 import datetime
+import os
+import pandas as pd
 
 from cartpole.Communicator import Communicator
 
@@ -47,6 +49,7 @@ class CartPoleEnv2(gym.Env):
         self.socket.subscribe("")
         self.last_message = (-math.pi, -math.pi, -math.pi, -math.pi, -math.pi, 0, 0, 0)
 
+        self.log_dir = "logs"
         self.all_observations = []
         self.all_rewards = []
         self.all_times = []
@@ -81,23 +84,23 @@ class CartPoleEnv2(gym.Env):
         return angle_reward - position_penalty
     
     def reward_ankit(self, x: float, theta1: float, theta2: float, theta3: float, theta4: float, theta5: float, overall_time: int):
-        dtheta1 = (math.pi-abs(theta1)) + (math.pi-abs(theta2))
-        dtheta2 = (math.pi-abs(theta2)) + (math.pi-abs(theta3))
-        dtheta3 = (math.pi-abs(theta3)) + (math.pi-abs(theta4))
-        dtheta4 = (math.pi-abs(theta4)) + (math.pi-abs(theta5))
+        # dtheta1 = (math.pi-abs(theta1)) + (math.pi-abs(theta2))
+        # dtheta2 = (math.pi-abs(theta2)) + (math.pi-abs(theta3))
+        # dtheta3 = (math.pi-abs(theta3)) + (math.pi-abs(theta4))
+        # dtheta4 = (math.pi-abs(theta4)) + (math.pi-abs(theta5))
         angle_reward = math.exp((math.cos(theta1) + math.cos(theta2) + math.cos(theta3) + math.cos(theta4) + math.cos(theta5))/2) # [0.08, 12.18]
         # rotation_position = abs(x)/12800
         # position_penalty = math.exp(rotation_position/self.max_revolutions_to_each_side) - 1 # [0, exp(1)-1]
-        if math.degrees(abs(theta5)) < 12:
-            angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
-        else:
-            angular_velocity_penalty = 0
+        # if math.degrees(abs(theta5)) < 12:
+        #     angular_velocity_penalty = angle_reward * (dtheta1 + dtheta2 + dtheta3 + dtheta4) / (4 * 2 * math.pi) # [0, 1] * angle_reward
+        # else:
+        #     angular_velocity_penalty = 0
         # if math.degrees(abs(theta5)) > 168:
         #     no_swing_up_penalty = overall_time/50000
         # else:
         #     no_swing_up_penalty = 0
 
-        return angle_reward - angular_velocity_penalty
+        return angle_reward
     
     def reward_escobar_2020(self, x: float, theta: float, force: float):
         """
@@ -207,6 +210,23 @@ class CartPoleEnv2(gym.Env):
         while not self.office_empty():
             print("Wait 10 minutes...")
             time.sleep(600) # wait 10 minutes
+        
+        # check if file exists and if yes, delete it
+        if os.path.exists(os.path.join(self.log_dir, 'observations_rewards_times.csv')):
+            os.remove(os.path.join(self.log_dir, 'observations_rewards_times.csv'))
+        
+        # save observations and rewards
+        observations = pd.DataFrame(self.all_observations, columns=['angle1','angle2', 'angle3', 'angle4', 'angle5', 'angle_velocity', 'position', 'position_velocity', 'pole_up'])
+        rewards = pd.DataFrame(self.all_rewards, columns=['reward'])
+        times = pd.DataFrame(self.all_times, columns=['time'])
+        delays = pd.DataFrame(self.all_delays, columns=['delay'])
+
+        # merge observations, rewards and times
+        observations = pd.concat([observations, rewards], axis=1)
+        observations = pd.concat([observations, times], axis=1)
+        observations = pd.concat([observations, delays], axis=1)
+        observations.to_csv(os.path.join(self.log_dir, 'observations_rewards_times.csv'))
+
         self.communicator.send_message("a", 10000) #slow it down a bit
         self.communicator.send_message('m', 0)
         self.communicator.send_message('v', 0)
