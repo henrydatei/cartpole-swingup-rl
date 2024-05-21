@@ -16,14 +16,14 @@
 
 - Key Algorithms in Reinforcement Learning
 - Dynamic Programming: Dynamic programming (DP) methods require a complete model of the environment. They are used to compute optimal policies by iteratively improving value functions. Examples include Policy Iteration and Value Iteration.
-- Monte Carlo (MC) methods learn directly from episodes of experience. They do not require knowledge of the environment's model and estimate value functions based on sample returns .
+- Monte Carlo (MC) methods learn directly from episodes of experience. They do not require knowledge of the environment's model and estimate value functions based on sample returns.
 - Temporal-Difference (TD) learning combines ideas from DP and MC methods. It updates value estimates based on the difference between consecutive estimates. (Sutton & Barto, 1998)
 
 - Exploration vs. Exploitation: One of the central challenges in RL is the trade-off between exploration (trying new actions to discover their effects) and exploitation (choosing actions that are known to yield high rewards). Various strategies such as ε-greedy, softmax, and Upper Confidence Bound (UCB) are employed to balance this trade-off (Auer, Cesa-Bianchi, & Fischer, 2002).
 
 - Deep Reinforcement Learning: With the advent of deep learning, RL has evolved into deep reinforcement learning (DRL), where neural networks are used to approximate value functions or policies. Notable advancements include: Deep Q-Network (DQN): Combines Q-Learning with deep neural networks to handle high-dimensional state spaces, such as those in Atari games (Mnih et al., 2015). Actor-Critic Methods: Use two neural networks, one for the policy (actor) and one for the value function (critic). Examples include A3C (Asynchronous Advantage Actor-Critic) and PPO (Proximal Policy Optimization) (Mnih et al., 2016; Schulman et al., 2017).
 
-(hier kommt auch eine kurze Erklärung zum PPO Algorithmus hin)
+- State of the Art Algorithm: Proximal Policy Optimization (PPO) (Schulman et al., 2017). PPO is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. Combines the benefits of policy gradient methods with the stability of trust region methods. Implemented in the OpenAI Baselines library. (OpenAI Blog, 2017; Wouter van Heeswijk, 2023)
 
 \section{The Cart-Pole Problem and Swing-Up Dynamics}
 
