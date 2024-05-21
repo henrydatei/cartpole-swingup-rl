@@ -43,7 +43,7 @@
 - es wurde auch versucht die Winkelgeschwidigkeit über eine FIFO-Queue zu bestimmen, die entweder die letzten 3 oder 5 Winkel mit Zeitstempel enthält, um so die Winkelgeschwidigkeit über einen größeren Zeitraum zu bestimmen und so zu Glätten
 - alle relevanten Informationen (z.B. aktuelle Zeit, 1-5 letzten Winkel, Winkelgeschwidigkeit) wurden dann über ZeroMQ in eine Queue der Länge 1 gelegt, die der RL Agent abfragen konnte, um die aktuellste Beobachtung zu erhalten
 - es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
-- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist
+- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist. Das Pendel ist dann oben, wenn der Betrag des Winkels kleiner als 12 Grad ist, wie von Nagendra (2017) vorgeschlagen. Ansonten ist das Pendel unten.
 
 - verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
 - in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen

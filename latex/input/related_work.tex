@@ -26,5 +26,28 @@
 - State of the Art Algorithm: Proximal Policy Optimization (PPO) (Schulman et al., 2017). PPO is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. Combines the benefits of policy gradient methods with the stability of trust region methods. Implemented in the OpenAI Baselines library. (OpenAI Blog, 2017; Wouter van Heeswijk, 2023)
 
 \section{The Cart-Pole Problem and Swing-Up Dynamics}
+The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control.
 
-\section{Review of Related Work in Real-World Environments}
+The cart-pole system consists of a cart of mass $m_c$ and a pole of length l and mass $m_p$. The cart can move horizontally, and the pole is free to swing in the vertical plane. The system's state can be described by four variables: the cart's position $x$, the cart's velocity $\dot{x}$, the pole's angle $\theta$ from the vertical, and the pole's angular velocity $\dot{\theta}$
+
+The equations of motion for the cart-pole system are derived from Newton's laws of motion and can be expressed as follows (assume no friction):
+\begin{align}
+    \ddot{\theta} &= \frac{g\sin\theta + \cos\theta\left(\frac{-F-m_pl\dot{\theta}^2\sin\theta}{m_c+m_p}\right)}{l\left(\frac{4}{3}-\frac{m_p\cos^2\theta}{m_c+m_p}\right)} \\
+    \ddot{x} &= \frac{F+m_pl(\dot{\theta}^2\sin\theta-\ddot{\theta}\cos\theta)}{m_c+m_p}
+\end{align}
+where $F$ is the force applied to the cart, and $g$ is the acceleration due to gravity. These equations are coupled and nonlinear, posing a significant challenge for control. (Florian, 2007)
+
+While balancing the pole is a standard control problem, the swing-up task involves bringing the pole from a hanging downward position to an upright position and then stabilizing it. The swing-up problem is more complex because it requires controlling the system to pass through a large range of states.
+
+One popular method for solving the swing-up problem is based on energy control. The idea is to apply forces to the cart to increase the total energy of the system to the desired level that allows the pole to be balanced upright. The total energy $E$ of the system is the sum of the kinetic and potential energies:
+\begin{align}
+    E = \frac{1}{2}m_c\dot{x}^2 + \frac{1}{2}m_p(\dot{x}^2 + l^2\dot{\theta}^2 + 2l\dot{x}\dot{\theta}\cos(\theta)) + m_pgl\cos(\theta)
+\end{align}
+The control strategy involves applying a force $F$ to the cart that drives the system's energy towards the desired energy level for the upright position. When the pole's energy is close to the required level, a switching strategy can be employed to transition from swing-up control to balance control (Astrom & Furuta, 2000).
+
+\section{Review of Related Work for the Cart-Pole Swing-Up Task} %irgendwie gefällt mir die section noch nicht so ganz, vllt zusammenlegen mit vorheriger section?
+- not found any papers that use real cart-pole system for swing-up task, many papers use simulated environments and use similar reward functions. Different approaches for reward functions are listed in the following papers. Only one paper uses a real cart-pole system for the swing-up task, but reward function is simple (Nayante 2017). 
+
+- Simple reward function used in Doya (2000), Wawrzynski & Pacut (2004) uses cosine of angle. 
+- Escobar et al. (2020): The research focuses on the sensitivity analysis of this deep RL controller applied to the cart-pole swing-up task. The investigation includes examining the effects of varying the physical properties of the system and the presence of dry friction forces, using the cumulative reward as a metric during the task. Used simulated environment and task was solvable with friction. This is important because examined system in this paper is not simulated but real and therefore dry friction forces are present. The reward function penalizes high displacement  of the cart, high angles and high forces. A similar reward function can be found in Liu et al. (2023).
+- Kimura & Kobayashi (1999): The paper aims to develop a reinforcement learning algorithm capable of handling continuous state and action spaces to solve nonlinear control problems effectively. Discrete reward function, penalizes high displacement, high angles and high angular velocities.
