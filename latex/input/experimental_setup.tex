@@ -72,15 +72,15 @@
     \end{cases}
 \end{align}
 - Aus vorgegangen Experimenten hatte sich auch eine Reward-Funktion ergeben, diese nutzt die letzten 5 Winkel und bestimmt eine Winkeländerung. Zugleich besteht diese Reward-Funktion aus mehreren Teilen, die den Winkel belohnen, zu hohe Winkelgeschwindigkeiten bestrafen, den RL Agent bestrafen, wenn sich das Cart zu weit aus der mittleren Position bewegt und den RL Agent bestraft, wenn der Winkel mit fortgeschrittenem Training unten bleibt. \begin{align}
-    angle_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{\alpha}\right) \\
-    angular_velocity_penalty &= \begin{cases}
-        angle_reward\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
+    angle\_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{\alpha}\right) \\
+    angular\_velocity_penalty &= \begin{cases}
+        angle\_reward\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
         0 & \text{sonst}
     \end{cases} \\
-    no_swing_up_penalty &= \begin{cases}
-        \frac{time steps since training start}{50000} & \vert\theta_5\vert \ge 168^\circ \\
+    no\_swing\_up\_penalty &= \begin{cases}
+        \frac{\text{time steps since training start}}{50000} & \vert\theta_5\vert \ge 168^\circ \\
         0 & \text{sonst}
     \end{cases} \\
-    r_{complex} &= angle_reward - \beta\cdot position_penalty - \gamma\cdot angular_velocity_penalty - \delta\cdot no_swing_up_penalty
+    r_{complex} &= angle\_reward - \beta\cdot position\_penalty - \gamma\cdot angular\_velocity\_penalty - \delta\cdot no\_swing\_up\_penalty
 \end{align}
 wobei $\theta_5$ der aktuellste Winkel ist und $\Delta\theta_i$ für $i=1,...,4$ die absolute Änderung von $\theta_i$ zu $\theta_{i+1}$ ist. $\alpha$ bis $\delta$ erlauben eine unterschiedliche Gewichtung der einzelnen Teile der Reward-Funktion.
