@@ -62,7 +62,7 @@
         0 & \text{sonst}
     \end{cases}
 \end{align} hier mit $\theta$ als Winkel in Radiant und $\dot{\theta}$ als Winkelgeschwindigkeit in Radiant pro Sekunde.
-- Escobar et al. (2020) haben folgende Reward-Funktion vorgeschlagen, die leicht modifiziert wurde, um sie an das Setup anzupassen. Im originalen Paper fließt die verwendete Kraft ein, um den RL Agent zu motivieren, mit möglichst wenig Kraft das Ziel zu erreichen. Ein zweiter Teil der Reward-Funktion liefert einen negativen Reward, wenn das Cart sich außerhalb des zulässigen Bereiches befindet. Das ist bei diesem Setup nicht möglich, weswegen dieser Teil der Reward-Funktion weggelassen wurde. \begin{align}
+- Escobar et al. (2020) haben folgende Reward-Funktion vorgeschlagen, die leicht modifiziert wurde, um sie an das Setup anzupassen. Im originalen Paper fließt die verwendete Kraft ein, um den RL Agent zu motivieren, mit möglichst wenig Kraft das Ziel zu erreichen. Ein zweiter Teil der Reward-Funktion liefert einen negativen Reward, wenn das Cart sich außerhalb des zulässigen Bereiches befindet. Das ist bei diesem Setup nicht möglich, weswegen dieser Teil der Reward-Funktion weggelassen wurde. A similar reward function can be found in Liu et al. (2023). \begin{align}
     r_{Escobar} = -0.01\left(0.01\cdot\vert x\vert^2 + 0.1\cdot\vert\theta\vert^2 + 5\cdot\vert \dot{x}\vert^2\right)
 \end{align} wobei $x$ die Position und $\dot{x}$ die Geschwindigkeit des Carts ist. 
 - Aufgrund von hohen Winkelgeschwindigkeiten, die zwar nötig sind, um den Pole nach oben zu bekommen, aber in der Balancierungsphase, wenn der Pole oben ist, hinderlich sind, wurde noch eine Reward-Funktionen getestet, die hohe Winkelgeschwindigkeiten nur bis einem bestimmten Punkt fördern. \begin{align}
