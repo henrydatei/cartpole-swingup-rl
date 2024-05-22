@@ -39,3 +39,4 @@
 
 16.05.2024
 - 11:42: Queue für Experimente machen, weil Ergebnisse von Reward-Funktionen aus Literatur sehen so aus, als hätte der Motor nicht ausreichend Kraft gehabt. Deswegen jetzt noch mal Escobar, Kimura, Simple, Swing up stabilisation und Ankit (nur mit angle reward, keine penalties) laufen lassen über das Wochenende mit je 200k steps (erster Test nur mit 5k steps um zu schauen ob alles läuft) => scheint zu funktionieren
+- 13:34: jetzt das ganze mit 200k steps
