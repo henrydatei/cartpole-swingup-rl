@@ -1,0 +1,12 @@
+gym>=0.26.2
+imutils>=0.5.4
+matplotlib>=3.8.3
+numpy>=1.26.4
+opencv_python>=4.9.0.80
+pandas>=2.2.2
+picamera2>=0.3.18
+pygame>=2.5.2
+pyserial>=3.5
+pyzmq>=25.1.2
+stable_baselines3>=2.2.1
+torch>=2.2.1
