@@ -19,10 +19,21 @@ plot(m1$time.total_timesteps, m1$rollout.ep_rew_mean, type = "l", xlab = "Timest
 plot(m2$time.total_timesteps, m2$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Reward per Episode", main = "Simple Reward, 51 Actions")
 plot(m3$time.total_timesteps, m3$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Reward per Episode", main = "Complex Reward, 2 Actions")
 
-# Escobar 2020
-escobar = read.csv("logs/PPO_CartPoleEnv2_50k_smoothing_error_protection_reward_escobar2020_2024-04-17_11-15-45/observations_rewards_times.csv")
+# Simple Reward
+simple_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_simple_2step_faster_lessweight_2actions_2024-05-16_13-34-22/observations_rewards_times.csv")
+simple_progress = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_simple_2step_faster_lessweight_2actions_2024-05-16_13-34-22/progress.csv")
 
-plot(escobar$angle, xlab = "Observations", ylab = "Angle in rad")
+plot(simple_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
+plot(simple_obs$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s")
+plot(simple_progress$time.total_timesteps, simple_progress$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Mean reward per Episode")
+
+# Escobar 2020
+escobar_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_escobar_2step_faster_lessweight_2actions_2024-05-17_05-50-11/observations_rewards_times.csv")
+escobar_progress = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_escobar_2step_faster_lessweight_2actions_2024-05-17_05-50-11/progress.csv")
+
+plot(escobar_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
+plot(escobar_obs$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s")
+plot(escobar_progress$time.total_timesteps, simple_progress$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Mean reward per Episode")
 
 # Camera Delay
 total_delay = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-14_10-42-44/observations_rewards_times.csv")
