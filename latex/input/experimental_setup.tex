@@ -53,7 +53,7 @@
 - Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.
 
 - verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
-- simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004)
+- simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004). Erreichte das Cart das Ende des Fahrbereiches, so wurde jede Action, die das Cart nicht wieder zurück in Richtung Mitte bringt, ignoriert.
 - H. Kimura & S. Kobayashi (1999) haben folgende Reward-Funktion vorgeschlagen: \begin{align}
     r_{Kimura,Kobayashi} = \begin{cases}
         -1 & \vert\theta\vert \ge 0.8\pi \\

@@ -45,14 +45,47 @@
 \end{figure}
 - Beim Beobachten des RL Agent wurde auch schnell klar, dass ohne den Einsatz von time.sleep(0.1) der Rl Agent nicht in der Lage ist, das Pendel nach oben zu bringen, weil er zu viele Aktionen macht, die das cart nur schnell kurze distanzen hin und her fahren lässt. somit lässt sich kein Moment des Pendels aufbauen, welches aber nötig ist, um nach oben zu schwingen. Mit erhöhter Trainingszeit ist dies aber denkbar, dass der RL Agent dies selbst lernt. Die vielen schnellen Aktionen sind dann in der Balancierungsphase nötig
 
-- Reward Funktion, die von Escobar et al (2020) vorgeschlagen wurde, hat nicht zum Erfolg geführt, der RL Agent hat es in 50000 Steps nicht einmal geschafft, das Pendel nach oben zu bekommen (siehe Abbildung \ref{fig:angle_escobar2020})
+- Simple Reward Funktion führt nicht zum gewünschten Verhalten, die beobachteten Winkel sind oft sehr groß ($\pm\pi$, was der unteren Position des Pendels entspricht), siehe Abbildung \ref{fig:angle_simple_reward}. Der weiße Bereich bei $\pm$ 1 Radiant kommt daher, dass die Kamera keine Seite des Pendels sehen kann, wenn es sich in der Horizontalen befindet. Daher können in diesem Zustand auch keine Winkel gemessen werden. Die beobachtete Winkelgeschwidigkeit ist oft sehr groß, was darauf hindeutet, dass das Pendel sehr schnell schwingt. Damit ist es zwar möglich, das Pendel nach oben zu bringen, aber sehr schwer das Pendel oben zu balancieren (siehe \ref{fig:angle_velocity_simple_reward}). Der mittlere Reward pro Episode konvergiert zu rund -1600 (siehe \ref{fig:mean_reward_simple_reward}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/simple_reward_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the simple reward function}
+    \label{fig:angle_simple_reward}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/simple_reward_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the simple reward function}
+    \label{fig:angle_velocity_simple_reward}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/simple_reward_mean_reward.png}
+    \caption{Mean reward per episode with the simple reward function}
+    \label{fig:mean_reward_simple_reward}
+\end{figure}
+
+- Kimura: %TODO
+
+- Reward Funktion, die von Escobar et al (2020) vorgeschlagen wurde, hat nicht zum Erfolg geführt, die beobachteten Winkel konvergieren auch nicht zu 0 Radiant, siehe Abbildung \ref{fig:angle_escobar2020}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_escobar2020}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der einfachen Reward Funktion, der erziehlte Reward ist numerisch höher, aber abnehmend (\ref{fig:mean_reward_escobar2020}).
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{img/escobar2020_angle.png}
-    \caption{Seen angles of the pendulum over 50000 steps with the reward function of Escobar et al (2020)}
+    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Escobar et al (2020)}
     \label{fig:angle_escobar2020}
 \end{figure}
-- Oft ein beobachteter Winkel von $\pm\pi$ rad, was die untere Position des Pendels ist, das Pendel wurde nur bis etwa $\pm 1$ rad nach oben gebracht %TODO: ist nicht einfach der Motor zu schwach?
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/escobar2020_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Escobar et al (2020)}
+    \label{fig:angle_velocity_escobar2020}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/escobar2020_mean_reward.png}
+    \caption{Mean reward per episode with the reward function of Escobar et al (2020)}
+    \label{fig:mean_reward_escobar2020}
+\end{figure}
 
 \section{Challenges and Limitations of Experiments}
 - Da es sich nicht um eine Simulation, sondern um ein echtes System handelt, gibt es viele Herausforderungen, die in Simulationen nicht auftreten, wie z.B. die Erkennung der Winkel des Pendels in Echtzeit, verschiedene Delays, die durch die Hardware entstehen, und auch die akkurate Bestimmung der Winkelgeschwidigkeit: Winkeländerung geteilt durch sehr kleine Zeit ergibt einen großen Fehler, selbst bei kleinen Zeitabweichungen. Durch das Smoothing sollte der Effekt aber abgemildert werden.
