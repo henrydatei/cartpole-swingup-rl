@@ -2,11 +2,9 @@ gym
 imutils
 matplotlib
 numpy
-# opencv_python>=4.9.0.80
 pandas
-picamera2
 pygame
 pyserial
 pyzmq
 stable_baselines3
-# torch>=2.2.1
+tensorboard
