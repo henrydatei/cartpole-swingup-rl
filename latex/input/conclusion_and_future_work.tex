@@ -1,10 +1,18 @@
 \chapter{Conclusion and Future Work}
 
 \section{Summary of Findings}
+- auch wenn es nicht gelungen ist, das Pendel nach dem Hochschwingen zu balancieren, so wurden doch einige Verbesserungen am System vorgenommen, die es ermöglichen, in Zukunft den RL Agent besser zu trainieren.
+- modularer Aufbau des Systems ermöglicht es, einzelne Komponenten, wie z.B. die Winkelerkennung, den RL Agent oder die Motorsteuerung per Arduino, auszutauschen und zu verbessern
+- dadurch auch komplexitätsreduktion in Aufbau und Wartung
+- der Motor hat jetzt definitiv genug Kraft, um das Pendel nach oben zu bewegen ohne dabei zu überhitzen
+- die motorsteuerung ist präzise
+- die Verarbeitungszeit zur Winkelerkennung läuft asynchron zu allen anderen Komponenten, sodass mehrerer Kerne des Raspberry Pi genutzt werden können und entscheidungen des RL Agent nicht erst auf ein Bild und den Winkel warten müssen, was die Verzögerung zwischen der letzten Beobachtung und der Realität verringert
 
-\section{Potential Applications}
+- leider konnte keine der in der Lteratur vorgeschlagen Reward Funktionen den Task lösen, auch die in dieser Arbeit vorgeschlagene Reward Funktion konnte den Task nicht lösen
+- Inbesondere bei der Reward Funktion von Kimura & Kobayashi (1999) kam das Pendel nicht mehr nach oben, was daran liegen könnte, dass eine hohe Winkelgeschwidigkeit besonders stark bestraft wird. Die hohe Winkelgeschwidigkeit ist aber in der Aufschwingphase notwendig, um das Pendel nach oben zu bewegen.
 
 \section{Directions for Future Research}
-- Ist die Winkelerkennung per Kamera eine gute Idee? Andere Methoden zur Winkelmessung ausprobieren, z.B. Gyroskop, Magnetometer, etc.
-- Pole länger machen. Es ist für einen Menschen auch einfacher einen längeren Pole zu balancieren, unser Pole ist verhältnismäßig kurz.
-- Motor schneller machen, in dem einen Youtube Video ist der Motor viel schneller als unser Motor.
+- Ist die Winkelerkennung per Kamera eine gute Idee? Andere Methoden zur Winkelmessung ausprobieren, z.B. Gyroskop, Magnetometer, etc. Man könnte hier vielleicht auch eine kürzere Latenz erreichen, Bildverarbeitung ist sehr rechenintensiv, insbesondere wenn keine Grafikeinheit, wie bei dem Raspberry Pi, vorhanden ist.
+- Pole länger machen. Es ist für einen Menschen auch einfacher einen längeren Pole zu balancieren, unser Pole ist verhältnismäßig kurz. Das Pendel in Nayante (2021) hat eine Länge von 940mm, unser Pendel hat eine Länge von 350mm.
+- Motor schneller machen, in dem einen Youtube Video ist der Motor viel schneller als unser Motor und scheint auch mehr Kraft zu haben, sodass das Pendel nach oben bewegt werden kann. Die Schnelligkeit könnte man mit dem aktuellen Motor auch über ein Getriebe lösen, man muss dann aber darauf achten, dass die Kraft immer noch ausreicht. Eventuell muss man sonst den Strom erhöhen und die Kühlung intensivieren. Um die benötigte Kraft zu verringern, könnte man auch die Befestigung des Carts auf den Strangen überdenken, sodass weniger Reibung entsteht, z.B. durch den Einsatz von Schmiermittel.
+- Länger trainieren
