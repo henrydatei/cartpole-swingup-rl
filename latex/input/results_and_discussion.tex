@@ -65,7 +65,25 @@
     \label{fig:mean_reward_simple_reward}
 \end{figure}
 
-- Kimura: %TODO
+- Reward Funktion von Kimura & Kobayashi (1999) hat auch keine gute Performance, zwar stabilisiert sich auch hier der Mean Reward (siehe \ref{fig:mean_reward_kimura1999}), aber die Winkel erreichen gar nicht mehr die 0 Radiant, es findet also kein Aufschwung statt (siehe \ref{fig:angle_kimura1999}). Die beobachtete Winkelgeschwidigkeit nimmt stark ab über die Zeit (siehe \ref{fig:angle_velocity_kimura1999}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/kimura1999_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Kimura & Kobayashi (1999)}
+    \label{fig:angle_kimura1999}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/kimura1999_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Kimura & Kobayashi (1999)}
+    \label{fig:angle_velocity_kimura1999}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/kimura_mean_reward.png}
+    \caption{Mean reward per episode with the reward function of Kimura & Kobayashi (1999)}
+    \label{fig:mean_reward_kimura1999}
+\end{figure}
 
 - Reward Funktion, die von Escobar et al (2020) vorgeschlagen wurde, hat nicht zum Erfolg geführt, die beobachteten Winkel konvergieren auch nicht zu 0 Radiant, siehe Abbildung \ref{fig:angle_escobar2020}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_escobar2020}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der einfachen Reward Funktion, der erziehlte Reward ist numerisch höher, aber abnehmend (\ref{fig:mean_reward_escobar2020}).
 \begin{figure}[htbp]
