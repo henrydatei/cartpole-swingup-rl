@@ -1,6 +1,6 @@
 # https://pyimagesearch.com/2016/02/08/opencv-shape-detection/
 
-from cartpole.Shapedetector import ShapeDetector
+from Shapedetector import ShapeDetector
 import imutils
 import cv2
 from picamera2 import Picamera2
