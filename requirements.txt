@@ -9,3 +9,4 @@ pyzmq
 stable_baselines3
 tensorboard
 shimmy>=0.2.1
+pynput
