@@ -105,6 +105,26 @@
     \label{fig:mean_reward_escobar2020}
 \end{figure}
 
+- Auch die Reward Funktion, die eine hohe Winkelgeschwidigkeit in der Aufschungphase belohnt, $r_{highVelocity}$, hatte leider keinen Erfolg. Die beobachteten Winkel konvergieren nicht zu 0 Radiant, siehe Abbildung \ref{fig:angle_highVelocity}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_highVelocity}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der anderen Reward Funktionen, der erziehlte Reward ist steigt, hat aber noch nicht das bisherhige Maximum nach rund 40000 Timesteps erreicht. Zu diesem Zeitpunkt sieht man zwar mehr Winkel um die 0 Radiant, aber immer noch viele beobachtete Winkel bei $\pm\pi$ Radiant (\ref{fig:mean_reward_swingup}). Der Reward könnte also auch noch deutlich höher gehen.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/swingup_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the high velocity reward function}
+    \label{fig:angle_swingup}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/swingup_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the high velocity reward function}
+    \label{fig:angle_velocity_swingup}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/swingup_mean_reward.png}
+    \caption{Mean reward per episode with the high velocity reward function}
+    \label{fig:mean_reward_swingup}
+\end{figure}
+
 \section{Challenges and Limitations of Experiments}
 - Da es sich nicht um eine Simulation, sondern um ein echtes System handelt, gibt es viele Herausforderungen, die in Simulationen nicht auftreten, wie z.B. die Erkennung der Winkel des Pendels in Echtzeit, verschiedene Delays, die durch die Hardware entstehen, und auch die akkurate Bestimmung der Winkelgeschwidigkeit: Winkeländerung geteilt durch sehr kleine Zeit ergibt einen großen Fehler, selbst bei kleinen Zeitabweichungen. Durch das Smoothing sollte der Effekt aber abgemildert werden.
 
