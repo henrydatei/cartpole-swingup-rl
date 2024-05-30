@@ -5,7 +5,7 @@
 - Fokus der späteren Experimente lag darauf, die übrige Hardware, insbesondere den Stepper Motor, zu verbessern
 - Fokus der letzten Experimente lag darauf, die Software zu verbessern, insbesondere die Reward-Funktion des Reinforcement Learning Agents
 
-\section{Determining the angle}
+\section{Determining the angle} \label{sec:determining_the_angle}
 - in Experimenten vor mir wurde der Winkel des Pendels durch die Erkennung von farbigen Rechtecken auf dem Pendel und auf dem Stück Plastik, welches so am Pendel befestigt ist, dass es auf der anderen Seite des Rotationspunktes des Pendels ist, bestimmt
 - Die Farben waren Gelb und Violett und mithilfe der Mitte der Bounding Box um die erkannten Farben konnte dann der Winkel bestimmt werden, durch eine Verbindung des Mittelpunktes und des Rotationspunktes des Pendels, welcher auch im Bild erkennbar war, aber durch hartcodierte Pixelkoordinaten festgelegt war. Die Kamera durfte sich also nicht bewegen, da sonst wie Winkelbestimmung nicht mehr korrekt war.
 
@@ -39,11 +39,11 @@
 - Zur Software gehören 2 Teile: zum einen der Umgang mit den bestimmten Winkeln des Pendels, zum anderen der RL Agent und dort insbesondere die Reward-Funktion
 
 - welche Informationen aus den Kamerabildern genutzt werden, hing immer größtenteils von der Reward-Funktion ab, aber grundlegend wurde immer der Winkel und die Winkelgeschwidigkeit ermittelt.
-- verschiedene Methoden zur Winkelbestimmung wurden in der Section Determining the angle beschrieben, für die Winkelgeschwindigkeit wurde die Differenz der Winkel in den letzten 2 Frames genommen und deren Zeitdifferenz genutzt, um die Winkelgeschwindigkeit zu bestimmen
+- verschiedene Methoden zur Winkelbestimmung wurden in der Section \ref{sec:determining_the_angle} beschrieben, für die Winkelgeschwindigkeit wurde die Differenz der Winkel in den letzten 2 Frames genommen und deren Zeitdifferenz genutzt, um die Winkelgeschwindigkeit zu bestimmen
 - es wurde auch versucht die Winkelgeschwidigkeit über eine FIFO-Queue zu bestimmen, die entweder die letzten 3 oder 5 Winkel mit Zeitstempel enthält, um so die Winkelgeschwidigkeit über einen größeren Zeitraum zu bestimmen und so zu Glätten
 - alle relevanten Informationen (z.B. aktuelle Zeit, 1-5 letzten Winkel, Winkelgeschwidigkeit) wurden dann über ZeroMQ in eine Queue der Länge 1 gelegt, die der RL Agent abfragen konnte, um die aktuellste Beobachtung zu erhalten
 - es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
-- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist. Das Pendel ist dann oben, wenn der Betrag des Winkels kleiner als 12 Grad ist, wie von Nagendra (2017) vorgeschlagen. Ansonten ist das Pendel unten.
+- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist. Das Pendel ist dann oben, wenn der Betrag des Winkels kleiner als 12 Grad ist, wie von Nagendra (2017) vorgeschlagen. Ansonsten ist das Pendel unten.
 
 - verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
 - in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen
@@ -51,8 +51,10 @@
 - Aktionen sind Geschwindigkeiten, die das Cart in Steps/Sekunde bewegen, wobei die Geschwindigkeit und Vorzeichen in 1000er Schritten von 0 bis 60000 Steps/Sekunde gewählt werden kann
 - Reduktion auf 2000er Schritte und 5000er Schritte, um die Anzahl der Aktionen zu reduzieren, da die Anzahl der Aktionen die Trainingszeit erhöht
 - Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.
+- Wenn das Cart den Rand erreicht, so stoppt es automatisch und nur Aktionen, die das Cart wieder in die Mitte bringen, werden ausgeführt. In Vortests bekam der RL Agent eine Strafe, die exponentiell größer geworden ist, je weiter sich das Cart von der Mitte entfernt hat. Das hat dazu geführt, dass sich das Cart nach einiger Zeit nur leicht in der Mitte bewegt hat, um die Strafe so klein wie möglich zu halten. Hochgeschwungen ist der Pole dann nicht mehr, da das Cart nicht genug Moment aufbauen kann. Deswegen wurde die Strafe entfernt.
 
 - verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
+- die Länge einer Episode ist 2048 Steps, was auch der Standardwert der Implementierung von PPO in Stable Baselines 3 ist
 - simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004). Erreichte das Cart das Ende des Fahrbereiches, so wurde jede Action, die das Cart nicht wieder zurück in Richtung Mitte bringt, ignoriert.
 - H. Kimura & S. Kobayashi (1999) haben folgende Reward-Funktion vorgeschlagen: \begin{align}
     r_{Kimura,Kobayashi} = \begin{cases}
