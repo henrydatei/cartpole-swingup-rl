@@ -207,9 +207,9 @@ class CartPoleEnv2(gym.Env):
 
     def reset(self):
         print("Resetting...")
-        while not self.office_empty():
-            print("Wait 10 minutes...")
-            time.sleep(600) # wait 10 minutes
+        # while not self.office_empty():
+        #     print("Wait 10 minutes...")
+        #     time.sleep(600) # wait 10 minutes
         
         # check if file exists and if yes, delete it
         if os.path.exists(os.path.join(self.log_dir, 'observations_rewards_times.csv')):
