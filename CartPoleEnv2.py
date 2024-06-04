@@ -181,9 +181,9 @@ class CartPoleEnv2(gym.Env):
             # reward = self.reward_escobar_2020(self.position, self.angle, self.position_velocity/1000)
             # reward = self.reward_kimura_1999(self.position, self.angle, self.angle_velocity)
             # reward = self.reward_swing_up_stabilization(self.angle, self.angle_velocity)
-            reward = self.reward_simple(self.angle5)
+            # reward = self.reward_simple(self.angle5)
             # reward = self.reward_simple_position_penalty_clipping(self.angle, self.position, self.angle_velocity)
-            # reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.overall_time_steps)
+            reward = self.reward_ankit(self.position, self.angle1, self.angle2, self.angle3, self.angle4, self.angle5, self.overall_time_steps)
         else:
             reward = 0
 
@@ -207,9 +207,9 @@ class CartPoleEnv2(gym.Env):
 
     def reset(self):
         print("Resetting...")
-        while not self.office_empty():
-            print("Wait 10 minutes...")
-            time.sleep(600) # wait 10 minutes
+        # while not self.office_empty():
+        #     print("Wait 10 minutes...")
+        #     time.sleep(600) # wait 10 minutes
         
         # check if file exists and if yes, delete it
         if os.path.exists(os.path.join(self.log_dir, 'observations_rewards_times.csv')):
