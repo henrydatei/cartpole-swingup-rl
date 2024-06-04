@@ -51,6 +51,39 @@ plot(swingup_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
 plot(swingup_obs$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s")
 plot(swingup_progress$time.total_timesteps, swingup_progress$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Mean reward per Episode")
 
+# Ankit 200k, nur angle reward, keine penalty
+ankit_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-30_16-37-19/observations_rewards_times.csv")
+ankit_progress = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-30_16-37-19/progress.csv")
+
+plot(ankit_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
+plot(ankit_obs$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s")
+plot(ankit_progress$time.total_timesteps, ankit_progress$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Mean reward per Episode")
+
+# Ankit 200k, Bestrafung fuer das zu weit wegfahren, beta=1
+ankit_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-11_00-25-01/observations_rewards_times.csv")
+plot(ankit_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
+plot(ankit_obs$position, xlab = "Observations", ylab = "Position in Microsteps")
+
+# Ankit 200k, Bestrafung fuer das zu weit wegfahren, beta=0.1
+ankit_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-11_00-03-37/observations_rewards_times.csv")
+plot(ankit_obs$angle5, xlab = "Observations", ylab = "Angle in rad")
+plot(ankit_obs$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s")
+plot(ankit_obs$position, xlab = "Observations", ylab = "Position in Microsteps")
+
+# Ankit 1m, aber no swing up penalty
+ankit_progress = read.csv("logs/PPO_CartPoleEnv2_1m_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-09_13-30-52/progress.csv")
+plot(ankit_progress$time.total_timesteps, ankit_progress$rollout.ep_rew_mean, type = "l", xlab = "Timesteps", ylab = "Mean reward per Episode")
+
+# Angular Velocity Penalty Einfluss
+mit_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-11_00-03-37/observations_rewards_times.csv")
+ohne_obs = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-14_10-42-44/observations_rewards_times.csv")
+
+mit_obs_filter = mit_obs %>% filter(abs(angle5) < 0.21)
+ohne_obs_filter = ohne_obs %>% filter(abs(angle5) < 0.21)
+
+plot(mit_obs_filter$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s", main = "with Angular Velocity Penalty")
+plot(ohne_obs_filter$angle_velocity, xlab = "Observations", ylab = "Angular velocity in rad/s", main = "without Angular Velocity Penalty")
+
 # Camera Delay
 total_delay = read.csv("logs/PPO_CartPoleEnv2_200k_smoothing_error_protection_reward_ankit_2step_faster_lessweight_2actions_2024-05-14_10-42-44/observations_rewards_times.csv")
 camera_delay = read.csv("camera_delay.txt", sep = " ", col.names = c("angle1", "angle2", "angle3", "angle4", "angle5", "angle_velocity", "camera_deay", "pole_up", "time"))

@@ -125,6 +125,56 @@
     \label{fig:mean_reward_swingup}
 \end{figure}
 
+- Die Komplexe Reward Funktion auch auch in unterschiedlichen Szenarien nicht gut funktioniert. Um die Reward Funktion so einfach wie möglich zu halten, wurden die negativen Rewards für's erste deaktiviert, und der Reward für Winkel wurde durch den Einstz der Exponentialfunktion vergrößert im Vergleich zur simplen Reward Funktion. Leider hat das nicht funktioniert, bei den beobachteten Winkeln ergeben sich noch sehr oft Winkel bei $\pm\pi$ Radiant, siehe Abbildung \ref{fig:angle_ankit_200k_only_angle_reward}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_ankit_200k_only_angle_reward}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der anderen Reward Funktionen, der erziehlte Reward erreicht sein Maximum bei rund 100000 Timesteps, danach nimmt er leicht ab (\ref{fig:mean_reward_ankit_200k_only_angle_reward}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
+    \label{fig:angle_ankit_200k_only_angle_reward}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
+    \label{fig:angle_velocity_ankit_200k_only_angle_reward}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_mean_reward.png}
+    \caption{Mean reward per episode with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
+    \label{fig:mean_reward_ankit_200k_only_angle_reward}
+\end{figure}
+- Aktiviert man zusätzlich die Position penalty ($\beta=1$ oder $\beta=0.1$), so stabilisiert sich auch der Mean Reward über die Zeit, aber wenn man dem Cartpole zuschaut, so sieht man, dass sich das Cart nur in der Mitte aufhält und keine Versuche mehr unternimmt, das Pendel nach oben zu bekommen (\ref{fig:angle_position_ankit_200k_position_penalty}). Bei $\beta=0.1$ ist der Effekt nicht so stark ausgeprägt, das Pendel wird zwar auch nicht zuverlässig balanciert, aber das Cart hat eine Tendenz, in der Mitte zu bleiben (\ref{fig:angle_position_ankit_200k_weaker_position_penalty}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/ankit_200k_position_penalty_angle.png}
+    \includegraphics[width=0.4\textwidth]{img/ankit_200k_position_penalty_position.png}
+    \caption{Seen angles and positions of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=1$, $\gamma=1$, $\delta=0$)}
+    \label{fig:angle_position_ankit_200k_position_penalty}
+\end{figure}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/ankit_200k_weaker_position_penalty_angle.png}
+    \includegraphics[width=0.4\textwidth]{img/ankit_200k_weaker_position_penalty_position.png}
+    \caption{Seen angles and positions of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0.1$, $\gamma=1$, $\delta=0$)}
+    \label{fig:angle_position_ankit_200k_weaker_position_penalty}
+\end{figure}
+Die Aktivierung der No Swing Up Penalty ($\delta=1$) ändert nichts am Verhalten des RL Agents, aber führt zu stark negativen Rewards (\ref{fig:mean_reward_ankit_1m_no_swing_up_penalty}), sodass diese Penalty wieder deaktiviert wurde.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/ankit_1m_no_swing_up_penalty_mean_reward.png}
+    \caption{Mean reward per episode with the complex reward function ($\alpha=2$, $\beta=1$, $\gamma=1$, $\delta=1$)}
+    \label{fig:mean_reward_ankit_1m_no_swing_up_penalty}
+\end{figure}
+Der Einfluss der Angular Velocity Penalty ($\gamma=1$) sorgt für leicht bessere Ergebnisse. Vergleicht man die Winkelgeschwidigkeiten wenn der Winkel bei $\pm$ 12$^\circ$ ist, so erhält man bei $\gamma=1$ eine höhere Anzahl an Winkelgeschwidigkeiten (2209 vs. 1377 bei jeweils insgesamt 200000 Steps), das heißt der Pole wurde länger balanciert. Die beobachteten Winkelgeschwidigkeiten sind aber nicht signifikant kleiner geworden (\ref{fig:filtered_angular_velocity_ankit_200k_compare_angular_velocity_penalty}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.4\textwidth]{img/with_angular_velocity_penalty.png}
+    \includegraphics[width=0.4\textwidth]{img/without_angular_velocity_penalty.png}
+    \caption{Comparision of seen angular velocities of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0.1$, $\delta=0$) when seen angle is between $\pm$ 12$^\circ$}
+    \label{fig:filtered_angular_velocity_ankit_200k_compare_angular_velocity_penalty}
+\end{figure}
+
 \section{Challenges and Limitations of Experiments}
 - Da es sich nicht um eine Simulation, sondern um ein echtes System handelt, gibt es viele Herausforderungen, die in Simulationen nicht auftreten, wie z.B. die Erkennung der Winkel des Pendels in Echtzeit, verschiedene Delays, die durch die Hardware entstehen, und auch die akkurate Bestimmung der Winkelgeschwidigkeit: Winkeländerung geteilt durch sehr kleine Zeit ergibt einen großen Fehler, selbst bei kleinen Zeitabweichungen. Durch das Smoothing sollte der Effekt aber abgemildert werden.
 
