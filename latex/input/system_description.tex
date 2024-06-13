@@ -1,6 +1,6 @@
 \chapter{System Description}
 
-The system was largely built through previous experiments and consists of 3D-printed parts, a stepper motor, a camera, two metallic rods, a timing belt, and various mechanical components (see figure \ref{fig:overview_cart_pole_experiment})
+The system was largely built through previous experiments and consists of 3D-printed parts, a stepper motor, a camera, two metallic rods, a timing belt, and various mechanical components (see Figure \ref{fig:overview_cart_pole_experiment})
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\textwidth]{img/front.jpg}
@@ -8,7 +8,7 @@ The system was largely built through previous experiments and consists of 3D-pri
     \caption{Overview over Cart-Pole experiment with 3D printed parts}
     \label{fig:overview_cart_pole_experiment}
 \end{figure}
-Adjustments were made during the course of the experiments. Some of the moving parts shifted over time, necessitating the use of clamps to fix these parts in place (\ref{fig:clamps})
+Adjustments were made during the course of the experiments. Some of the moving parts shifted over time, necessitating the use of clamps to fix these parts in place (Figure \ref{fig:clamps})
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{img/clamps.jpg}
@@ -71,6 +71,7 @@ A custom environment based on OpenAI Gym was developed to simulate the cart-pole
 \subsection{Control Algorithms}
 Communication between the Raspberry Pi and the Arduino occurs over USB as a serial connection. A custom protocol is used where messages are transmitted as strings. These strings follow the format \textit{<letter,number>}, where letters represent the type of message and numbers represent the values, see table \ref{tab:types_of_messages}.
 \begin{table}
+    \centering
     \caption{Types of messages for the Arduino}
     \label{tab:types_of_messages}
     \begin{tabular}{|c|c|}

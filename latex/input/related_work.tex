@@ -40,8 +40,8 @@ The cart-pole system consists of a cart of mass $m_c$ and a pole of length $l$ a
 
 The equations of motion for the cart-pole system are derived from Newton's laws of motion and can be expressed as follows (assuming no friction):
 \begin{align}
-\ddot{\theta} &= \frac{g\sin\theta + \cos\theta\left(\frac{-F-m_p l \dot{\theta}^2 \sin\theta}{m_c+m_p}\right)}{l\left(\frac{4}{3}-\frac{m_p \cos^2 \theta}{m_c+m_p}\right)} \
-\ddot{x} &= \frac{F+m_p l (\dot{\theta}^2 \sin\theta - \ddot{\theta} \cos\theta)}{m_c+m_p}
+\ddot{\theta} &= \frac{g\sin\theta + \cos\theta\left(\frac{-F-m_p l \dot{\theta}^2 \sin\theta}{m_c+m_p}\right)}{l\left(\frac{4}{3}-\frac{m_p \cos^2 \theta}{m_c+m_p}\right)} \notag \\
+\ddot{x} &= \frac{F+m_p l (\dot{\theta}^2 \sin\theta - \ddot{\theta} \cos\theta)}{m_c+m_p} \notag
 \end{align}
 where $F$ is the force applied to the cart, and $g$ is the acceleration due to gravity. These equations are coupled and nonlinear, posing a significant challenge for control (\cite{florian_correct_2007}).
 
@@ -49,7 +49,7 @@ While balancing the pole is a standard control problem, the swing-up task involv
 
 One popular method for solving the swing-up problem is based on energy control. The idea is to apply forces to the cart to increase the total energy of the system to the desired level that allows the pole to be balanced upright. The total energy $E$ of the system is the sum of the kinetic and potential energies:
 \begin{align}
-E = \frac{1}{2} m_c \dot{x}^2 + \frac{1}{2} m_p (\dot{x}^2 + l^2 \dot{\theta}^2 + 2 l \dot{x} \dot{\theta} \cos(\theta)) + m_p g l \cos(\theta)
+E = \frac{1}{2} m_c \dot{x}^2 + \frac{1}{2} m_p (\dot{x}^2 + l^2 \dot{\theta}^2 + 2 l \dot{x} \dot{\theta} \cos(\theta)) + m_p g l \cos(\theta) \notag
 \end{align}
 The control strategy involves applying a force $F$ to the cart that drives the system's energy towards the desired energy level for the upright position. When the pole's energy is close to the required level, a switching strategy can be employed to transition from swing-up control to balance control (\cite{astrom_swinging_2000}).
 
