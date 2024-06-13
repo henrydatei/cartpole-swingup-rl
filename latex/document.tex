@@ -16,6 +16,9 @@
 % Parameter für das Titelblatt und die Selbstständigkeitserklärung
 \input{input/titlepage}
 
+
+\addbibresource{cartpole_swingup.bib}
+
 % % % % % % % % % % % % % % % %
 % Beginn der document-Umgebung
 % % % % % % % % % % % % % % % %
@@ -89,8 +92,8 @@
 % \bibliographystyle{gerplain}
 
 % Einbinden der Bibliothek
-% \bibliography{beispielbib}
-% \thispagestyle{empty}
+\printbibliography
+\thispagestyle{empty}
 
 % Befehl zum Erstellen der Selbstständigkeitserklärung. Achtung: Es werden die Namen der Autoren, die in titlepage.tex festgelegt wurden, herangezogen und das Datum in \date{} verwendet.
 % Befehl steht nur zur Verfügung, wenn das Paket VOSStatement eingebunden ist.
