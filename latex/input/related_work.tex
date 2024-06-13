@@ -1,48 +1,56 @@
 \chapter{Background and Literature Review}
 
 \section{Fundamentals of Reinforcement Learning}
-- Reinforcement learning (RL) is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize cumulative reward. This approach is inspired by behaviorist psychology, where learning is achieved through interactions with the environment and is reinforced by rewards and punishments. RL has gained significant attention due to its successful applications in various domains such as robotics, game playing, and autonomous systems. (Sutton & Barto, 1998)
 
-- Fundamental Concepts of Reinforcement Learning
-- Agent and Environment: In RL, the learning process involves an agent and an environment. The agent interacts with the environment by performing actions, and the environment responds by providing feedback in the form of rewards or penalties. The objective of the agent is to learn a policy that maximizes the total reward over time (Sutton & Barto, 1998).
-- State ($S$): Represents the current situation or configuration of the environment.
-- Action ($A$): The set of all possible moves the agent can make.
-- Reward ($R$): The feedback from the environment based on the action taken by the agent.
-- The agent's goal is to find a policy, $\pi$, that maps states to actions in a way that maximizes the expected cumulative reward, known as the return (Sutton & Barto, 1998).
-- Policy ($\pi$): A policy is a strategy used by the agent to decide the next action based on the current state.
-- Value Function ($V$): The value function estimates the expected return (total reward) starting from a state and following a particular policy. It helps in evaluating the goodness of states (Szepesvári, 2010).
-- Model-Free RL: The agent learns a policy or value function without understanding the underlying model of the environment. Examples include Q-Learning (Watkins & Dayan, 1992) and PPO (Pan et al 2018).
-- Model-Based RL: The agent learns a model of the environment (transition probabilities and reward function) and uses it to plan actions (Kaelbling, Littman, & Moore, 1996).
+Reinforcement learning (RL) is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize cumulative reward. This approach is inspired by behaviorist psychology, where learning is achieved through interactions with the environment and is reinforced by rewards and punishments. RL has gained significant attention due to its successful applications in various domains such as robotics, game playing, and autonomous systems (\cite{sutton_reinforcement_2018}).
 
-- Key Algorithms in Reinforcement Learning
-- Dynamic Programming: Dynamic programming (DP) methods require a complete model of the environment. They are used to compute optimal policies by iteratively improving value functions. Examples include Policy Iteration and Value Iteration.
-- Monte Carlo (MC) methods learn directly from episodes of experience. They do not require knowledge of the environment's model and estimate value functions based on sample returns.
-- Temporal-Difference (TD) learning combines ideas from DP and MC methods. It updates value estimates based on the difference between consecutive estimates. (Sutton & Barto, 1998)
+The fundamental concepts of reinforcement learning are as follows:
+\begin{itemize}
+    \item Agent and Environment: In RL, the learning process involves an agent and an environment. The agent interacts with the environment by performing actions, and the environment responds by providing feedback in the form of rewards or penalties. The objective of the agent is to learn a policy that maximizes the total reward over time (\cite{sutton_reinforcement_2018}).
+    \item State ($S$): Represents the current situation or configuration of the environment.
+    \item Action ($A$): The set of all possible moves the agent can make.
+    \item Reward ($R$): The feedback from the environment based on the action taken by the agent.
+    \item Policy ($\pi$): A policy is a strategy used by the agent to decide the next action based on the current state.
+    \item Value Function ($V$): The value function estimates the expected return (total reward) starting from a state and following a particular policy. It helps in evaluating the goodness of states (\cite{szepesvari_algorithms_2022}).
+    \item Model-Free RL: The agent learns a policy or value function without understanding the underlying model of the environment. Examples include Q-Learning (\cite{watkins_q-learning_1992}) and PPO (\cite{pan_policy_2018}).
+    \item Model-Based RL: The agent learns a model of the environment (transition probabilities and reward function) and uses it to plan actions (\cite{kaelbling_reinforcement_1996}).
+\end{itemize}
 
-- Exploration vs. Exploitation: One of the central challenges in RL is the trade-off between exploration (trying new actions to discover their effects) and exploitation (choosing actions that are known to yield high rewards). Various strategies such as ε-greedy, softmax, and Upper Confidence Bound (UCB) are employed to balance this trade-off (Auer, Cesa-Bianchi, & Fischer, 2002).
+The key algorithms in reinforcement learning include:
+\begin{itemize}
+    \item Dynamic Programming: Dynamic programming (DP) methods require a complete model of the environment. They are used to compute optimal policies by iteratively improving value functions. Examples include Policy Iteration and Value Iteration.
+    \item Monte Carlo (MC) methods learn directly from episodes of experience. They do not require knowledge of the environment's model and estimate value functions based on sample returns.
+    \item Temporal-Difference (TD) learning combines ideas from DP and MC methods. It updates value estimates based on the difference between consecutive estimates (\cite{sutton_reinforcement_2018}).
+\end{itemize}
 
-- Deep Reinforcement Learning: With the advent of deep learning, RL has evolved into deep reinforcement learning (DRL), where neural networks are used to approximate value functions or policies. Notable advancements include: Deep Q-Network (DQN): Combines Q-Learning with deep neural networks to handle high-dimensional state spaces, such as those in Atari games (Mnih et al., 2015). Actor-Critic Methods: Use two neural networks, one for the policy (actor) and one for the value function (critic). Examples include A3C (Asynchronous Advantage Actor-Critic) and PPO (Proximal Policy Optimization) (Mnih et al., 2016; Schulman et al., 2017).
+One of the central challenges in RL is the trade-off between exploration (trying new actions to discover their effects) and exploitation (choosing actions that are known to yield high rewards). Various strategies such as $\varepsilon$-greedy, softmax, and Upper Confidence Bound (UCB) are employed to balance this trade-off (\cite{auer_finite-time_2002}).
 
-- State of the Art Algorithm: Proximal Policy Optimization (PPO) (Schulman et al., 2017). PPO is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. Combines the benefits of policy gradient methods with the stability of trust region methods. Implemented in the OpenAI Baselines library. (OpenAI Blog, 2017; Wouter van Heeswijk, 2023)
+With the advent of deep learning, RL has evolved into deep reinforcement learning (DRL), where neural networks are used to approximate value functions or policies. Notable advancements include:
+\begin{itemize}
+    \item Deep Q-Network (DQN): Combines Q-Learning with deep neural networks to handle high-dimensional state spaces, such as those in Atari games (\cite{mnih_human-level_2015}).
+    \item Actor-Critic Methods: Use two neural networks, one for the policy (actor) and one for the value function (critic). Examples include A3C (Asynchronous Advantage Actor-Critic) and PPO (Proximal Policy Optimization) (\cite{mnih_asynchronous_2016,schulman_proximal_2017}).
+\end{itemize}
+
+The state-of-the-art algorithm is Proximal Policy Optimization (PPO) which is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. It combines the benefits of policy gradient methods with the stability of trust region methods and is implemented in the OpenAI Baselines library (\cite{schulman_proximal_2017,openai_proximal_2017,wouter_van_heeswijk_proximal_2023}).
 
 \section{The Cart-Pole Problem and Swing-Up Dynamics}
 The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control.
 
-The cart-pole system consists of a cart of mass $m_c$ and a pole of length l and mass $m_p$. The cart can move horizontally, and the pole is free to swing in the vertical plane. The system's state can be described by four variables: the cart's position $x$, the cart's velocity $\dot{x}$, the pole's angle $\theta$ from the vertical, and the pole's angular velocity $\dot{\theta}$
+The cart-pole system consists of a cart of mass $m_c$ and a pole of length $l$ and mass $m_p$. The cart can move horizontally, and the pole is free to swing in the vertical plane. The system's state can be described by four variables: the cart's position $x$, the cart's velocity $\dot{x}$, the pole's angle $\theta$ from the vertical, and the pole's angular velocity $\dot{\theta}$.
 
-The equations of motion for the cart-pole system are derived from Newton's laws of motion and can be expressed as follows (assume no friction):
+The equations of motion for the cart-pole system are derived from Newton's laws of motion and can be expressed as follows (assuming no friction):
 \begin{align}
-    \ddot{\theta} &= \frac{g\sin\theta + \cos\theta\left(\frac{-F-m_pl\dot{\theta}^2\sin\theta}{m_c+m_p}\right)}{l\left(\frac{4}{3}-\frac{m_p\cos^2\theta}{m_c+m_p}\right)} \\
-    \ddot{x} &= \frac{F+m_pl(\dot{\theta}^2\sin\theta-\ddot{\theta}\cos\theta)}{m_c+m_p}
+\ddot{\theta} &= \frac{g\sin\theta + \cos\theta\left(\frac{-F-m_p l \dot{\theta}^2 \sin\theta}{m_c+m_p}\right)}{l\left(\frac{4}{3}-\frac{m_p \cos^2 \theta}{m_c+m_p}\right)} \
+\ddot{x} &= \frac{F+m_p l (\dot{\theta}^2 \sin\theta - \ddot{\theta} \cos\theta)}{m_c+m_p}
 \end{align}
-where $F$ is the force applied to the cart, and $g$ is the acceleration due to gravity. These equations are coupled and nonlinear, posing a significant challenge for control. (Florian, 2007)
+where $F$ is the force applied to the cart, and $g$ is the acceleration due to gravity. These equations are coupled and nonlinear, posing a significant challenge for control (\cite{florian_correct_2007}).
 
 While balancing the pole is a standard control problem, the swing-up task involves bringing the pole from a hanging downward position to an upright position and then stabilizing it. The swing-up problem is more complex because it requires controlling the system to pass through a large range of states.
 
 One popular method for solving the swing-up problem is based on energy control. The idea is to apply forces to the cart to increase the total energy of the system to the desired level that allows the pole to be balanced upright. The total energy $E$ of the system is the sum of the kinetic and potential energies:
 \begin{align}
-    E = \frac{1}{2}m_c\dot{x}^2 + \frac{1}{2}m_p(\dot{x}^2 + l^2\dot{\theta}^2 + 2l\dot{x}\dot{\theta}\cos(\theta)) + m_pgl\cos(\theta)
+E = \frac{1}{2} m_c \dot{x}^2 + \frac{1}{2} m_p (\dot{x}^2 + l^2 \dot{\theta}^2 + 2 l \dot{x} \dot{\theta} \cos(\theta)) + m_p g l \cos(\theta)
 \end{align}
-The control strategy involves applying a force $F$ to the cart that drives the system's energy towards the desired energy level for the upright position. When the pole's energy is close to the required level, a switching strategy can be employed to transition from swing-up control to balance control (Astrom & Furuta, 2000).
+The control strategy involves applying a force $F$ to the cart that drives the system's energy towards the desired energy level for the upright position. When the pole's energy is close to the required level, a switching strategy can be employed to transition from swing-up control to balance control (\cite{astrom_swinging_2000}).
 
-- not found any papers that use real cart-pole system for swing-up task, many papers use simulated environments and use similar reward functions. Different approaches for reward functions are listed in the Section Experimental Setup. Only one paper uses a real cart-pole system for the swing-up task, but reward function is simple (Nayante 2017).
+There are few papers that use a real cart-pole system for the swing-up task; many use simulated environments and similar reward functions. Different approaches for reward functions are listed in the Experimental Setup section. Only one paper was found that uses a real cart-pole system for the swing-up task, but it employs a simple reward function (\cite{nayante_reinforcement_2021}).
