@@ -185,11 +185,11 @@ Auch eine längere Trainingszeit mit 1 Million Steps schafft es nicht, den Pole 
 \section{Challenges and Limitations of Experiments}
 - Da es sich nicht um eine Simulation, sondern um ein echtes System handelt, gibt es viele Herausforderungen, die in Simulationen nicht auftreten, wie z.B. die Erkennung der Winkel des Pendels in Echtzeit, verschiedene Delays, die durch die Hardware entstehen, und auch die akkurate Bestimmung der Winkelgeschwidigkeit: Winkeländerung geteilt durch sehr kleine Zeit ergibt einen großen Fehler, selbst bei kleinen Zeitabweichungen. Durch das Smoothing sollte der Effekt aber abgemildert werden.
 
-- Um das Delay der Kamera zu bestimmen, wurde die aktuelle Zeit vor der Aufnahme des Bildes gespeichert und Vergleichen mit der Zeit, als die Berechnung des Winkel abgeschlossen war. Das Delay der Kamera und Bildverarbeitung schwankt um 0.1 Sekunden, das Delay aller Komponenten zusammen schwankt um 0.2 Sekunden, in Extremfällen beträgt es 0.7 Sekunden (siehe Abbildung \ref{fig:camera_delay_boxplot})
+- Um das Delay der Kamera zu bestimmen, wurde die aktuelle Zeit vor der Aufnahme des Bildes gespeichert und Vergleichen mit der Zeit, als die Berechnung des Winkel abgeschlossen war. Das Delay der Kamera und Bildverarbeitung schwankt um 0.1 Sekunden, das Delay aller Komponenten zusammen schwankt um 0.2 Sekunden, in Extremfällen beträgt es 0.7 Sekunden (siehe Abbildung \ref{fig:camera_delay_boxplot}). Zum Vergleich: Das übernommene experimente Setup hatte ein Delay von etwa 0.2 Sekunden. In diesem wurde die Aufnahme und Auswertung des Bildes synchron in jedem Schritt ausgeführt, die Bildverarbeitung ist aber recht ähnlich.
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{img/total_delay_camera_delay_boxplot.png}
-    \caption{Boxplot of the Camera Delay and Image Processing (labeled as Camera Delay) and the Total Delay of all Components (labeled as Total Delay)}
+    \caption{Boxplot of the Camera Delay and Image Processing (labeled as Camera Delay) and the Total Delay of all Components (labeled as Total Delay) with improvements. For comparison the Total Delay without improvements is also shown, labeled as Old System.}
     \label{fig:camera_delay_boxplot}
 \end{figure}
 - Mit zunehmender Zeit scheint das insgesamte Delay größer zu werden, die Ausreißer nehmen zu (siehe \ref{fig:total_delay_over_time}). Ich kann mir nicht erklären warum und auch die Beobachtung, dass bei vielen Experimenten das Skript für die Bildverarbeitung nach etwa 1.3 Millionen Steps zwar nicht abgestürzt ist, aber keine Daten mehr geliefert hat, ist nicht erklärbar.
@@ -199,4 +199,3 @@ Auch eine längere Trainingszeit mit 1 Million Steps schafft es nicht, den Pole 
     \caption{Delay of the Camera and Image Processing for each Observation}
     \label{fig:total_delay_over_time}
 \end{figure}
-%TODO: eventuell messen des Delays über IPC?
