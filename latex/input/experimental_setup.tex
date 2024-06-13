@@ -1,89 +1,88 @@
 \chapter{Experimental Setup}
 
-- auf der Suche nach einem System, was das Inverse Cartpole Problem löst, wurde iterativ vorgegangen, das heißt es wurde ein Experiment durchgeführt, die Ergebnisse wurden analysiert und das Experiment wurde angepasst, um die Ergebnisse zu verbessern
-- Fokus der ersten Experimente lag darauf, die Winkelbestimmung mittels Kamera zu verbessern
-- Fokus der späteren Experimente lag darauf, die übrige Hardware, insbesondere den Stepper Motor, zu verbessern
-- Fokus der letzten Experimente lag darauf, die Software zu verbessern, insbesondere die Reward-Funktion des Reinforcement Learning Agents
+In the search for a system that solves the Inverse Cartpole Problem, an iterative approach was taken. This means that an experiment was conducted, the results were analyzed, and the experiment was adjusted to improve the outcomes. The focus of the initial experiments was on improving angle determination using a camera. The focus of the later experiments shifted towards improving the remaining hardware, particularly the stepper motor. The final experiments concentrated on enhancing the software, specifically the reward function of the reinforcement learning agent.
 
 \section{Determining the angle} \label{sec:determining_the_angle}
-- in Experimenten vor mir wurde der Winkel des Pendels durch die Erkennung von farbigen Rechtecken auf dem Pendel und auf dem Stück Plastik, welches so am Pendel befestigt ist, dass es auf der anderen Seite des Rotationspunktes des Pendels ist, bestimmt
-- Die Farben waren Gelb und Violett und mithilfe der Mitte der Bounding Box um die erkannten Farben konnte dann der Winkel bestimmt werden, durch eine Verbindung des Mittelpunktes und des Rotationspunktes des Pendels, welcher auch im Bild erkennbar war, aber durch hartcodierte Pixelkoordinaten festgelegt war. Die Kamera durfte sich also nicht bewegen, da sonst wie Winkelbestimmung nicht mehr korrekt war.
+In experiments prior to mine, the angle of the pendulum was determined by detecting colored rectangles on the pendulum and on a piece of plastic attached to the pendulum such that it is on the opposite side of the rotation point of the pendulum. The colors used were yellow and violet, and by finding the center of the bounding box around the detected colors, the angle could then be determined by connecting the midpoint and the rotation point of the pendulum, which was also visible in the image but fixed by hardcoded pixel coordinates. Thus, the camera could not be moved, as any movement would result in incorrect angle determination.
 
-- weitere Experimente: Anbringen von Symbolen, hier Kreis und Dreieck, auf dem Pendel und auf dem Stück Plastik, sodass die Farberkennung nicht mehr notwendig war, sondern die Symbole erkannt werden konnten.
-- Ansatz: Erkennung der verschiedenen geometrischen Figuren anhand ihrer Konturen und Approximation mittels des Douglas-Peucker Algorithmus, Implementation in OpenCV's approxPolyDP(). Wahl von Dreieck und Kreis aufgrund ihrer unterschiedlichen Anzahl von Ecken und sehr unterschiedlichen Konturen.
-- Filterung über Momente einer Kontur mittels OpenCV's moments() Funktion, z.B. um nur Formen einer bestimmten Größe zu erkennen
-- Erkennung der Kreise auf anderem Weg: Erkennung des Kreises mittels OpenCV's Hough Circle Transform, die zuerst mögliche Mittelpunkte und dann passende Radien bestimmt, um Kreise zu erkennen. 
+Further experiments involved attaching symbols, specifically a circle and a triangle, to the pendulum and the piece of plastic, so that color detection was no longer necessary, and instead, the symbols could be recognized. The approach was to detect the different geometric shapes based on their contours and approximate them using the Douglas-Peucker algorithm, implemented in OpenCV's \texttt{approxPolyDP()} (\cite{opencv_team_opencv_nodate-1}). The triangle and circle were chosen due to their differing number of vertices and very different contours. Filtering was done based on the moments of a contour using OpenCV's \texttt{moments()} function, for instance, to detect only shapes of a certain size (\cite{opencv_team_opencv_nodate-2}).
 
-- nächste Experimente versuchen den Weg der Farberkennung zu verbessern
-- Transformation des Bildes vom RGB-Farbraum in den HSV-Farbraum, der weniger empfindlich für Beleuchtungsänderungen ist
-- Suchen von komplementären Farben im HSV Farbraum liefert zum Beispiel die Farben blau und gelb
-- Zusätzlich wurde Sonneneinstrahlung von außen durch Herunterlassen des Sonnenschutzes versucht zu verringern und dauerhafte Beleuchtung des Zimmers mittels künstlichem Licht 
-- Da das Pendel bereits in blauem Plastik gedruckt wurde, wird nur auf dem Stück Plastik ein gelbes Stück Klebeband angebracht
-- das Pendel ist nicht immer komplett zu sehen, weswegen der Einsatz einer Bounding-Box und dann nehmen des Mittelpunktes zu falschen Winkeln führen würde
-- stattdessen Bestimmen des Moments m00 von OpenCV's moments() Funktion, welcher die Koordinates des Schwerpunktes angibt. Dieses Vorgehen verhindert auch Probleme mit der Winkelbestimmung, falls Konturen nicht glatte Kanten erkannt werden, z.B. wenn Schatten ungünstig geworfen werden; der Schwerpunkt bleibt relativ an der selben Stelle
+For circle detection, another method was used: detecting circles using OpenCV's Hough Circle Transform, which first determines potential centers and then matches radii to recognize circles (\cite{opencv_team_opencv_nodate}).
+
+Subsequent experiments aimed to improve the color detection method. The image was transformed from the RGB color space to the HSV color space, which is less sensitive to changes in lighting. Searching for complementary colors in the HSV color space yielded colors such as blue and yellow. Additionally, sunlight from outside was reduced by lowering the blinds, and constant lighting of the room was attempted using artificial light. Since the pendulum was already printed in blue plastic, only a yellow piece of tape was attached to the piece of plastic. The pendulum was not always fully visible, which could lead to incorrect angles if using the center of a bounding box. Instead, the moment \texttt{m00} from OpenCV's \texttt{moments()} function, which gives the coordinates of the centroid, was used. This method also prevents problems with angle determination if contours with uneven edges are detected, for example, when shadows are cast unfavorably; the centroid remains relatively in the same position (\cite{opencv_team_opencv_nodate-2}).
 
 \section{Optimizing Hardware}
-- Bei Experimenten wurde klar, dass das Setup in der Konfiguration, in der es sich bei vorgegangen Experimenten befand, nicht optimal war und nicht in der Lage war, das Pendel nach oben zu bekommen
-- Verschiedene Möglichkeiten der Optimierung wurden identifiziert: das Pendel leichter machen, sodass weniger Kraft nötig ist, um es nach oben zu bekommen, den Strom des Stepper Motors erhöhen, um mehr Kraft zu erzeugen, oder die Geschwindigkeit mit der der Stepper Motor das Cart bewegt, erhöhen
-- Viele dieser Experimente dauerten nur wenige Minuten, da bereits abzusehen war, dass sie nicht erfolgreich sein würden und das Pendel nicht nach oben gebracht werden würde
+During experiments, it became clear that the setup, in the configuration used in previous experiments, was not optimal and was unable to lift the pendulum upwards. Various optimization possibilities were identified: making the pendulum lighter so that less force was needed to lift it, increasing the current of the stepper motor to generate more force, or increasing the speed at which the stepper motor moves the cart.
 
-- Das Pendel wurde leichter gemacht, indem das Gewicht am Ende des Pendels entfernt wurde, sodass das Pendel nur noch aus dem blauen Stab und den 2 Verbindungsstücken besteht. Das Gewicht des Pendels wurde dadurch von 128 g auf 79 g reduziert
+Many of these experiments lasted only a few minutes, as it was already apparent that they would not be successful in lifting the pendulum.
 
-- In seiner urprünglichen Kofiguration wurde der Stepper Motor vom Stepper Motor Driver mit einem Strom von 0.61 A (RMS, Root Mean Square) betrieben, was einen Peakstrom von 0.86 A bedeutet
-- Testen verschiedener Stepper Motoren: 1x MOT-AN-S-060-005-042-L-A-AAAA von igus und 2x 17HS19-2004S1 von stepperonline bei verschiedenen Strömen
-- Der verbautete Motor MOT-AN-S-060-005-042-L-A-AAAA von igus verträgt eine Stromstärke von 1.8 A, der Stepper Motor Driver kann maximal einen RMS Strom von 2 A liefern (Peak 2.83 A), der Stepper Motor 17HS19-2004S1 von stepperonline verträgt eine Stromstärke von 2 A 
+The pendulum was made lighter by removing the weight at the end of the pendulum, leaving only the blue rod and the two connecting pieces. This reduced the weight of the pendulum from 128 g to 79 g.
 
-- Experimente mit verschiedenen Geschwindigkeiten und Beschleunigungen des Stepper Motors, um die beste Leistung zu erzielen. Das Cart wurde immer mit maximaler Geschwindigkeit und zufälligen Actions (links oder rechts) getestet, um zu schauen, ob das Pendel nach oben gebracht werden kann. Geteste Geschwindigkeiten 50000 Steps/Sekunde - 70000 Steps/Sekunde in 5000er Schritten, geteste Beschleunigungen 1000000 Steps/Sekunde^2 - 10000000 Steps/Sekunde^2 in 1000000er Schritten
+In its original configuration, the stepper motor was operated by the stepper motor driver with a current of 0.61 A (RMS, Root Mean Square), which means a peak current of 0.86 A. Various stepper motors were tested: 1x MOT-AN-S-060-005-042-L-A-AAAA from igus and 2x 17HS19-2004S1 from stepperonline at different currents. The installed motor MOT-AN-S-060-005-042-L-A-AAAA from igus can withstand a current of 1.8 A, the stepper motor driver can deliver a maximum RMS current of 2 A (peak 2.83 A), and the stepper motor 17HS19-2004S1 from stepperonline can withstand a current of 2 A.
+
+Experiments were conducted with different speeds and accelerations of the stepper motor to achieve the best performance. The cart was always tested with maximum speed and random actions (left or right) to see if the pendulum could be lifted. Tested speeds ranged from 50,000 steps/second to 70,000 steps/second in increments of 5,000, and tested accelerations ranged from 1,000,000 steps/second$^2$ to 10,000,000 steps/second$^2$ in increments of 1,000,000.
 
 \section{Optimizing Software}
-- Zur Software gehören 2 Teile: zum einen der Umgang mit den bestimmten Winkeln des Pendels, zum anderen der RL Agent und dort insbesondere die Reward-Funktion
 
-- welche Informationen aus den Kamerabildern genutzt werden, hing immer größtenteils von der Reward-Funktion ab, aber grundlegend wurde immer der Winkel und die Winkelgeschwidigkeit ermittelt.
-- verschiedene Methoden zur Winkelbestimmung wurden in der Section \ref{sec:determining_the_angle} beschrieben, für die Winkelgeschwindigkeit wurde die Differenz der Winkel in den letzten 2 Frames genommen und deren Zeitdifferenz genutzt, um die Winkelgeschwindigkeit zu bestimmen
-- es wurde auch versucht die Winkelgeschwidigkeit über eine FIFO-Queue zu bestimmen, die entweder die letzten 3 oder 5 Winkel mit Zeitstempel enthält, um so die Winkelgeschwidigkeit über einen größeren Zeitraum zu bestimmen und so zu Glätten
-- alle relevanten Informationen (z.B. aktuelle Zeit, 1-5 letzten Winkel, Winkelgeschwidigkeit) wurden dann über ZeroMQ in eine Queue der Länge 1 gelegt, die der RL Agent abfragen konnte, um die aktuellste Beobachtung zu erhalten
-- es kann passieren, dass der RL Agent schneller Infors aus der ZeroMQ-Queue abruft, als neue Beobachtungen erzeugt werden können und der RL Agent in diesem Fall eine Nachricht mit nur Nullen enthält. Um zu unterscheiden, ob die Nachricht nur Nullen enthält weil der Pole gerade oben ist und sich nicht bewegt oder weil der RL Agent zu schnell ist, wurde ein Flag eingeführt, welches 1 ist, wenn der Pole oben ist. Eine Nachricht, die nur aus Nullen besteht, kann dann nie gültig sein. In diesem Fall hat der RL Agent die letzte Nachricht gespeichert und nutzt diese als aktuellste Beobachtung.
-- Observation space enthält die 1-5 Winkel, die Winkelgeschwindigkeit, die aktuelle Position und Geschwindigkeit des Carts und ob das Pendel oben oder unten ist. Das Pendel ist dann oben, wenn der Betrag des Winkels kleiner als 12 Grad ist, wie von Nagendra (2017) vorgeschlagen. Ansonsten ist das Pendel unten.
+The software consists of two parts: handling the determined angles of the pendulum and the reinforcement learning (RL) agent, particularly the reward function.
 
-- verschiedene action spaces wurden mit der simplen Reward-Funktion getestet
-- in Anlehnung an Cartpole Umgebung von OpenAI Gym wurde ein action space von 2 Aktionen getestet, die das Cart entweder nach links oder nach rechts bewegen
-- Erweiterung auf mehr Aktionen, die das Cart in 10$^\circ$ Abstufungen mit einer Aktion von ganz links nach ganz rechts bewegen können (insgesamt 648 Aktionen möglich)
-- Aktionen sind Geschwindigkeiten, die das Cart in Steps/Sekunde bewegen, wobei die Geschwindigkeit und Vorzeichen in 1000er Schritten von 0 bis 60000 Steps/Sekunde gewählt werden kann
-- Reduktion auf 2000er Schritte und 5000er Schritte, um die Anzahl der Aktionen zu reduzieren, da die Anzahl der Aktionen die Trainingszeit erhöht
-- Reduktion auf 2 Aktionen, Geschwindigkeit von -60000 und 60000, aber solange der Pole unten ist, wird jede Aktion für mindestens 0.1 Sekunden ausgeführt, um Winkelgeschwindigkeit aufzubauen. Die 0.1 Sekunden wurden per time.sleep(0.1) realisiert. Wenn der Pole oben ist, entfällt die Zeitverzögerung, der Pole kann durch viele Bewegungen balanciert werden.
-- Wenn das Cart den Rand erreicht, so stoppt es automatisch und nur Aktionen, die das Cart wieder in die Mitte bringen, werden ausgeführt. In Vortests bekam der RL Agent eine Strafe, die exponentiell größer geworden ist, je weiter sich das Cart von der Mitte entfernt hat. Das hat dazu geführt, dass sich das Cart nach einiger Zeit nur leicht in der Mitte bewegt hat, um die Strafe so klein wie möglich zu halten. Hochgeschwungen ist der Pole dann nicht mehr, da das Cart nicht genug Moment aufbauen kann. Deswegen wurde die Strafe entfernt.
+The information extracted from the camera images largely depended on the reward function, but fundamentally, the angle and angular velocity were always determined. Various methods for angle determination were described in Section \ref{sec:determining_the_angle}. 
 
-- verschiedene Reward-Funktionen wurden getestet, um den RL Agent zu trainieren, das Pendel nach oben zu bekommen
-- die Länge einer Episode ist 2048 Steps, was auch der Standardwert der Implementierung von PPO in Stable Baselines 3 ist
-- simple Reward-Funktion, in der der Reward $r_{simple}=\cos(\theta)$ ist, wobei $\theta$ der Winkel des Pendels ist. Durch die Defition der Winkel ist in der oberen Position der Winkel 0, welches einen Reward von 1 ergibt, in der unteren Position $\pm$ 180 Grad, was einen Reward von -1 ergibt. Diese Reward Funktion findet sich z.B. bei Doya (2000) oder bei Wawrzynski & Pacut (2004). Erreichte das Cart das Ende des Fahrbereiches, so wurde jede Action, die das Cart nicht wieder zurück in Richtung Mitte bringt, ignoriert.
-- H. Kimura & S. Kobayashi (1999) haben folgende Reward-Funktion vorgeschlagen: \begin{align}
+For the angular velocity, the difference in angles from the last two frames and their time difference were used to calculate the angular velocity. Additionally, angular velocity was also determined using a FIFO queue containing the last 3 or 5 angles with timestamps, to smooth the angular velocity calculation over a longer period (\cite{nikhilaggarwal3_queue_2019}).
+
+All relevant information (e.g., current time, last 1-5 angles, angular velocity) was then placed into a queue of length 1 via ZeroMQ, which the RL agent could query to obtain the latest observation. It can happen that the RL agent retrieves information from the ZeroMQ queue faster than new observations can be generated, resulting in the RL agent receiving a message with only zeros. To differentiate whether a message contains only zeros because the pole is upright and stationary or because the RL agent is too fast, a flag was introduced. This flag is set to 1 when the pole is upright. Thus, a message consisting only of zeros can never be valid. In such cases, the RL agent stores the last message and uses it as the current observation.
+
+The observation space includes the last 1-5 angles, angular velocity, the current position and velocity of the cart, and whether the pendulum is upright or not. The pendulum is considered upright if the absolute angle is less than 12 degrees, as suggested by Nagendra (\citeyear{nagendra_comparison_2017}). Otherwise, the pendulum is considered down.
+
+Various action spaces were tested with the simple reward function. Inspired by the Cartpole environment of OpenAI Gym, an action space of 2 actions was tested, moving the cart either left or right. This was extended to more actions, allowing the cart to move in 10-degree increments from fully left to fully right (a total of 648 possible actions).
+
+Actions represent velocities that move the cart in steps per second, with the velocity and sign chosen in increments of 1000 from 0 to 60,000 steps/second. This was later reduced to 2000 and 5000 steps increments to decrease the number of actions, as a larger action space increases training time.
+
+The action space was further reduced to 2 actions: velocities of -60,000 and 60,000 steps/second. However, while the pole is down, each action is executed for at least 0.1 seconds to build up angular velocity. This 0.1-second delay was implemented using \texttt{time.sleep(0.1)}. When the pole is upright, the delay is removed, allowing for many movements to balance the pole.
+
+If the cart reaches the edge, it automatically stops, and only actions that move the cart back towards the center are executed. In preliminary tests, the RL agent received a penalty that increased exponentially the further the cart moved from the center. This led to the cart moving slightly in the center over time to minimize the penalty, which prevented the pole from being swung up due to insufficient momentum. Therefore, the penalty was removed.
+
+Various reward functions were tested to train the RL agent to lift the pendulum. The length of an episode is 2048 steps, which is also the default value of the PPO implementation in Stable Baselines 3.
+
+A simple reward function, where the reward $r_{simple}=\cos(\theta)$, was used, where $\theta$ is the angle of the pendulum. By definition, an angle of 0 corresponds to the upright position, yielding a reward of 1, while angles of $\pm 180$ degrees (the downward position) result in a reward of -1. This reward function is mentioned by Doya (\citeyear{doya_reinforcement_2000}) and by Wawrzynski \& Pacut (\citeyear{wawrzynski_model-free_2004}). If the cart reached the end of its travel range, any action that did not move the cart back towards the center was ignored.
+
+H. Kimura \& S. Kobayashi (\citeyear{kimura_stochastic_1999}) proposed the following reward function:
+\begin{align}
     r_{Kimura,Kobayashi} = \begin{cases}
         -1 & \vert\theta\vert \ge 0.8\pi \\
         -3 & \vert\dot{\theta}\vert \ge 10 \\
         1 & \vert\theta\vert < 0.133\pi \land \vert\dot{\theta}\vert < 2 \\ 
-        0 & \text{sonst}
-    \end{cases}
-\end{align} hier mit $\theta$ als Winkel in Radiant und $\dot{\theta}$ als Winkelgeschwindigkeit in Radiant pro Sekunde.
-- Escobar et al. (2020) haben folgende Reward-Funktion vorgeschlagen, die leicht modifiziert wurde, um sie an das Setup anzupassen. Im originalen Paper fließt die verwendete Kraft ein, um den RL Agent zu motivieren, mit möglichst wenig Kraft das Ziel zu erreichen. Ein zweiter Teil der Reward-Funktion liefert einen negativen Reward, wenn das Cart sich außerhalb des zulässigen Bereiches befindet. Das ist bei diesem Setup nicht möglich, weswegen dieser Teil der Reward-Funktion weggelassen wurde. A similar reward function can be found in Liu et al. (2023). \begin{align}
-    r_{Escobar} = -0.01\left(0.01\cdot\vert x\vert^2 + 0.1\cdot\vert\theta\vert^2 + 5\cdot\vert \dot{x}\vert^2\right)
-\end{align} wobei $x$ die Position und $\dot{x}$ die Geschwindigkeit des Carts ist. 
-- Aufgrund von hohen Winkelgeschwindigkeiten, die zwar nötig sind, um den Pole nach oben zu bekommen, aber in der Balancierungsphase, wenn der Pole oben ist, hinderlich sind, wurde noch eine Reward-Funktionen getestet, die hohe Winkelgeschwindigkeiten nur bis einem bestimmten Punkt fördern. \begin{align}
+        0 & \text{else}
+    \end{cases}\notag
+\end{align} 
+Here, $\theta$ is the angle in radians and $\dot{\theta}$is the angular velocity in radians per second.
+
+Escobar et al. (\citeyear{manrique_escobar_parametric_2020}) proposed the following reward function, which was slightly modified to fit the setup. In the original paper, the applied force is considered to encourage the RL agent to achieve the goal with minimal force. A second part of the reward function provides a negative reward if the cart is outside the allowable range. This is not applicable in this setup, so this part of the reward function was omitted. A similar reward function can be found in Liu et al. (\citeyear{liu_swing-up_2023}).
+\begin{align}
+    r_{Escobar} = -0.01\left(0.01\cdot\vert x\vert^2 + 0.1\cdot\vert\theta\vert^2 + 5\cdot\vert \dot{x}\vert^2\right) \notag
+\end{align} 
+where $x$ is the position and $\dot{x}$ is the velocity of the cart.
+
+Due to the high angular velocities necessary to lift the pole but detrimental during the balancing phase when the pole is upright, another reward function was tested that encourages high angular velocities only up to a certain point.
+\begin{align}
     r_{highVelocity} = \begin{cases}
         \cos(\theta) & \vert\theta\vert \le 12^\circ \\
         \left|\frac{\dot{\theta}}{100}\right| & \vert\theta\vert > 12^\circ
-    \end{cases}
+    \end{cases} \notag
 \end{align}
-- Aus vorgegangen Experimenten hatte sich auch eine Reward-Funktion ergeben, diese nutzt die letzten 5 Winkel und bestimmt eine Winkeländerung. Zugleich besteht diese Reward-Funktion aus mehreren Teilen, die den Winkel belohnen, zu hohe Winkelgeschwindigkeiten bestrafen, den RL Agent bestrafen, wenn sich das Cart zu weit aus der mittleren Position bewegt und den RL Agent bestraft, wenn der Winkel mit fortgeschrittenem Training unten bleibt. \begin{align}
-    angle\_reward &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{\alpha}\right) \\
-    position\_penalty &= \exp\left(\frac{\vert\text{current position}\vert}{\vert\text{max position}\vert}\right)-1 \\
-    angular\_velocity\_penalty &= \begin{cases}
-        angle\_reward\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
-        0 & \text{sonst}
-    \end{cases} \\
-    no\_swing\_up\_penalty &= \begin{cases}
+From previous experiments, a reward function emerged that uses the last 5 angles to determine an angle change. This reward function consists of several parts: rewarding the angle, penalizing high angular velocities, penalizing the RL agent if the cart moves too far from the center position, and penalizing the RL agent if the angle remains down with advanced training.
+\begin{align}
+    \text{angle reward} &= \exp\left(\frac{\cos(\theta_1) + \cos(\theta_2) + \cos(\theta_3) + \cos(\theta_4) + \cos(\theta_5)}{\alpha}\right) \notag \\
+    \text{position penalty} &= \exp\left(\frac{\vert\text{current position}\vert}{\vert\text{max position}\vert}\right)-1 \notag \\
+    \text{angular velocity penalty} &= \begin{cases}
+        \text{angle reward}\cdot\frac{\Delta\theta_1 + \Delta\theta_2 + \Delta\theta_3 + \Delta\theta_4}{4\cdot 2\pi} & \vert\theta_5\vert \le 12^\circ \\
+        0 & \text{else}
+    \end{cases} \notag \\
+    \text{no swing up penalty} &= \begin{cases}
         \frac{\text{time steps since training start}}{50000} & \vert\theta_5\vert \ge 168^\circ \\
-        0 & \text{sonst}
-    \end{cases} \\
-    r_{complex} &= angle\_reward - \beta\cdot position\_penalty - \gamma\cdot angular\_velocity\_penalty - \delta\cdot no\_swing\_up\_penalty
+        0 & \text{else}
+    \end{cases} \notag \\
+    r_{complex} &= \text{angle reward} - \beta\cdot \text{position penalty} \notag \\
+    &- \gamma\cdot \text{angular velocity penalty} - \delta\cdot \text{no swing up penalty} \notag
 \end{align}
-wobei $\theta_5$ der aktuellste Winkel ist und $\Delta\theta_i$ für $i=1,...,4$ die absolute Änderung von $\theta_i$ zu $\theta_{i+1}$ ist. $\alpha$ bis $\delta$ erlauben eine unterschiedliche Gewichtung der einzelnen Teile der Reward-Funktion.
+where $\theta_5$ is the most recent angle and $\Delta\theta_i$ for $i=1,...,4$ is the absolute change from $\theta_i$ to $\theta_{i+1}$. $\alpha$ to $\delta$ allow for different weightings of the individual parts of the reward function. The current position can be obtained by sending a p-message to the Arduino, the maximum position by counting the number of revolutions of the stepper motor required to move the cart from the center to the edge. The counted revolutions multiplied by 12800 steps/revolution then give the maximum position.
