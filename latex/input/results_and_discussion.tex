@@ -2,29 +2,24 @@
 
 \section{Results of the Experiments}
 
-\subsection{First Set of Experiments: Determining the angle}
-- Bei diesen Experimenten wurde noch kein RL Agent eingesetzt, sondern die erkennten Winkel direkt auf dem Bildschirm ausgegeben, um die Winkelbestimmung zu überprüfen.
-- Problem bei Erkennung der farbigen Rechtecke auf Pendel und Stück Plastik,  dass von außen scheinendes Sonnenlicht die Farben veränderte, sodass die Farberkennung nicht mehr funktionierte. insbesondere bei dem Violett war dieser Effekt besonders stark ausgeprägt.
-- Lösung durch anbringen von Symbolen, die verändern ihre Farbe nicht
-- Trotz viel Kalibierung und Ausprobieren von verschiedenen Varianten der Formen (ausgedruckt vs. selbst gezeichnet) war keine zuverlässige Erkennung möglich, es wurden zu viele Elemente im Bild, wie z.B. Schrauben oder Objekte im Hintergrund (Personen, die durch das Bild gehen, Stühle, etc) erkannt, häufig als Kreis
-- auch Filterung über OpenCVs moment() funktion liefert keine zuverlässige Erkennung
-- Erkennung der Kreise über Hough Circle Transformation: Die Bestimmung der Dreiecke ist recht zuverlässig, aber die Bestimmung der Kreise, selbst mit dieser Methode ist stark fehleranfällig, oft werden Kreise nicht erkannt. Da diese Funktion aber in verschiedenen Quellen immer gute Ergebnisse liefert, vermute ich, dass das Bild der Kamera zu viel Rauschen enthält.
-- verbesserter Ansatz zur Farberkennung liefert zuverlässige Winkel
+\subsection{First Set of Experiments: Determining the Angle}
+In these experiments, an RL agent was not yet employed; instead, the detected angles were directly displayed on the screen to verify angle determination. A significant problem with detecting the colored rectangles on the pendulum and the piece of plastic was that sunlight altered the colors, causing the color detection to fail, particularly with the violet color, which was especially affected.
+
+This issue was resolved by attaching symbols, which do not change color. Despite extensive calibration and testing various forms (printed vs. hand-drawn), reliable detection was not possible. Too many elements in the image, such as screws or background objects (people passing by, chairs, etc.), were detected, often mistakenly as circles. Filtering using OpenCV's \texttt{moments()} function did not provide reliable detection either.
+
+Detection of circles using the Hough Circle Transformation showed that while triangle detection was fairly reliable, circle detection remained highly error-prone. Often, circles were not recognized. Given that this function yields good results in various sources, it is suspected that the camera image contains too much noise.
+
+The improved approach to color detection yielded reliable angle measurements.
 
 \subsection{Second Set of Experiments: Optimizing Hardware}
-- Pendel leichter machen hat nichts gebracht: Wenn das Pendel leichter ist, hat die Trägheit des Pendels aber nicht ausgereicht, um das Pendel nach oben zu bekommen
+Making the pendulum lighter did not help: Although a lighter pendulum required less force to lift, its inertia was insufficient to lift the pendulum upwards.
 
-- bei hohen Strömen (1.51 A RMS, 2.14 A Peak und 2 A RMS, 2.83 A Peak) wird der Stepper Motor sehr heiß, weswegen ein Lüfter montiert wurde, der den Motor kühlt
-- einer der zwei Stepper Motoren von stepperonline war nicht akkurat, die berechnete Position des Arduino hat nicht mit der tatsächlichen Position des Carts übereingestimmt
-- geringe Ströme bei diesem Motor führen zu keiner Verbesserung des Motors bezüglich der Genauigkeit
-- der andere Motor von stepperonline war akkurat, auch bei höhen Strömen
-- Experimente mit verschiedenen Strömen lieferten einen RMS Strom von 1.2 A (Peak 1.69 A) als guten Tradeoff zwischen Kraft des Motors und Überhitzung des Motors für den Stepper Motor von stepperonline
-- der Lüfter kann dann mit 3.3V betrieben werden und ist damit relativ leise
+At high currents (1.51 A RMS, 2.14 A Peak and 2 A RMS, 2.83 A Peak), the stepper motor became very hot, necessitating the installation of a fan to cool the motor. One of the two stepper motors from stepperonline was not accurate; the position calculated by the Arduino did not match the actual position of the cart. Low currents with this motor did not improve its accuracy. The other stepper motor from stepperonline was accurate, even at high currents. Experiments with various currents identified an RMS current of 1.2 A (Peak 1.69 A) as a good trade-off between motor force and overheating for the stepper motor from stepperonline. The fan can then be operated at 3.3V and is relatively quiet.
 
-- Erkenntnisse aus Experimenten mit maximaler Geschwindigkeit: Je höher die Geschwindigkeit des Stepper Motors gewählt wird, desto geringer wird die Genauigkeit. Verschiedene Experimente lieferten eine maximale Geschwindigkeit von 60000 Steps/Sekunde, bei der der Motor noch akkurat war. Die maximale Beschleunigung wurde mit 1000000 Steps/Sekunde^2 ermittelt, bei der der Motor noch akkurat war. Bei höheren Werten ist der Stepper Motor nicht mehr in der Lage alle Schritte auszuführen, die ihm gesendet werden, sodass die Genauigkeit leidet.
+Findings from experiments with maximum speed: The higher the speed chosen for the stepper motor, the lower the accuracy. Various experiments determined a maximum speed of 60,000 steps/second at which the motor remained accurate. The maximum acceleration was found to be 1,000,000 steps/second$^2$, at which the motor was still accurate. At higher values, the stepper motor was unable to execute all the steps sent to it, resulting in reduced accuracy.
 
 \subsection{Third Set of Experiments: Optimizing Software}
-- Durch Einsatz der FIFO-Queue nahm die Winkelgeschwindigkeit weniger extreme Werte an, siehe Abbildung \ref{fig:before_after_smoothing}. Die Werte vor der Glättung gehen betragsmäßig bis rund 700 rad/s, mit Ausreißern sogar bis 1400 rad/s. Nach der Glättung über die letzten 3 Winkel liegen die Werte bei maximal 400 rad/s.
+Using the FIFO queue resulted in less extreme values for angular velocity, as shown in Figure \ref{fig:before_after_smoothing}. The values before smoothing reached approximately 700 rad/s, with outliers up to 1400 rad/s. After smoothing over the last 3 angles, the values were at a maximum of 400 rad/s.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\textwidth]{img/before_smoothing.png}
@@ -32,9 +27,10 @@
     \caption{Comparison of the angle speed with and without the FIFO-Queue of Length 3}
     \label{fig:before_after_smoothing}
 \end{figure}
-- Der Einstz des Flags, welches 1 ist, wenn der Pole oben ist, um zu unterscheiden, ob der Winkel und Winkelgeschwindigkeit Null sind weil der Pole oben ist, oder weil der RL Agent die Nachrichten der Kamera schneller abruft, als diese neue Winkel bestimmen kann, hat funktioniert. Ohne diese Fehlerkorrektur tauchte dieses Problem in einem Datensatz bei 85 von 10240 Beobachtungen auf (0.83\%)
+The use of the flag, which is set to 1 when the pole is upright, to distinguish whether the angle and angular velocity are zero because the pole is upright or because the RL agent is retrieving messages from the camera faster than new angles can be determined, was successful. Without this error correction, this issue occurred in a dataset at 85 out of 10240 observations (0.83\%).
 
-- Beim Vergleich von unterschiedlichen Action Spaces fällt auf, die Größe es Action Space keinen Einfluss auf die Performance unter unterschiedlichen Reward Funktionen hat. In Abbildung \ref{fig:action_space_comparison} sieht man den Mean Reward pro Episode über ein Window von 100 Episoden für die Reward Funktionen $r_{highVelocity}$, $r_{simple}$ und $r_{complex}$ mit $\alpha=5$, $\beta=1$, $\gamma=1$ und $\delta=0$ und Größen des Action Spaces von 101 Aktionen, 51 Aktionen und 2 Aktionen. Nach etwa 200000 Steps konvergiert die Reward Funktion. Da einfachere Modelle komplexeren Modellen in der Regel vorzuziehen sind, wird für die weiteren Experimente ein diskreter action space mit 2 Aktionen verwendet.
+
+Comparing different action spaces, it is evident that the size of the action space does not affect performance under different reward functions. In Figure \ref{fig:action_space_comparison}, the mean reward per episode over a window of 100 episodes is shown for the reward functions $r_{highVelocity}$, $r_{simple}$ and $r_{complex}$ with $\alpha=5$, $\beta=1$, $\gamma=1$ and $\delta=0$, and action space sizes of 101 actions, 51 actions, and 2 actions. The reward function converges after approximately 200,000 steps no matter what reward function or size of the action space. As simpler models are generally preferable to more complex ones, a discrete action space with 2 actions is used for further experiments.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.3\textwidth]{img/high_velocity_reward.png}
@@ -43,108 +39,108 @@
     \caption{Comparison of the convergence of the mean reward per episode for different reward functions and action spaces}
     \label{fig:action_space_comparison}
 \end{figure}
-- Beim Beobachten des RL Agent wurde auch schnell klar, dass ohne den Einsatz von time.sleep(0.1) der Rl Agent nicht in der Lage ist, das Pendel nach oben zu bringen, weil er zu viele Aktionen macht, die das cart nur schnell kurze distanzen hin und her fahren lässt. somit lässt sich kein Moment des Pendels aufbauen, welches aber nötig ist, um nach oben zu schwingen. Mit erhöhter Trainingszeit ist dies aber denkbar, dass der RL Agent dies selbst lernt. Die vielen schnellen Aktionen sind dann in der Balancierungsphase nötig
+Observing the RL agent, it quickly became apparent that without using time.sleep(0.1), the RL agent cannot lift the pendulum because it performs too many actions, causing the cart to move back and forth quickly over short distances. This does not allow the pendulum to build momentum, which is necessary for swinging upwards. However, with increased training time, it is conceivable that the RL agent could learn this on its own. Many quick actions are then needed in the balancing phase.
 
-- Simple Reward Funktion führt nicht zum gewünschten Verhalten, die beobachteten Winkel sind oft sehr groß ($\pm\pi$, was der unteren Position des Pendels entspricht), siehe Abbildung \ref{fig:angle_simple_reward}. Der weiße Bereich bei $\pm$ 1 Radiant kommt daher, dass die Kamera keine Seite des Pendels sehen kann, wenn es sich in der Horizontalen befindet. Daher können in diesem Zustand auch keine Winkel gemessen werden. Die beobachtete Winkelgeschwidigkeit ist oft sehr groß, was darauf hindeutet, dass das Pendel sehr schnell schwingt. Damit ist es zwar möglich, das Pendel nach oben zu bringen, aber sehr schwer das Pendel oben zu balancieren (siehe \ref{fig:angle_velocity_simple_reward}). Der mittlere Reward pro Episode konvergiert zu rund -1600 (siehe \ref{fig:mean_reward_simple_reward}).
+The simple reward function does not lead to the desired behavior; the observed angles are often very large ($\pm\pi$, corresponding to the downward position of the pendulum), as seen in Figure \ref{fig:angle_simple_reward}. The white area at $\pm 1$ radian occurs because the camera cannot see any side of the pendulum when it is horizontal. Therefore, angles cannot be measured in this state. The observed angular velocity is often very high, indicating that the pendulum swings very quickly. While this can lift the pendulum upwards, it is very difficult to balance it at the top (see Figure \ref{fig:angle_velocity_simple_reward}). The mean reward per episode converges to around -1600 (see Figure \ref{fig:mean_reward_simple_reward}).
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/simple_reward_angle.png}
+    \includegraphics[width=0.6\textwidth]{img/simple_reward_angle.png}
     \caption{Seen angles of the pendulum over 200000 steps with the simple reward function}
     \label{fig:angle_simple_reward}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/simple_reward_angular_velocity.png}
+    \includegraphics[width=0.6\textwidth]{img/simple_reward_angular_velocity.png}
     \caption{Seen angular velocities of the pendulum over 200000 steps with the simple reward function}
     \label{fig:angle_velocity_simple_reward}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/simple_reward_mean_reward.png}
+    \includegraphics[width=0.6\textwidth]{img/simple_reward_mean_reward.png}
     \caption{Mean reward per episode with the simple reward function}
     \label{fig:mean_reward_simple_reward}
 \end{figure}
 
-- Reward Funktion von Kimura & Kobayashi (1999) hat auch keine gute Performance, zwar stabilisiert sich auch hier der Mean Reward (siehe \ref{fig:mean_reward_kimura1999}), aber die Winkel erreichen gar nicht mehr die 0 Radiant, es findet also kein Aufschwung statt (siehe \ref{fig:angle_kimura1999}). Die beobachtete Winkelgeschwidigkeit nimmt stark ab über die Zeit (siehe \ref{fig:angle_velocity_kimura1999}).
+The reward function proposed by Kimura \& Kobayashi (\citeyear{kimura_stochastic_1999}) also did not yield good performance. Although the mean reward stabilized (see Figure \ref{fig:mean_reward_kimura1999}), the angles never reached 0 radians, meaning no swing-up occurred (see Figure \ref{fig:angle_kimura1999}). The observed angular velocity significantly decreased over time (see Figure \ref{fig:angle_velocity_kimura1999}).
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/kimura1999_angle.png}
-    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Kimura & Kobayashi (1999)}
+    \includegraphics[width=0.6\textwidth]{img/kimura1999_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Kimura \& Kobayashi (\citeyear{kimura_stochastic_1999})}
     \label{fig:angle_kimura1999}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/kimura1999_angular_velocity.png}
-    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Kimura & Kobayashi (1999)}
+    \includegraphics[width=0.6\textwidth]{img/kimura1999_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Kimura \& Kobayashi (\citeyear{kimura_stochastic_1999})}
     \label{fig:angle_velocity_kimura1999}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/kimura_mean_reward.png}
-    \caption{Mean reward per episode with the reward function of Kimura & Kobayashi (1999)}
+    \includegraphics[width=0.6\textwidth]{img/kimura_mean_reward.png}
+    \caption{Mean reward per episode with the reward function of Kimura \& Kobayashi (19\citeyear{kimura_stochastic_1999}99)}
     \label{fig:mean_reward_kimura1999}
 \end{figure}
 
-- Reward Funktion, die von Escobar et al (2020) vorgeschlagen wurde, hat nicht zum Erfolg geführt, die beobachteten Winkel konvergieren auch nicht zu 0 Radiant, siehe Abbildung \ref{fig:angle_escobar2020}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_escobar2020}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der einfachen Reward Funktion, der erziehlte Reward ist numerisch höher, aber abnehmend (\ref{fig:mean_reward_escobar2020}).
+The reward function proposed by Escobar et al. (\citeyear{manrique_escobar_parametric_2020}) also did not lead to success. The observed angles did not converge to 0 radians, as shown in Figure \ref{fig:angle_escobar2020}. The observed angular velocities (Figure \ref{fig:angle_velocity_escobar2020}) were comparable to those observed with the simple reward function. The achieved reward was numerically higher but decreasing (Figure \ref{fig:mean_reward_escobar2020}).
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/escobar2020_angle.png}
-    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Escobar et al (2020)}
+    \includegraphics[width=0.6\textwidth]{img/escobar2020_angle.png}
+    \caption{Seen angles of the pendulum over 200000 steps with the reward function of Escobar et al (\citeyear{manrique_escobar_parametric_2020})}
     \label{fig:angle_escobar2020}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/escobar2020_angular_velocity.png}
-    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Escobar et al (2020)}
+    \includegraphics[width=0.6\textwidth]{img/escobar2020_angular_velocity.png}
+    \caption{Seen angular velocities of the pendulum over 200000 steps with the reward function of Escobar et al (\citeyear{manrique_escobar_parametric_2020})}
     \label{fig:angle_velocity_escobar2020}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/escobar2020_mean_reward.png}
-    \caption{Mean reward per episode with the reward function of Escobar et al (2020)}
+    \includegraphics[width=0.6\textwidth]{img/escobar2020_mean_reward.png}
+    \caption{Mean reward per episode with the reward function of Escobar et al (\citeyear{manrique_escobar_parametric_2020})}
     \label{fig:mean_reward_escobar2020}
 \end{figure}
 
-- Auch die Reward Funktion, die eine hohe Winkelgeschwidigkeit in der Aufschungphase belohnt, $r_{highVelocity}$, hatte leider keinen Erfolg. Die beobachteten Winkel konvergieren nicht zu 0 Radiant, siehe Abbildung \ref{fig:angle_highVelocity}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_highVelocity}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der anderen Reward Funktionen, der erziehlte Reward ist steigt, hat aber noch nicht das bisherhige Maximum nach rund 40000 Timesteps erreicht. Zu diesem Zeitpunkt sieht man zwar mehr Winkel um die 0 Radiant, aber immer noch viele beobachtete Winkel bei $\pm\pi$ Radiant (\ref{fig:mean_reward_swingup}). Der Reward könnte also auch noch deutlich höher gehen.
+The reward function that rewards high angular velocity during the swing-up phase,$r_{highVelocity}$, was also unsuccessful. The observed angles did not converge to 0 radians, as shown in Figure \ref{fig:angle_swingup}. The observed angular velocities (Figure \ref{fig:angle_velocity_swingup}) were comparable to those observed with other reward functions. The achieved reward increased but had not yet reached its previous maximum after around 40,000 timesteps. At this point, more angles around 0 radians were observed, but many angles were still observed at $\pm\pi$ radians (Figure \ref{fig:mean_reward_swingup}). Therefore, the reward could potentially increase significantly.
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/swingup_angle.png}
+    \includegraphics[width=0.6\textwidth]{img/swingup_angle.png}
     \caption{Seen angles of the pendulum over 200000 steps with the high velocity reward function}
     \label{fig:angle_swingup}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/swingup_angular_velocity.png}
+    \includegraphics[width=0.6\textwidth]{img/swingup_angular_velocity.png}
     \caption{Seen angular velocities of the pendulum over 200000 steps with the high velocity reward function}
     \label{fig:angle_velocity_swingup}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/swingup_mean_reward.png}
+    \includegraphics[width=0.6\textwidth]{img/swingup_mean_reward.png}
     \caption{Mean reward per episode with the high velocity reward function}
     \label{fig:mean_reward_swingup}
 \end{figure}
 
-- Die Komplexe Reward Funktion auch auch in unterschiedlichen Szenarien nicht gut funktioniert. Um die Reward Funktion so einfach wie möglich zu halten, wurden die negativen Rewards für's erste deaktiviert, und der Reward für Winkel wurde durch den Einstz der Exponentialfunktion vergrößert im Vergleich zur simplen Reward Funktion. Leider hat das nicht funktioniert, bei den beobachteten Winkeln ergeben sich noch sehr oft Winkel bei $\pm\pi$ Radiant, siehe Abbildung \ref{fig:angle_ankit_200k_only_angle_reward}. Die beobachteten Winkelgeschwidigkeiten (\ref{fig:angle_velocity_ankit_200k_only_angle_reward}) sind vergleichbar mit den beobachteten Winkelgeschwidigkeiten der anderen Reward Funktionen, der erziehlte Reward erreicht sein Maximum bei rund 100000 Timesteps, danach nimmt er leicht ab (\ref{fig:mean_reward_ankit_200k_only_angle_reward}).
+The complex reward function also did not perform well in various scenarios. To simplify the reward function, the negative rewards were initially deactivated, and the reward for the angle was increased using the exponential function compared to the simple reward function. Unfortunately, this did not work; the observed angles still often reached $\pm\pi$ radians, as shown in Figure \ref{fig:angle_ankit_200k_only_angle_reward}. The observed angular velocities (Figure \ref{fig:angle_velocity_ankit_200k_only_angle_reward}) were comparable to those observed with other reward functions. The achieved reward reached its maximum at around 100,000 timesteps, after which it slightly decreased (Figure \ref{fig:mean_reward_ankit_200k_only_angle_reward}).
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_angle.png}
+    \includegraphics[width=0.6\textwidth]{img/ankit_200k_only_angle_reward_angle.png}
     \caption{Seen angles of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
     \label{fig:angle_ankit_200k_only_angle_reward}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_angular_velocity.png}
+    \includegraphics[width=0.6\textwidth]{img/ankit_200k_only_angle_reward_angular_velocity.png}
     \caption{Seen angular velocities of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
     \label{fig:angle_velocity_ankit_200k_only_angle_reward}
 \end{figure}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/ankit_200k_only_angle_reward_mean_reward.png}
+    \includegraphics[width=0.6\textwidth]{img/ankit_200k_only_angle_reward_mean_reward.png}
     \caption{Mean reward per episode with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
     \label{fig:mean_reward_ankit_200k_only_angle_reward}
 \end{figure}
-- Aktiviert man zusätzlich die Position penalty ($\beta=1$ oder $\beta=0.1$), so stabilisiert sich auch der Mean Reward über die Zeit, aber wenn man dem Cartpole zuschaut, so sieht man, dass sich das Cart nur in der Mitte aufhält und keine Versuche mehr unternimmt, das Pendel nach oben zu bekommen (\ref{fig:angle_position_ankit_200k_position_penalty}). Bei $\beta=0.1$ ist der Effekt nicht so stark ausgeprägt, das Pendel wird zwar auch nicht zuverlässig balanciert, aber das Cart hat eine Tendenz, in der Mitte zu bleiben (\ref{fig:angle_position_ankit_200k_weaker_position_penalty}).
+Activating the position penalty ($\beta=1$ or $\beta=0.1$) stabilizes the mean reward over time. However, observing the Cartpole shows that the cart remains in the center and makes no attempts to swing the pendulum upwards (Figure \ref{fig:angle_position_ankit_200k_position_penalty}). With $\beta=0.1$, the effect is less pronounced. While the pendulum is still not reliably balanced, the cart tends to stay in the center (Figure \ref{fig:angle_position_ankit_200k_weaker_position_penalty}).
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\textwidth]{img/ankit_200k_position_penalty_angle.png}
@@ -159,14 +155,14 @@
     \caption{Seen angles and positions of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0.1$, $\gamma=1$, $\delta=0$)}
     \label{fig:angle_position_ankit_200k_weaker_position_penalty}
 \end{figure}
-Die Aktivierung der No Swing Up Penalty ($\delta=1$) ändert nichts am Verhalten des RL Agents, aber führt zu stark negativen Rewards (\ref{fig:mean_reward_ankit_1m_no_swing_up_penalty}), sodass diese Penalty wieder deaktiviert wurde.
+Activating the no swing-up penalty ($\delta=1$) did not change the behavior of the RL agent but resulted in significantly negative rewards (Figure \ref{fig:mean_reward_ankit_1m_no_swing_up_penalty}). Consequently, this penalty was deactivated again.
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/ankit_1m_no_swing_up_penalty_mean_reward.png}
+    \includegraphics[width=0.6\textwidth]{img/ankit_1m_no_swing_up_penalty_mean_reward.png}
     \caption{Mean reward per episode with the complex reward function ($\alpha=2$, $\beta=1$, $\gamma=1$, $\delta=1$)}
     \label{fig:mean_reward_ankit_1m_no_swing_up_penalty}
 \end{figure}
-Der Einfluss der Angular Velocity Penalty ($\gamma=1$) sorgt für leicht bessere Ergebnisse. Vergleicht man die Winkelgeschwidigkeiten wenn der Winkel bei $\pm$ 12$^\circ$ ist, so erhält man bei $\gamma=1$ eine höhere Anzahl an Winkelgeschwidigkeiten (2209 vs. 1377 bei jeweils insgesamt 200000 Steps), das heißt der Pole wurde länger balanciert. Die beobachteten Winkelgeschwidigkeiten sind aber nicht signifikant kleiner geworden (\ref{fig:filtered_angular_velocity_ankit_200k_compare_angular_velocity_penalty}).
+The influence of the angular velocity penalty ($\gamma=1$) resulted in slightly better outcomes. Comparing the angular velocities when the angle is at $\pm 12^\circ$, there is a higher count of angular velocities with $\gamma=1$ (2209 vs. 1377 over 200,000 steps), indicating that the pole was balanced for a longer duration. However, the observed angular velocities did not become significantly smaller (Figure \ref{fig:filtered_angular_velocity_ankit_200k_compare_angular_velocity_penalty}).
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\textwidth]{img/with_angular_velocity_penalty.png}
@@ -174,28 +170,29 @@ Der Einfluss der Angular Velocity Penalty ($\gamma=1$) sorgt für leicht bessere
     \caption{Comparision of seen angular velocities of the pendulum over 200000 steps with the complex reward function ($\alpha=2$, $\beta=0.1$, $\delta=0$) when seen angle is between $\pm$ 12$^\circ$}
     \label{fig:filtered_angular_velocity_ankit_200k_compare_angular_velocity_penalty}
 \end{figure}
-Auch eine längere Trainingszeit mit 1 Million Steps schafft es nicht, den Pole zuverlässig zu balancieren (vergleiche \ref{fig:mean_reward_ankit_1m_only_angle_reward} mit \ref{fig:mean_reward_ankit_200k_only_angle_reward}).
+Even with a longer training time of 1 million steps, the pole could not be reliably balanced (compare Figure \ref{fig:mean_reward_ankit_200k_only_angle_reward} with Figure \ref{fig:mean_reward_ankit_1m_only_angle_reward}).
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/ankit_1m_only_angle_reward_mean_reward.png}
+    \includegraphics[width=0.6\textwidth]{img/ankit_1m_only_angle_reward_mean_reward.png}
     \caption{Mean reward per episode with the complex reward function ($\alpha=2$, $\beta=0$, $\gamma=0$, $\delta=0$)}
     \label{fig:mean_reward_ankit_1m_only_angle_reward}
 \end{figure}
 
 \section{Challenges and Limitations of Experiments}
-- Da es sich nicht um eine Simulation, sondern um ein echtes System handelt, gibt es viele Herausforderungen, die in Simulationen nicht auftreten, wie z.B. die Erkennung der Winkel des Pendels in Echtzeit, verschiedene Delays, die durch die Hardware entstehen, und auch die akkurate Bestimmung der Winkelgeschwidigkeit: Winkeländerung geteilt durch sehr kleine Zeit ergibt einen großen Fehler, selbst bei kleinen Zeitabweichungen. Durch das Smoothing sollte der Effekt aber abgemildert werden.
 
-- Um das Delay der Kamera zu bestimmen, wurde die aktuelle Zeit vor der Aufnahme des Bildes gespeichert und Vergleichen mit der Zeit, als die Berechnung des Winkel abgeschlossen war. Das Delay der Kamera und Bildverarbeitung schwankt um 0.1 Sekunden, das Delay aller Komponenten zusammen schwankt um 0.2 Sekunden, in Extremfällen beträgt es 0.7 Sekunden (siehe Abbildung \ref{fig:camera_delay_boxplot}). Zum Vergleich: Das übernommene experimente Setup hatte ein Delay von etwa 0.2 Sekunden. In diesem wurde die Aufnahme und Auswertung des Bildes synchron in jedem Schritt ausgeführt, die Bildverarbeitung ist aber recht ähnlich.
+Since this is a real system and not a simulation, many challenges arise that do not occur in simulations. These include real-time detection of the pendulum angles, various delays caused by the hardware, and accurate determination of angular velocity: angle change divided by very short time intervals results in a large error, even with small time deviations. Smoothing should mitigate this effect.
+
+To determine the camera delay, the current time was recorded before capturing the image and compared with the time when the angle calculation was completed. The camera and image processing delay fluctuates around 0.1 seconds, and the total delay of all components fluctuates around 0.2 seconds, with extreme cases reaching 0.7 seconds (see Figure \ref{fig:camera_delay_boxplot}). For comparison, the previous experimental setup had a delay of about 0.2 seconds. In this setup, image capture and evaluation were executed synchronously in each step, but the image processing is quite similar.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{img/total_delay_camera_delay_boxplot.png}
+    \includegraphics[width=0.6\textwidth]{img/total_delay_camera_delay_boxplot.png}
     \caption{Boxplot of the Camera Delay and Image Processing (labeled as Camera Delay) and the Total Delay of all Components (labeled as Total Delay) with improvements. For comparison the Total Delay without improvements is also shown, labeled as Old System.}
     \label{fig:camera_delay_boxplot}
 \end{figure}
-- Mit zunehmender Zeit scheint das insgesamte Delay größer zu werden, die Ausreißer nehmen zu (siehe \ref{fig:total_delay_over_time}). Ich kann mir nicht erklären warum und auch die Beobachtung, dass bei vielen Experimenten das Skript für die Bildverarbeitung nach etwa 1.3 Millionen Steps zwar nicht abgestürzt ist, aber keine Daten mehr geliefert hat, ist nicht erklärbar.
+Over time, the overall delay seems to increase, and outliers become more frequent (see Figure \ref{fig:total_delay_over_time}). It is unclear why this occurs, and it is also unexplained why the image processing script, in many experiments, did not crash but stopped delivering data after about 1.3 million steps.
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{img/total_delay_over_time.png}
+    \includegraphics[width=0.6\textwidth]{img/total_delay_over_time.png}
     \caption{Delay of the Camera and Image Processing for each Observation}
     \label{fig:total_delay_over_time}
 \end{figure}
