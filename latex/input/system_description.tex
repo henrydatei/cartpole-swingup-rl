@@ -1,6 +1,6 @@
 \chapter{System Description}
 
-- System war schon durch vorheige Experimente weitgehend aufgebaut und besteht aus 3D gedruckten Teilen, einem Stepper Motor, Kamera, 2 metallischen Stangen, Zahnriemen und diversen mechanischen Teilen (siehe \ref{fig:overview_cart_pole_experiment})
+The system was largely built through previous experiments and consists of 3D-printed parts, a stepper motor, a camera, two metallic rods, a timing belt, and various mechanical components (see figure \ref{fig:overview_cart_pole_experiment})
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.4\textwidth]{img/front.jpg}
@@ -8,8 +8,7 @@
     \caption{Overview over Cart-Pole experiment with 3D printed parts}
     \label{fig:overview_cart_pole_experiment}
 \end{figure}
-- Anpassungen wurden im Verlauf der Experimente vorgenommen
-- einige der beweglichen Teile haben sich im Laufe der Experimente verschoben, sodass Klammern angebracht werden mussten, um die Teile zu fixieren (\ref{fig:clamps})
+Adjustments were made during the course of the experiments. Some of the moving parts shifted over time, necessitating the use of clamps to fix these parts in place (\ref{fig:clamps})
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{img/clamps.jpg}
@@ -31,14 +30,12 @@
     \caption{Deflection pulley for the belt}
     \label{fig:deflection_pulley}
 \end{figure}
-- auf einem Holzbrett im Abstand von 95 cm 2 Halterungen montiert für Metallstangen, auf denen das Cart (\ref{fig:cart}) fahren kann
-- auf einer Halterung ist eine Umlenkrolle in Form eines Zahnrades montiert, die den Zahnriemen führt, auf der anderen Halterung ist der Stepper Motor montiert (\ref{fig:deflection_pulley})
-- der Zahnriemen muss sehr straff gespannt sein, sonst rutscht er durch und das Cart bewegt sich nicht
-- mehrere Halterungen für ein Gewinde, an dem das Pendel hängt
-- Pendel ist 3D gedruckt und besteht aus 5 Teilen, die zusammengesteckt werden: 1 blauer breiter Stab und 4 Teile um den Stab, wovon 2 für die Verbindung von Pendel und Gewinde sorgen und 2 für zusätzliches Gewicht am Ende des Pendels sorgen
-- ein Stück Plastik mit gelbem Klebeband ist auch am Pendel befestigt, um es der Kamera zu ermöglichen, das Pendel in jeder Position zu erkennen
-- insgesamt ist das Pendel 35 cm lang und wiegt 128 g
-- eigentlich verlangt das Cart-Pole-Experiment eine reibungslose Oberfläche, auf der das Cart fahren kann, dieses wurde versucht durch Rollen, die um die Metallstangen angebracht sind, zu erreichen, jedoch war die Oberfläche nicht reibungslos genug, sodass das Cart nicht reibungslos fahren konnte. Es ist leider verhältnismäßig viel Kraft notwendig, um das Cart zu bewegen, was die Experimente erschwert hat. Aber laut Escobar et al. (2020) ist das kein Problem, da das Cart-Pole-Experiment auch mit Reibung gelöst werden kann.
+
+The cart system is mounted on a wooden board with two supports spaced 95 cm apart, which hold the metal rods on which the cart (Figure \ref{fig:cart}) moves. One support has a deflection pulley in the form of a gear to guide the timing belt, while the other support mounts the stepper motor (Figure \ref{fig:deflection_pulley}). The timing belt must be very tight; otherwise, it slips, preventing the cart from moving.
+
+There are several mounts for a threaded rod from which the pendulum hangs. The pendulum is 3D-printed and consists of five parts that fit together: one broad blue rod and four parts around the rod, two of which connect the pendulum to the thread, and two add extra weight at the end of the pendulum. A piece of plastic with yellow tape is also attached to the pendulum to enable the camera to recognize the pendulum's position.
+
+The pendulum is 35 cm long and weighs 128 g. Although the cart-pole experiment ideally requires a smooth surface for the cart to move on, attempts to achieve this with rollers on the metal rods were insufficient. The surface was not smooth enough, requiring relatively more force to move the cart, complicating the experiments. However, according to Escobar et al. (\citeyear{manrique_escobar_parametric_2020}), this is not a significant problem, as the cart-pole experiment can also be solved with friction.
 
 \subsection{Stepper Motor}
 \begin{figure}[htbp]
@@ -47,16 +44,14 @@
     \caption{Stepper Motor for the Cart}
     \label{fig:stepper_motor}
 \end{figure}
-- Stepper Motor dreht ein Zahnrand, auf dem sich der Zahnriemen befindet, dadurch wird das Cart bewegt (\ref{fig:stepper_motor})
-- bei verschiedenen Experimenten wurden unterschiedliche Stromsträken für den Stepper Motor getestet, der dadurch heiß wurde, deswegen wurde ein Lüfter montiert, der Lüfter ist vom selben Typ wie der Lüfter der einen Raspberry Pi kühlt und wird mit 3.3V betrieben
-- verschiedene Stepper Motoren wurden im Verlauf der Experimente probiert, alle vom Typ NEMA 17, 1 Motor mit der Bezeichnung MOT-AN-S-060-005-042-L-A-AAAA von igus, 2 Motoren mit der Bezeichnung 17HS19-2004S1 von stepperonline, wovon einer nicht akkurat war
-- der Motor von igus verträgt eine Stromstärke von 1.8A, die anderen Motoren vertragen 2A
-- die Stromstärke wurde im Verlauf der Experimente verändert, um die beste Leistung zu erzielen, ohne den Motor zu überhitzen
+The stepper motor rotates a gear on which the timing belt is mounted, thereby moving the cart (Figure \ref{fig:stepper_motor}). During various experiments, different current levels were tested for the stepper motor. As the motor became hot, a fan was mounted. The fan is of the same type used for cooling a Raspberry Pi and operates at 3.3V.
+
+Different stepper motors were tested throughout the experiments, all of the NEMA 17 type. One motor was labeled MOT-AN-S-060-005-042-L-A-AAAA from Igus, and two motors were labeled 17HS19-2004S1 from StepperOnline, one of which proved to be inaccurate. The Igus motor can handle a current of 1.8A, while the other motors can handle 2A.
+
+The current was adjusted during the experiments to achieve the best performance without overheating the motor.
 
 \subsection{Stepper Motor Control}
-- alle Motoren wurden mit einem Makeblock 2H Microstep Driver angesteuert, der mit einem Arduino verbunden ist
-- der Arduino ist mit einem Raspberry Pi und Microusb verbunden
-- alle Stepper Motoren wurden mit einer Schrittwinkelauflösung von 1.8$^\circ$ betrieben (12800 Schritte pro Umdrehung)
+All motors were controlled using a Makeblock 2H Microstep Driver, which is connected to an Arduino. The Arduino is connected to a Raspberry Pi via Micro-USB. All stepper motors were operated with a step angle resolution of 1.8$^\circ$ (12800 steps per revolution).
 
 \subsection{Camera}
 \begin{figure}[htbp]
@@ -65,25 +60,16 @@
     \caption{Camera to detect the angle of the pendulum}
     \label{fig:camera}
 \end{figure}
-- Kamera ist eine Picam, die in einem 3D gedruckten Gehäuse montiert ist, das an dem Cart befestigt ist (\ref{fig:camera})
-- Kamera ist mit einem Raspberry Pi verbunden, der die Bilder der Kamera verarbeitet
-- Position der Kamera darf sich nicht verändern, da sonst die Winkel des Pendels, die erkannt werden sollen, nicht mehr korrekt sind
-- Deaktivieren des Autofocus der Kamera, um die Bilder schneller zu machen und immer die gleiche Schärfe zu haben
-- Einsatz von Klebeband, um die Kamera zu fixieren
+The camera used is a Picam, mounted in a 3D-printed housing attached to the cart (Figure \ref{fig:camera}). The camera is connected to a Raspberry Pi, which processes the images captured by the camera. It is crucial that the position of the camera remains fixed; otherwise, the angles of the pendulum detected will not be accurate.
+
+To improve image processing speed and maintain consistent focus, the autofocus feature of the camera was disabled. Tape was used to secure the camera and ensure it stays in a fixed position.
 
 \section{Software Architecture}
 \subsection{Reinforcement Learning Agent}
-- Entwicklung einer eigenen Environment auf Basis von OpenAI Gym, die die Cart-Pole-Umgebung nachbildet
-- wichtigste Änderung: Überschreiben der step-Funktion, damit die ausgewählten Aktionen in Nachrichten umgewandelt werden, die an den Arduino gesendet werden, um das Cart zu bewegen
-- Algorithmus: PPO, Implementierung von stable baselines 3
-- Verarbeitung der Bilder der Kamera in einem eigenen Skript, welches unabhängig vom Reinforcement Learning Agent läuft, um die Winkel des Pendels zu bestimmen
-- Winkel starten bei 0 in der oberen Position und gehen bis 180 Grad in der unteren Position, auf der linken Seite des Pendels von 0 bis 180 Grad, auf der rechten Seite von 0 bis -180 Grad
-- Senden der Winkel und weiterer Informationen über ZeroMQs Implementeriung eines TCP Sockets an den Reinforcement Learning Agent
-- Vorteil: bessere Nutzung der 4 Kerne des Raspberry Pis (1 Kern für RL Agent, 1 Kern für Bildverarbeitung), Bilder können häufiger gemacht werden, akuratere Bestimmung der Winkelgeschwidigkeit durch mehr Messungen, Reduktion des Delays in den Entscheidungen des RL Agents, da die Bilder nicht mehr verarbeitet werden müssen, bevor der RL Agent eine Aktion auswählt
+A custom environment based on OpenAI Gym was developed to simulate the cart-pole environment. The most significant modification involved overriding the step function to convert selected actions into messages sent to the Arduino to move the cart. The algorithm used is Proximal Policy Optimization (PPO), implemented using Stable Baselines 3. Image processing from the camera is handled by a separate script, which runs independently of the reinforcement learning agent to determine the angles of the pendulum. Angles start at 0 in the upper position and range up to 180 degrees in the lower position; on the left side of the pendulum from 0 to 180 degrees, and on the right side from 0 to -180 degrees. The angles and other information are sent to the reinforcement learning agent using ZeroMQ's implementation of a TCP socket. This setup allows for better utilization of the Raspberry Pi's four cores (one core for the RL agent, one core for image processing), more frequent image captures, more accurate determination of angular velocity through more measurements, and reduced decision delay for the RL agent, as images no longer need processing before action selection.
 
 \subsection{Control Algorithms}
-- Kommunikation des Raspberry Pi mit dem Arduino über USB als serielle Schnittstellenverbindung
-- eigenes Protokoll, Nachrichten werden in Form von Strings übertragen, Strings haben die Form "<letter,number>", die Buchstaben stehen für die Art der Nachricht, die Zahlen für die Werte
+Communication between the Raspberry Pi and the Arduino occurs over USB as a serial connection. A custom protocol is used where messages are transmitted as strings. These strings follow the format \textit{<letter,number>}, where letters represent the type of message and numbers represent the values, see table \ref{tab:types_of_messages}.
 \begin{table}
     \caption{Types of messages for the Arduino}
     \label{tab:types_of_messages}
@@ -101,10 +87,6 @@
         \hline
     \end{tabular}
     \end{table}
-- Arduino kennt immer die aktuelle Position durch mitzählen der durchgeführten Schritte und stoppt den Motor automatisch, wenn das Cart das Ende der Stangen erreicht. Dafür ist es notwendig, den Home-Punkt immer in der Mitte des Streckenabschnitts zu setzen, den das Cart zurücklegen soll, um sicherzustellen, dass das Cart immer anhält, wenn es das Ende der Stange erreicht, die maximale Anzahl der Umdrehungen des Stepper Motors bevor das Cart das Ende der Stangen erreicht, wurde mit 9 ermittelt.
-- Der Raspberry Pi sendet die Nachrichten an den Arduino, um das Cart zu bewegen, und durch die Asynchronität des Systems kann der Raspberry Pi in der Zwischenzeit andere Berechnungen durchführen, um die nächste Aktion des Reinforcement Learning Agents zu bestimmen, während das Cart sich bewegt
-- Der Ardoino führt (bei Angabe einer Geschwindigkeit) die Bewegung des Carts solange aus, bis er eine neue Nachricht bekommt oder das Cart das Ende der Stange erreicht hat
+The Arduino always knows the current position by counting the steps performed and automatically stops the motor when the cart reaches the end of the rods. Therefore, it is necessary to set the home position in the middle of the track section the cart is supposed to travel to ensure it always stops when reaching the end. The maximum number of revolutions of the stepper motor before the cart reaches the end of the rods was determined to be nine. The Raspberry Pi sends messages to the Arduino to move the cart, and due to the system's asynchrony, the Raspberry Pi can perform other calculations in the meantime to determine the next action of the reinforcement learning agent while the cart is moving. The Arduino continues to move the cart at the specified speed until it receives a new message or the cart reaches the end of the rod.
 
-- weiterhin wurde eine funktion eingebaut, die ermittelt, ob das Büro leer ist, um diese Mitarbeiter nicht durch die Geräusche zu stören, die das Cart macht, wenn es sich bewegt
-- ob das Büro leer ist, hängt aktuell nur von der Zeit ab, aktuell wird davon ausgegangen, dass das Büro von 8:30 am Morgen bis 18:30 am Abend von Montag bis Freitag besetzt ist. Außerhalb dieser Zeiten wird davon ausgegangen, dass das Büro leer ist und das Cart sich bewegen kann ohne jemanden zu stören.
-- Die Überprüfung, ob das Büro leer ist, wird bei jedem reset des RL Agents durchgeführt (Aufruf der reset-Funktion der Gym Environment). Ist das Büro nicht leer, so wird 10 Minuten gewartet, bis erneut geprüft wird.
+Additionally, a function was implemented to detect whether the office is empty to avoid disturbing employees with the noise produced by the moving cart. Whether the office is empty currently depends only on the time. It is assumed that the office is occupied from 8:30 AM to 6:30 PM from Monday to Friday. Outside these hours, it is assumed the office is empty, and the cart can move without disturbing anyone. This check is performed each time the RL agent is reset (calling the reset function of the Gym environment). If the office is not empty, the system waits 10 minutes before checking again.
