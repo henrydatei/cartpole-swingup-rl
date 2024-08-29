@@ -34,7 +34,7 @@ With the advent of deep learning, RL has evolved into deep reinforcement learnin
 The state-of-the-art algorithm is Proximal Policy Optimization (PPO) which is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. It combines the benefits of policy gradient methods with the stability of trust region methods and is implemented in the OpenAI Baselines library (\cite{schulman_proximal_2017,openai_proximal_2017,wouter_van_heeswijk_proximal_2023}).
 
 \section{The Cart-Pole Problem and Swing-Up Dynamics}
-The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control.
+The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control like nonlinearity and instability (). % TODO: cite kumari & Agarwal (2023)
 
 The cart-pole system consists of a cart of mass $m_c$ and a pole of length $l$ and mass $m_p$. The cart can move horizontally, and the pole is free to swing in the vertical plane. The system's state can be described by four variables: the cart's position $x$, the cart's velocity $\dot{x}$, the pole's angle $\theta$ from the vertical, and the pole's angular velocity $\dot{\theta}$.
 
@@ -53,4 +53,59 @@ E = \frac{1}{2} m_c \dot{x}^2 + \frac{1}{2} m_p (\dot{x}^2 + l^2 \dot{\theta}^2 
 \end{align}
 The control strategy involves applying a force $F$ to the cart that drives the system's energy towards the desired energy level for the upright position. When the pole's energy is close to the required level, a switching strategy can be employed to transition from swing-up control to balance control (\cite{astrom_swinging_2000}).
 
-There are few papers that use a real cart-pole system for the swing-up task; many use simulated environments and similar reward functions. Different approaches for reward functions are listed in the Experimental Setup section. Only one paper was found that uses a real cart-pole system for the swing-up task, but it employs a simple reward function (\cite{nayante_reinforcement_2021}).
+\section{Solution Approaches for the Cart-Pole Problem}
+
+- notable approaches with the following control algorithms (kumari & Agarwal (2023))
+- PID controller
+- reinforcement learning
+- LQR controller
+- fuzzy controller
+- sliding mode controller
+- LQG controller
+- Lyapunov-based controller
+- particle swarm optimized controller
+- energy control
+- Diese Ansätze werden gerne in Kombination angewendet, um die besten ergebnisse zu erzielen
+
+PID controller
+- PID = Proportional-Integral-Derivative, Steuerungsbefehl zum Zeitpunkt $t$ ist die Summe aus Proportional-, Integral- und Derivative-Komponenten
+- alle 3 Komponenten reagieren auf Fehler $e_t$ (Differenz zwischen gewünschtem und aktuellem Zustand)
+- P-Komponente: reagiert proportional zum Fehler
+- I-Komponente: reagiert auf die Summe der bisherigen Fehler
+- D-Komponente: reagiert auf die Änderungsrate des Fehlers
+- Steuerungsbefehl $u_t = K_P\cdot e_t + K_I\cdot\sum_{i=0}^t e_i + K_D\cdot\frac{e_t - e_{t-1}}{\Delta t}$ für diskrete Zeitpunkt. Bei kontinuierlicher Zeit wird der Differenzialterm durch die Ableitung ersetzt und der Summenterm durch das Integral
+- Werte für $K_P$, $K_I$ und $K_D$ werden durch manuelle Einstellung oder Optimierung bestimmt und als "gain" bezeichnet
+- Chang & Lee (2007) nutzen 3 PID controller:  einen für das Swing-up, einen zum Stabilisieren des Winkels, wenn das Pendel bei $\pm$ 14 Grad ist, und einen zum Balacieren des Pendels, wenn es bei $\pm$ 3 Grad ist. Die zweite Phase erhöht die Robustheit des Systems und nutzt Feedback Linearization Control um das nichtlineare System zu linearisieren. Die Grundidee von Feedback Linearization Control ist ein nichtlineares System $\dot{x} = f(x) + g(x)\cdot u$ ($x$ Zustandsvektor, $u$ Steuerungsbefehl, $f$ und $g$ nichtlineare Funktionen, die die Dynamik des Systems beschreiben) durch eine Transformation des Steuerungsbefehls und Einführung eines neuen Steuerungsbefehls $v$ zu linearisieren: $u = \frac{1}{g(x)}(v - f(x))$. Dann wird das System zu $\dot{x}=v$, damit linear und kann mit linearen Reglern (PID oder LQR) kontrolliert werden. (J. Slotine, Weiping Li 1991, p. 208ff)
+
+Reinforcement Learning
+- Zur Theorie von RL siehe oben
+- RL ist ein Ansatz, bei dem ein Agent durch Interaktion mit der Umgebung lernt, wie er Aktionen auswählen soll, um eine Belohnung zu maximieren. Durch die Interaktion mit der Umgebung sammelt der Agent Erfahrung und passt seine Strategie an, um die Belohnung zu maximieren. Damit weniger Aufwand für die Modellierung der Umgebung benötigt wird, wird Model-Free RL verwendet, bei dem der Agent direkt aus Erfahrungen lernt, ohne die Umgebung zu modellieren.
+- There are few papers that use a real cart-pole system for the swing-up task (i.e. \cite{nayante_reinforcement_2021,pilcolearner_cart-pole_2011,deisenroth_pilco_2011}); many use simulated environments (often without the swing-up task) and similar reward functions (i.e. \cite{kumar_balancing_2020,liu_swing-up_2023,kimura_stochastic_1999}). Different approaches for reward functions are listed in the Experimental Setup section. Only one paper was found that uses a real cart-pole system for the swing-up task and was published recently, but it employs a simple reward function (\cite{nayante_reinforcement_2021}).
+
+LQR controller
+- Idea is from Kalman (1960)
+- LQR = Linear Quadratic Regulator und ist für lineare Systeme mit quadratischen Kosten optimal
+- lineares System: $\dot{x} = Ax + Bu$, $x$ Zustandsvektor, $u$ Steuerungsbefehl, $A$ und $B$ Systemmatrizen
+- Kostenfunktion: $J = \int_0^\infty (x^T Q x + u^T R u) dt$, $Q$ und $R$ sind Gewichtungsmatrizen
+- Ziel: Minimierung der Kostenfunktion durch Wahl von $K$ (Reglermatrix) in $u = -Kx$ und System bleibt stabil
+- Finden von $K$ durch Lösung der Riccati-Gleichung $A^T P + PA - PBR^{-1}B^T P + Q = 0$ (finden von $P$) und dann einsetzen von $P$ um $K$ zu finden $K = R^{-1}B^T P$
+- Lösung der Riccati-Gleichung garantiert, dass der Regler dass System stabilisert (solange System $(A,B)$ stabilisierbar ist) und Kostenfunktion minimiert
+- kumari & Agarwal 2023, 2022
+
+Lyapunov-based controller
+- Lyapunov-based control is a method for designing controllers that guarantee the stability of a system using Lyapunov functions. A Lyapunov function is a scalar function that measures the energy of the system and is used to analyze the system's stability. The Lyapunov function is chosen such that its derivative along the system's trajectories is negative definite, ensuring that the system converges to a stable equilibrium point. Lyapunov-based control is widely used in control theory to design controllers for nonlinear systems and has been applied to a variety of problems, including robotic manipulation, aerospace systems, and power systems (\cite{slotine_applied_1991}).
+- Für verschiedene Phasen des Cart-Pole-Systems können unterschiedliche Lyapunov-Funktionen verwendet werden, um die Stabilität zu gewährleisten. Für das Swing-up-Problem kann eine Lyapunov-Funktion verwendet werden, die die Energie des Systems misst und sicherstellt, dass die Energie des Pendels auf das erforderliche Niveau gebracht wird. Für das Balancieren des Pendels kann eine andere Lyapunov-Funktion verwendet werden, die die Stabilität des aufrechten Gleichgewichts sicherstellt.
+- Kai & Bito 2014
+- Ibanez et al 2005
+
+PSO controller
+- Mousa et al 2015 (enthält noch weitere Kategorien von Controllern, vllt kann man da noch was abgreifen)
+- Abido 2002
+
+Fuzzy controller
+- Liu et al 2009
+- Nour et al 2007
+
+Sliding mode controller
+- Ma'arif et al 2022
+- Sanjeewa & Parnichkun 2021
