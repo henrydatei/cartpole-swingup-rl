@@ -77,6 +77,24 @@ PID controller
 - Steuerungsbefehl $u_t = K_P\cdot e_t + K_I\cdot\sum_{i=0}^t e_i + K_D\cdot\frac{e_t - e_{t-1}}{\Delta t}$ für diskrete Zeitpunkt. Bei kontinuierlicher Zeit wird der Differenzialterm durch die Ableitung ersetzt und der Summenterm durch das Integral
 - Werte für $K_P$, $K_I$ und $K_D$ werden durch manuelle Einstellung oder Optimierung bestimmt und als "gain" bezeichnet
 - Chang & Lee (2007) nutzen 3 PID controller:  einen für das Swing-up, einen zum Stabilisieren des Winkels, wenn das Pendel bei $\pm$ 14 Grad ist, und einen zum Balacieren des Pendels, wenn es bei $\pm$ 3 Grad ist. Die zweite Phase erhöht die Robustheit des Systems und nutzt Feedback Linearization Control um das nichtlineare System zu linearisieren. Die Grundidee von Feedback Linearization Control ist ein nichtlineares System $\dot{x} = f(x) + g(x)\cdot u$ ($x$ Zustandsvektor, $u$ Steuerungsbefehl, $f$ und $g$ nichtlineare Funktionen, die die Dynamik des Systems beschreiben) durch eine Transformation des Steuerungsbefehls und Einführung eines neuen Steuerungsbefehls $v$ zu linearisieren: $u = \frac{1}{g(x)}(v - f(x))$. Dann wird das System zu $\dot{x}=v$, damit linear und kann mit linearen Reglern (PID oder LQR) kontrolliert werden. (J. Slotine, Weiping Li 1991, p. 208ff)
+- Vergleichende Studien, wie z.B. von Prasad et al 2011 oder Varghese et al 2017, vergleichen den PID controller mit anderen Controllern, meistens PID und LQR zusammen, und zeigen, dass der PID controller zwar gut ist, aber andere Controller besser. Beide Studien nutzen MATLAB Simulink für ihre Simulationen mit einem Zeitschritt von 0.01 Sekunden und einem maximalen Simulationszeitraum von 10 Sekunden. Nach etwa 7 Sekunden erreicht das System das Gleichgewicht. Die state space equations mit disturbance input sind
+\begin{align}
+    \dot{x} &= \frac{\mathrm{d}}{\mathrm{d}t}\begin{pmatrix}
+        \theta \\
+        \dot{\theta} \\
+        z \\
+        \dot{z}
+    \end{pmatrix} = \begin{pmatrix}
+        \dot{\theta} \\
+        f_1 \\
+        \dot{z} \\
+        f_2
+    \end{pmatrix} \\
+    y &= Cx \\
+    f_1 &= \frac{u\cos(\theta) - (M+m)g\sin(\theta) + ml(\cos(\theta)\sin(\theta))\dot{\theta}^2 - \frac{M}{m}F_w\cos(\theta)}{ml\cos^2(\theta) - (M+m)l} \\
+    f_2 &= \frac{u + ml(\sin(\theta))\dot{\theta}^2 - mg\cos(\theta)\sin(\theta) + F_w\sin^2(\theta)}{M+m-m\cos^2(\theta)}
+\end{align}
+mit $z$ Position des Carts, $\theta$ Winkel des Pendels, $M$ Masse des Carts, $m$ Masse des Pendels, $l$ Länge des Pendels, $g$ Erdbeschleunigung, $F_w$ Störung durch Wind, $u$ Steuerungsbefehl in Form als ausgeübte Kraft auf das Cart. Beide Studien verwenden 2 PID controller, deren Steuerungsbefehle sie addieren. Der erste PID controller versucht das Cart in die Mitte zu bekommen, der andere Controller das Pendel aufrecht zu balancieren. Der Wind wird durch ein White Noise Signal simuliert.
 
 Reinforcement Learning
 - Zur Theorie von RL siehe oben
@@ -154,12 +172,24 @@ $p$ ist hier ein Gewicht, die Lyapunov-Funktion $V_k$ hängt von dem Zustand des
 wird iterativ der optimale Steuerungsbefehl $u_k$ gefunden. Für die Stabilisierung wird dann ein LQR controller benutzt, der bei einem Winkel von $\frac{\pi}{4}$ aktiviert wird.
 
 PSO controller
-- Mousa et al 2015 (enthält noch weitere Kategorien von Controllern, vllt kann man da noch was abgreifen)
-- Abido 2002
+- Finden der Parameter eines Reglers häufig durch ausprobieren oder Optimierungsalgorithmen
+- Ein solcher Optimierungsalgorithmus ist Particle Swarm Optimization (PSO)
+- Idee von Eberhard & Kennedy 1995
+- Particle Swarm Optimization (PSO), introduced by James Kennedy and Russell Eberhart in 1995, is an optimization algorithm inspired by the social behavior of birds flocking or fish schooling. The basic concept of PSO is to simulate the social dynamics of a group of individuals, known as particles, that collectively search for the optimal solution to a problem. In this algorithm, each particle represents a potential solution. These particles move through the solution space and adjust their positions based on their own experiences as well as the experiences of neighboring particles (Kennedy & Eberhard 1997). Each particle has a position and a velocity, which are updated as the algorithm progresses, relying on three key influences: the particle's current position, its personal best position found so far, and the global best position discovered by the entire swarm.
+- Initially, a swarm of particles is randomly positioned in the search space, and their velocities are also set randomly (Shi & Eberhard 1998). The fitness of each particle, which determines how close it is to the optimal solution, is evaluated based on an objective function. To improve their positions, particles update their velocities considering their current direction (inertia), the direction toward their personal best position (cognitive influence), and the direction toward the global best position (social influence). These velocity updates guide the particles' movement through the solution space, and over time, they gravitate toward better solutions. The particle's personal best is updated whenever it discovers a better position, and the global best is updated if any particle finds a new overall best position. This process repeats until the algorithm meets a stopping criterion, such as reaching a maximum number of iterations or finding a sufficiently good solution (Angeline 1998).
+- Mathematically, the velocity update for each particle is influenced by its inertia, the difference between its personal best and current position, and the difference between the global best and current position. Random factors are introduced to ensure variability in the search, and certain parameters control how strongly the particles are pulled toward their personal best or the global best (Özcan & Mohan 1998).
+- Mousa et al 2015 vergleicht den Ansatz PI controller mit LQR und PI controller mit PSO Optimierung und findet heraus, dass der PSO optimierte PI controller besser ist als der PI+LQR controller. In seiner Simulation ist das Pendel mit dem PI+LQR controller nach 6 Sekunden in Balance, bei dem mit PSO optimierten PI controller nach 4 Sekunden.
 
 Fuzzy controller
-- Liu et al 2009
-- Nour et al 2007
+- A fuzzy logic controller is a type of control system that uses fuzzy logic, rather than traditional binary logic, to handle uncertain, imprecise, or ambiguous data. Unlike conventional controllers, which rely on precise inputs and mathematical models, a fuzzy logic controller mimics human decision-making by interpreting inputs in a way that resembles natural language reasoning (Rehman 2017). This makes it particularly useful for complex systems where exact mathematical models are difficult to derive or where control needs to handle vagueness.
+- The basic operation of a fuzzy logic controller involves three main stages: fuzzification, inference, and defuzzification. In the fuzzification stage, the crisp (precise) input values are converted into fuzzy sets. These sets represent linguistic variables like low, medium, or high using membership functions, which define the degree to which a particular input belongs to each category (Liu et al 2009).
+- The next stage is the inference process, where the fuzzy sets are used in a set of if-then-rules to determine the control action. These rules are based on expert knowledge and are expressed in simple terms (Dahiya 2016). Multiple rules can be applied simultaneously, and the system combines them to determine the most appropriate output.
+- In the final stage, defuzzification, the fuzzy results from the inference process are converted back into crisp values to produce a specific control output (Mahmoud 2018, pp 15ff).
+- Nour et al 2007 nutzen einen Fuzzy Logic Controller um ein simuliertes Cart-Pole-System zu balancieren. Allerdings startet der Pole bereits in der oberen Position und wird nur durch Störungen aus dem Gleichgewicht gebracht. Durch Bewegen des Carts soll dann der Pole wieder in die obere Position gebracht werden. Der Fuzzy Logic Controller wird mit einem PID controller verglichen und zeigt bessere Ergebnisse. Insbesondere werden die Regelparameter für den PID controller einmal für ein bestimmtes Gewicht (1 kilogramm cart, 100 gramm pole) für das System optimiert und dann für ein anderes Gewicht übernommen. Der Fuzzy Logic Controller zeigt eine bessere Robustheit gegenüber Änderungen in den Systemparametern. Es gibt 5 fuzzy sets für den Winkel, 5 fuzzy sets für die Winkelgeschwindigkeit, 2 fuzzy sets für die Position und Geschwindigkeit des Carts und 13 fuzzy sets für die Kraft, die auf das Cart ausgeübt werden soll. Es werden 225 Regeln aufgestellt, die die Kraft bestimmen, anhand folgender Formel und den fuzzy sets, in die die Werte fallen:
+\begin{align}
+    F = \theta + (\dot{\theta}-1) + (-x+3) + (-\dot{x}+3)
+\end{align}
+In einem zweiten Schritt werden die Anzahl an Regeln reduziert, auf 16: für jeden der 4 Inputs gibt es jetzt nur 2 fuzzy sets (positiv oder negativ). Die Rechenzeit wurde dadurch reduziert und die Ergebnisse sind immer noch zufriedenstellend.
 
 Sliding mode controller
 - Ma'arif et al 2022
