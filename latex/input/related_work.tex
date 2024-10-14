@@ -66,6 +66,7 @@ The control strategy involves applying a force $F$ to the cart that drives the s
 - particle swarm optimized controller
 - energy control
 - Diese Ansätze werden gerne in Kombination angewendet, um die besten ergebnisse zu erzielen
+- Weiterhin wird exemplarisch ein Paper vorgestellt, welches diesen Ansatz nutzt
 
 PID controller
 - PID = Proportional-Integral-Derivative, Steuerungsbefehl zum Zeitpunkt $t$ ist die Summe aus Proportional-, Integral- und Derivative-Komponenten
@@ -90,13 +91,67 @@ LQR controller
 - Ziel: Minimierung der Kostenfunktion durch Wahl von $K$ (Reglermatrix) in $u = -Kx$ und System bleibt stabil
 - Finden von $K$ durch Lösung der Riccati-Gleichung $A^T P + PA - PBR^{-1}B^T P + Q = 0$ (finden von $P$) und dann einsetzen von $P$ um $K$ zu finden $K = R^{-1}B^T P$
 - Lösung der Riccati-Gleichung garantiert, dass der Regler dass System stabilisert (solange System $(A,B)$ stabilisierbar ist) und Kostenfunktion minimiert
-- kumari & Agarwal 2023, 2022
+- Kumar & Jerome 2013 nutzen diesen Ansatz und nach einer Analyse des Systems erhalten sie folgende Systemmatrizen:
+\begin{align}
+    A &= \begin{pmatrix}
+        0 & 0 & 1 & 0 \\
+        0 & 0 & 0 & 1 \\
+        0 & \frac{(M_pl)^2}{q} & \frac{-B_{eq}(M_pl^2 + I)}{q} & \frac{M_plB_p}{q} \\
+        0 & \frac{(M+M_p)M_pgl}{q} & \frac{M_plB_{eq}}{q} & \frac{(M+M_p)B_p}{q}
+    \end{pmatrix} \\
+    B &= \begin{pmatrix}
+        0 \\
+        0 \\
+        \frac{M_pl^2+I}{q} \\
+        \frac{M_pl}{q}
+    \end{pmatrix} \\
+    x &= \begin{pmatrix}
+        z \\
+        \theta \\
+        \dot{z} \\
+        \dot{\theta}
+    \end{pmatrix}
+\end{align}
+mit $M_p$ und $l$ Masse und Länge des Pendels, $M$ Masse des Carts, $I$ Trägheitsmoment des Pendels, $B_{eq}$ Äquivalente Dämpfungskonstante, $B_p$ Dämpfungskonstante des Pendels, $g$ Erdbeschleunigung, $z$ Position des Carts, $\theta$ Winkel des Pendels, $q = (M+M_p)(I+M_pl^2) - (M_pl)^2$. Mit den folgenden Gewichtungsmatrizen
+\begin{align}
+    Q &= \begin{pmatrix}
+        0.5 & 0 & 0 & 0 \\
+        0 & 5.5 & 0 & 0 \\
+        0 & 0 & 0 & 0 \\
+        0 & 0 & 0 & 0
+    \end{pmatrix} \\
+    R &= \begin{pmatrix}
+        0.0003
+    \end{pmatrix}
+\end{align}
+ist $K$
+\begin{align}
+    K = \begin{pmatrix}
+        -44.72 & 200.8 & -49.77 & 27.38
+    \end{pmatrix}
+\end{align}
+für das System, welches Kumar und Jerome in ihrem Labor aufgebaut haben. Nach etwa 7 Sekunden erreicht das System das Gleichgewicht.
 
 Lyapunov-based controller
 - Lyapunov-based control is a method for designing controllers that guarantee the stability of a system using Lyapunov functions. A Lyapunov function is a scalar function that measures the energy of the system and is used to analyze the system's stability. The Lyapunov function is chosen such that its derivative along the system's trajectories is negative definite, ensuring that the system converges to a stable equilibrium point. Lyapunov-based control is widely used in control theory to design controllers for nonlinear systems and has been applied to a variety of problems, including robotic manipulation, aerospace systems, and power systems (\cite{slotine_applied_1991}).
 - Für verschiedene Phasen des Cart-Pole-Systems können unterschiedliche Lyapunov-Funktionen verwendet werden, um die Stabilität zu gewährleisten. Für das Swing-up-Problem kann eine Lyapunov-Funktion verwendet werden, die die Energie des Systems misst und sicherstellt, dass die Energie des Pendels auf das erforderliche Niveau gebracht wird. Für das Balancieren des Pendels kann eine andere Lyapunov-Funktion verwendet werden, die die Stabilität des aufrechten Gleichgewichts sicherstellt.
-- Kai & Bito 2014
-- Ibanez et al 2005
+- Kai & Bito 2014 nutzen eine Kombination aus Lyapunov-Funktion und LQR controller um das Cartpole-Problem per Simulation zu lösen. Weiterhin nutzen sie discrete mechanics, da diese weniger numerische Fehler aufweisen, trotzdem einige Gesetze der Physik erhalten bleiben und sich größere sampling times realisieren lassen (Marsden & West 2003). Mit ihrer Methode konnten sie den Pole nach 3.2 Sekunden aufrecht Balacieren. Die genutzte Lyapunov-Funktion ist
+\begin{align}
+    V_k = w_1E_k^2 + w_2\left((\cos\theta_k-1)^2 + \sin^2\theta_k\right) + w_3(\theta_{k-1} - \theta_k)^2 + w_4z_k^2
+\end{align}
+wobei $w_1, w_2, w_3, w_4>0$ Gewichte sind, $\theta_k$ der Winkel des Poles zum Zeitpunkt $k$, $z_k$ die Position des Carts zum Zeitpunkt $k$ und $E_k$ eine discrete energy-like Funktion ist mit
+\begin{align}
+    E_k = \frac{1}{2}ml^2\left(\frac{\theta_k - \theta_{k-1}}{h}\right)^2 + mgl[\cos((1-\alpha)\theta_{k-1} + \alpha\theta_k) - 1]
+\end{align}
+wobei $m$ die Masse und $l$ die Länge des Pendels ist, $h$ ist das sampling interval. Einführung einer Fehler-Funktion $\Gamma(\theta_{k+1}, u_k)$, die beim Einsetzen des optimalen Steuerungsbefehls $u_k$ und des nächsten Zustands $\theta_{k+1}$ den Wert 0 hat:
+\begin{align}
+    \Gamma(\theta_{k+1}, u_k) = V_{k+1} - V_k + p(\theta_k - \theta_{k-1})^2 = 0
+\end{align}
+$p$ ist hier ein Gewicht, die Lyapunov-Funktion $V_k$ hängt von dem Zustand des Systems ab und daher auch indirekt von $u_k$. Mit Hilfe des Newton-Verfahrens und der update rule
+\begin{align}
+    u_{k}^{l+1} = u_k^l - \frac{\partial\Gamma}{\partial u_k}^{-1}\Gamma
+\end{align}
+wird iterativ der optimale Steuerungsbefehl $u_k$ gefunden. Für die Stabilisierung wird dann ein LQR controller benutzt, der bei einem Winkel von $\frac{\pi}{4}$ aktiviert wird.
 
 PSO controller
 - Mousa et al 2015 (enthält noch weitere Kategorien von Controllern, vllt kann man da noch was abgreifen)
