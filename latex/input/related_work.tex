@@ -34,7 +34,8 @@ With the advent of deep learning, RL has evolved into deep reinforcement learnin
 The state-of-the-art algorithm is Proximal Policy Optimization (PPO) which is a model-free, on-policy algorithm that optimizes the policy by maximizing the expected return. It uses a clipped surrogate objective to prevent large policy updates and ensure stable learning. PPO has been successfully applied to a wide range of tasks, including robotic manipulation, locomotion, and game playing. It combines the benefits of policy gradient methods with the stability of trust region methods and is implemented in the OpenAI Baselines library (\cite{schulman_proximal_2017,openai_proximal_2017,wouter_van_heeswijk_proximal_2023}).
 
 \section{The Cart-Pole Problem and Swing-Up Dynamics}
-The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control like nonlinearity and instability (). % TODO: cite kumari & Agarwal (2023)
+
+The cart-pole problem, often referred to as the inverted pendulum, is a classic benchmark in control theory and reinforcement learning. It involves a pole attached to a cart that moves along a frictionless track. The goal is to balance the pole upright by applying forces to the cart. This problem has been extensively studied because it embodies the fundamental challenges of dynamic stability and control like nonlinearity and instability (\cite{kumari_root_2023}).
 
 The cart-pole system consists of a cart of mass $m_c$ and a pole of length $l$ and mass $m_p$. The cart can move horizontally, and the pole is free to swing in the vertical plane. The system's state can be described by four variables: the cart's position $x$, the cart's velocity $\dot{x}$, the pole's angle $\theta$ from the vertical, and the pole's angular velocity $\dot{\theta}$.
 
@@ -55,29 +56,44 @@ The control strategy involves applying a force $F$ to the cart that drives the s
 
 \section{Solution Approaches for the Cart-Pole Problem}
 
-- notable approaches with the following control algorithms (kumari & Agarwal (2023))
-- PID controller
-- reinforcement learning
-- LQR controller
-- fuzzy controller
-- sliding mode controller
-- LQG controller
-- Lyapunov-based controller
-- particle swarm optimized controller
-- energy control
-- Diese Ansätze werden gerne in Kombination angewendet, um die besten ergebnisse zu erzielen
-- Weiterhin wird exemplarisch ein Paper vorgestellt, welches diesen Ansatz nutzt
+Several notable solution approaches have been applied to the Cart-Pole problem, utilizing various control algorithms as highlighted by Kumari and Agarwal (\citeyear{kumari_root_2023}). These include:
+\begin{itemize}
+    \item PID Controller
+    \item Reinforcement Learning
+    \item Linear Quadratic Regulator (LQR) Controller
+    \item Lyapunov-based Controller
+    \item Particle Swarm Optimized Controller
+    \item Fuzzy Controller
+    \item Sliding Mode Controller
+\end{itemize}
 
-PID controller
-- PID = Proportional-Integral-Derivative, Steuerungsbefehl zum Zeitpunkt $t$ ist die Summe aus Proportional-, Integral- und Derivative-Komponenten
-- alle 3 Komponenten reagieren auf Fehler $e_t$ (Differenz zwischen gewünschtem und aktuellem Zustand)
-- P-Komponente: reagiert proportional zum Fehler
-- I-Komponente: reagiert auf die Summe der bisherigen Fehler
-- D-Komponente: reagiert auf die Änderungsrate des Fehlers
-- Steuerungsbefehl $u_t = K_P\cdot e_t + K_I\cdot\sum_{i=0}^t e_i + K_D\cdot\frac{e_t - e_{t-1}}{\Delta t}$ für diskrete Zeitpunkt. Bei kontinuierlicher Zeit wird der Differenzialterm durch die Ableitung ersetzt und der Summenterm durch das Integral
-- Werte für $K_P$, $K_I$ und $K_D$ werden durch manuelle Einstellung oder Optimierung bestimmt und als gain bezeichnet
-- Chang & Lee (2007) nutzen 3 PID controller:  einen für das Swing-up, einen zum Stabilisieren des Winkels, wenn das Pendel bei $\pm$ 14 Grad ist, und einen zum Balacieren des Pendels, wenn es bei $\pm$ 3 Grad ist. Die zweite Phase erhöht die Robustheit des Systems und nutzt Feedback Linearization Control um das nichtlineare System zu linearisieren. Die Grundidee von Feedback Linearization Control ist ein nichtlineares System $\dot{x} = f(x) + g(x)\cdot u$ ($x$ Zustandsvektor, $u$ Steuerungsbefehl, $f$ und $g$ nichtlineare Funktionen, die die Dynamik des Systems beschreiben) durch eine Transformation des Steuerungsbefehls und Einführung eines neuen Steuerungsbefehls $v$ zu linearisieren: $u = \frac{1}{g(x)}(v - f(x))$. Dann wird das System zu $\dot{x}=v$, damit linear und kann mit linearen Reglern (PID oder LQR) kontrolliert werden. (J. Slotine, Weiping Li 1991, p. 208ff)
-- Vergleichende Studien, wie z.B. von Prasad et al 2011 oder Varghese et al 2017, vergleichen den PID controller mit anderen Controllern, meistens PID und LQR zusammen, und zeigen, dass der PID controller zwar gut ist, aber andere Controller besser. Beide Studien nutzen MATLAB Simulink für ihre Simulationen mit einem Zeitschritt von 0.01 Sekunden und einem maximalen Simulationszeitraum von 10 Sekunden. Nach etwa 7 Sekunden erreicht das System das Gleichgewicht. Die state space equations mit disturbance input sind
+These approaches are often combined to achieve optimal results. Furthermore, an exemplary paper is introduced which demonstrates the application of this approach.
+
+\subsection{PID Controller}
+
+The Proportional-Integral-Derivative (PID) controller is a control strategy where the control signal at time $t$ is the sum of the proportional, integral, and derivative components. All three components respond to the error $e_t$, which is the difference between the desired and the actual state:
+\begin{itemize}
+    \item Proportional (P) Component: Reacts proportionally to the current error.
+    \item Integral (I) Component: Responds to the accumulated sum of past errors.
+    \item Derivative (D) Component: Reacts to the rate of change of the error.
+\end{itemize}
+For discrete time, the control signal is given by:
+\begin{align}
+    u_t = K_P\cdot e_t + K_I\cdot\sum_{i=0}^t e_i + K_D\cdot\frac{e_t - e_{t-1}}{\Delta t} \notag
+\end{align}
+In continuous time, the derivative term is replaced by the derivative, and the summation term by the integral. The values of $K_P$, $K_I$, and $K_D$ are referred to as the \textit{gains} and are determined through manual tuning or optimization.
+
+Chang and Lee (\citeyear{chang_design_2007}) used three PID controllers: one for the swing-up phase, one for stabilizing the pendulum's angle when it is within $\pm 14^\circ$, and one for balancing the pendulum when it is within $\pm 3^\circ$. The second phase enhances the system's robustness by utilizing Feedback Linearization Control to linearize the nonlinear system. The core idea behind Feedback Linearization Control is to transform the nonlinear system
+\begin{align}
+    \dot{x} = f(x) + g(x)\cdot u \notag
+\end{align}
+where $x$ is the state vector, $u$ is the control input, and $f$ and $g$ are nonlinear functions describing the system dynamics. The system is linearized by transforming the control input and introducing a new control signal $v$:
+\begin{align}
+    u = \frac{1}{g(x)}(v - f(x)) \notag
+\end{align}
+This results in a linearized system $\dot{x} = v$, which can then be controlled using linear controllers like PID or LQR (\cite{slotine_applied_1991}, p. 208ff).
+
+Comparative studies, such as those by Prasad et al. (\citeyear{prasad_optimal_2011}) and Varghese et al. (\citeyear{varghese_optimal_2017}), have compared PID controllers with other control techniques, frequently in combination with LQR. These studies conclude that while PID performs well, other controllers tend to outperform it. Both studies used MATLAB Simulink for simulations, with a time step of 0.01 seconds and a maximum simulation period of 10 seconds. The system typically reaches equilibrium after approximately 7 seconds. The state-space equations with disturbance input are:
 \begin{align}
     \dot{x} &= \frac{\mathrm{d}}{\mathrm{d}t}\begin{pmatrix}
         \theta \\
@@ -89,120 +105,149 @@ PID controller
         f_1 \\
         \dot{z} \\
         f_2
-    \end{pmatrix} \\
-    y &= Cx \\
-    f_1 &= \frac{u\cos(\theta) - (M+m)g\sin(\theta) + ml(\cos(\theta)\sin(\theta))\dot{\theta}^2 - \frac{M}{m}F_w\cos(\theta)}{ml\cos^2(\theta) - (M+m)l} \\
-    f_2 &= \frac{u + ml(\sin(\theta))\dot{\theta}^2 - mg\cos(\theta)\sin(\theta) + F_w\sin^2(\theta)}{M+m-m\cos^2(\theta)}
+    \end{pmatrix} \notag \\
+    y &= Cx \notag \\
+    f_1 &= \frac{u\cos(\theta) - (M+m)g\sin(\theta) + ml(\cos(\theta)\sin(\theta))\dot{\theta}^2 - \frac{M}{m}F_w\cos(\theta)}{ml\cos^2(\theta) - (M+m)l} \notag \\
+    f_2 &= \frac{u + ml(\sin(\theta))\dot{\theta}^2 - mg\cos(\theta)\sin(\theta) + F_w\sin^2(\theta)}{M+m-m\cos^2(\theta)} \notag
 \end{align}
-mit $z$ Position des Carts, $\theta$ Winkel des Pendels, $M$ Masse des Carts, $m$ Masse des Pendels, $l$ Länge des Pendels, $g$ Erdbeschleunigung, $F_w$ Störung durch Wind, $u$ Steuerungsbefehl in Form als ausgeübte Kraft auf das Cart. Beide Studien verwenden 2 PID controller, deren Steuerungsbefehle sie addieren. Der erste PID controller versucht das Cart in die Mitte zu bekommen, der andere Controller das Pendel aufrecht zu balancieren. Der Wind wird durch ein White Noise Signal simuliert.
+where $z$ is the cart position, $\theta$ is the pendulum angle, $M$ is the cart mass, $m$ is the pendulum mass, $l$ is the length of the pendulum, $g$ is gravitational acceleration, $F_w$ represents wind disturbance, and $u$ is the control force applied to the cart. Both studies used two PID controllers: one controlling the cart's position towards the center, and the other balancing the pendulum. The wind disturbance was simulated using a white noise signal.
 
-Reinforcement Learning
-- Zur Theorie von RL siehe oben
-- RL ist ein Ansatz, bei dem ein Agent durch Interaktion mit der Umgebung lernt, wie er Aktionen auswählen soll, um eine Belohnung zu maximieren. Durch die Interaktion mit der Umgebung sammelt der Agent Erfahrung und passt seine Strategie an, um die Belohnung zu maximieren. Damit weniger Aufwand für die Modellierung der Umgebung benötigt wird, wird Model-Free RL verwendet, bei dem der Agent direkt aus Erfahrungen lernt, ohne die Umgebung zu modellieren.
-- There are few papers that use a real cart-pole system for the swing-up task (i.e. \cite{nayante_reinforcement_2021,pilcolearner_cart-pole_2011,deisenroth_pilco_2011}); many use simulated environments (often without the swing-up task) and similar reward functions (i.e. \cite{kumar_balancing_2020,liu_swing-up_2023,kimura_stochastic_1999}). Different approaches for reward functions are listed in the Experimental Setup section. Only one paper was found that uses a real cart-pole system for the swing-up task and was published recently, but it employs a simple reward function (\cite{nayante_reinforcement_2021}).
+\subsection{Reinforcement Learning}
 
-LQR controller
-- Idea is from Kalman (1960)
-- LQR = Linear Quadratic Regulator und ist für lineare Systeme mit quadratischen Kosten optimal
-- lineares System: $\dot{x} = Ax + Bu$, $x$ Zustandsvektor, $u$ Steuerungsbefehl, $A$ und $B$ Systemmatrizen
-- Kostenfunktion: $J = \int_0^\infty (x^T Q x + u^T R u) dt$, $Q$ und $R$ sind Gewichtungsmatrizen
-- Ziel: Minimierung der Kostenfunktion durch Wahl von $K$ (Reglermatrix) in $u = -Kx$ und System bleibt stabil
-- Finden von $K$ durch Lösung der Riccati-Gleichung $A^T P + PA - PBR^{-1}B^T P + Q = 0$ (finden von $P$) und dann einsetzen von $P$ um $K$ zu finden $K = R^{-1}B^T P$
-- Lösung der Riccati-Gleichung garantiert, dass der Regler dass System stabilisert (solange System $(A,B)$ stabilisierbar ist) und Kostenfunktion minimiert
-- Kumar & Jerome 2013 nutzen diesen Ansatz und nach einer Analyse des Systems erhalten sie folgende Systemmatrizen:
+For an overview of the theory behind reinforcement learning (RL), refer to the previous section. RL is a technique in which an agent learns to select actions through interactions with the environment to maximize a cumulative reward. By interacting with the environment, the agent gains experience and adjusts its strategy to optimize the reward. To reduce the effort required for modeling the environment, model-free RL is commonly employed, where the agent learns directly from experiences without explicitly modeling the environment.
+
+There are only a few papers that utilize a real cart-pole system for the swing-up task (e.g., \cite{nayante_reinforcement_2021, pilcolearner_cart-pole_2011, deisenroth_pilco_2011}); most studies use simulated environments, often without addressing the swing-up task, and employ similar reward functions (e.g., \cite{kumar_balancing_2020, liu_swing-up_2023, kimura_stochastic_1999}). Various approaches to reward functions are discussed in the Experimental Setup section. Notably, only one recent paper was found that uses a real cart-pole system for the swing-up task, although it applies a simple reward function (\cite{nayante_reinforcement_2021}).
+
+\subsection{LQR Controller}
+
+The Linear Quadratic Regulator (LQR) was introduced by Kalman (\citeyear{kalman_contributions_1960}) and is optimal for linear systems with quadratic cost functions. The dynamics of a linear system are given by:
+\begin{align}
+    \dot{x} = Ax + Bu \notag
+\end{align}
+where $x$ is the state vector, $u$ is the control input, and $A$ and $B$ are system matrices. The cost function is defined as:
+\begin{align}
+    J = \int_0^\infty (x^T Q x + u^T R u) \,\mathrm{d}t \notag
+\end{align}
+where $Q$ and $R$ are weighting matrices. The goal of LQR is to minimize this cost function by choosing the control law $u = -Kx$, where $K$ is the regulator matrix, ensuring system stability. The matrix $K$ is found by solving the Riccati equation:
+\begin{align}
+    A^T P + PA - PBR^{-1}B^T P + Q = 0 \notag
+\end{align}
+Once the solution $P$ is obtained, the regulator matrix $K$ is calculated as:
+\begin{align}
+    K = R^{-1}B^T P \notag
+\end{align}
+Solving the Riccati equation guarantees that the regulator stabilizes the system (as long as the system $(A, B)$ is stabilizable) and minimizes the cost function.
+
+Kumar and Jerome (\citeyear{vinodh_kumar_robust_2013}) applied this approach. After analyzing their system, they determined the following system matrices:
 \begin{align}
     A &= \begin{pmatrix}
         0 & 0 & 1 & 0 \\
         0 & 0 & 0 & 1 \\
         0 & \frac{(M_pl)^2}{q} & \frac{-B_{eq}(M_pl^2 + I)}{q} & \frac{M_plB_p}{q} \\
         0 & \frac{(M+M_p)M_pgl}{q} & \frac{M_plB_{eq}}{q} & \frac{(M+M_p)B_p}{q}
-    \end{pmatrix} \\
+    \end{pmatrix} \notag \\
     B &= \begin{pmatrix}
         0 \\
         0 \\
         \frac{M_pl^2+I}{q} \\
         \frac{M_pl}{q}
-    \end{pmatrix} \\
+    \end{pmatrix} \notag \\
     x &= \begin{pmatrix}
         z \\
         \theta \\
         \dot{z} \\
         \dot{\theta}
-    \end{pmatrix}
+    \end{pmatrix} \notag
 \end{align}
-mit $M_p$ und $l$ Masse und Länge des Pendels, $M$ Masse des Carts, $I$ Trägheitsmoment des Pendels, $B_{eq}$ Äquivalente Dämpfungskonstante, $B_p$ Dämpfungskonstante des Pendels, $g$ Erdbeschleunigung, $z$ Position des Carts, $\theta$ Winkel des Pendels, $q = (M+M_p)(I+M_pl^2) - (M_pl)^2$. Mit den folgenden Gewichtungsmatrizen
+Here, $M_p$ and $l$ are the mass and length of the pendulum, $M$ is the mass of the cart, $I$ is the moment of inertia of the pendulum, $B_{eq}$ is the equivalent damping constant, $B_p$ is the pendulum damping constant, $g$ is gravitational acceleration, $z$ is the cart position, and $\theta$ is the pendulum angle. The term $q$ is defined as: $q = (M+M_p)(I+M_pl^2) - (M_pl)^2$. With the following weighting matrices:
 \begin{align}
     Q &= \begin{pmatrix}
         0.5 & 0 & 0 & 0 \\
         0 & 5.5 & 0 & 0 \\
         0 & 0 & 0 & 0 \\
         0 & 0 & 0 & 0
-    \end{pmatrix} \\
+    \end{pmatrix} \notag \\
     R &= \begin{pmatrix}
         0.0003
-    \end{pmatrix}
+    \end{pmatrix} \notag
 \end{align}
-ist $K$
+the regulator matrix $K$ is found to be:
 \begin{align}
     K = \begin{pmatrix}
         -44.72 & 200.8 & -49.77 & 27.38
-    \end{pmatrix}
+    \end{pmatrix} \notag
 \end{align}
-für das System, welches Kumar und Jerome in ihrem Labor aufgebaut haben. Nach etwa 7 Sekunden erreicht das System das Gleichgewicht.
+for the system that Kumar and Jerome built in their laboratory. The system reaches equilibrium after approximately 7 seconds.
 
-Lyapunov-based controller
-- Lyapunov-based control is a method for designing controllers that guarantee the stability of a system using Lyapunov functions. A Lyapunov function is a scalar function that measures the energy of the system and is used to analyze the system's stability. The Lyapunov function is chosen such that its derivative along the system's trajectories is negative definite, ensuring that the system converges to a stable equilibrium point. Lyapunov-based control is widely used in control theory to design controllers for nonlinear systems and has been applied to a variety of problems, including robotic manipulation, aerospace systems, and power systems (\cite{slotine_applied_1991}).
-- Für verschiedene Phasen des Cart-Pole-Systems können unterschiedliche Lyapunov-Funktionen verwendet werden, um die Stabilität zu gewährleisten. Für das Swing-up-Problem kann eine Lyapunov-Funktion verwendet werden, die die Energie des Systems misst und sicherstellt, dass die Energie des Pendels auf das erforderliche Niveau gebracht wird. Für das Balancieren des Pendels kann eine andere Lyapunov-Funktion verwendet werden, die die Stabilität des aufrechten Gleichgewichts sicherstellt.
-- Kai & Bito 2014 nutzen eine Kombination aus Lyapunov-Funktion und LQR controller um das Cartpole-Problem per Simulation zu lösen. Weiterhin nutzen sie discrete mechanics, da diese weniger numerische Fehler aufweisen, trotzdem einige Gesetze der Physik erhalten bleiben und sich größere sampling times realisieren lassen (Marsden & West 2003). Mit ihrer Methode konnten sie den Pole nach 3.2 Sekunden aufrecht Balacieren. Die genutzte Lyapunov-Funktion ist
-\begin{align}
-    V_k = w_1E_k^2 + w_2\left((\cos\theta_k-1)^2 + \sin^2\theta_k\right) + w_3(\theta_{k-1} - \theta_k)^2 + w_4z_k^2
-\end{align}
-wobei $w_1, w_2, w_3, w_4>0$ Gewichte sind, $\theta_k$ der Winkel des Poles zum Zeitpunkt $k$, $z_k$ die Position des Carts zum Zeitpunkt $k$ und $E_k$ eine discrete energy-like Funktion ist mit
-\begin{align}
-    E_k = \frac{1}{2}ml^2\left(\frac{\theta_k - \theta_{k-1}}{h}\right)^2 + mgl[\cos((1-\alpha)\theta_{k-1} + \alpha\theta_k) - 1]
-\end{align}
-wobei $m$ die Masse und $l$ die Länge des Pendels ist, $h$ ist das sampling interval. Einführung einer Fehler-Funktion $\Gamma(\theta_{k+1}, u_k)$, die beim Einsetzen des optimalen Steuerungsbefehls $u_k$ und des nächsten Zustands $\theta_{k+1}$ den Wert 0 hat:
-\begin{align}
-    \Gamma(\theta_{k+1}, u_k) = V_{k+1} - V_k + p(\theta_k - \theta_{k-1})^2 = 0
-\end{align}
-$p$ ist hier ein Gewicht, die Lyapunov-Funktion $V_k$ hängt von dem Zustand des Systems ab und daher auch indirekt von $u_k$. Mit Hilfe des Newton-Verfahrens und der update rule
-\begin{align}
-    u_{k}^{l+1} = u_k^l - \frac{\partial\Gamma}{\partial u_k}^{-1}\Gamma
-\end{align}
-wird iterativ der optimale Steuerungsbefehl $u_k$ gefunden. Für die Stabilisierung wird dann ein LQR controller benutzt, der bei einem Winkel von $\frac{\pi}{4}$ aktiviert wird.
+\subsection{Lyapunov-based Controller}
 
-PSO controller
-- Finden der Parameter eines Reglers häufig durch ausprobieren oder Optimierungsalgorithmen
-- Ein solcher Optimierungsalgorithmus ist Particle Swarm Optimization (PSO)
-- Idee von Eberhard & Kennedy 1995
-- Particle Swarm Optimization (PSO), introduced by James Kennedy and Russell Eberhart in 1995, is an optimization algorithm inspired by the social behavior of birds flocking or fish schooling. The basic concept of PSO is to simulate the social dynamics of a group of individuals, known as particles, that collectively search for the optimal solution to a problem. In this algorithm, each particle represents a potential solution. These particles move through the solution space and adjust their positions based on their own experiences as well as the experiences of neighboring particles (Kennedy & Eberhard 1997). Each particle has a position and a velocity, which are updated as the algorithm progresses, relying on three key influences: the particle's current position, its personal best position found so far, and the global best position discovered by the entire swarm.
-- Initially, a swarm of particles is randomly positioned in the search space, and their velocities are also set randomly (Shi & Eberhard 1998). The fitness of each particle, which determines how close it is to the optimal solution, is evaluated based on an objective function. To improve their positions, particles update their velocities considering their current direction (inertia), the direction toward their personal best position (cognitive influence), and the direction toward the global best position (social influence). These velocity updates guide the particles' movement through the solution space, and over time, they gravitate toward better solutions. The particle's personal best is updated whenever it discovers a better position, and the global best is updated if any particle finds a new overall best position. This process repeats until the algorithm meets a stopping criterion, such as reaching a maximum number of iterations or finding a sufficiently good solution (Angeline 1998).
-- Mathematically, the velocity update for each particle is influenced by its inertia, the difference between its personal best and current position, and the difference between the global best and current position. Random factors are introduced to ensure variability in the search, and certain parameters control how strongly the particles are pulled toward their personal best or the global best (Özcan & Mohan 1998).
-- Mousa et al 2015 vergleicht den Ansatz PI controller mit LQR und PI controller mit PSO Optimierung und findet heraus, dass der PSO optimierte PI controller besser ist als der PI+LQR controller. In seiner Simulation ist das Pendel mit dem PI+LQR controller nach 6 Sekunden in Balance, bei dem mit PSO optimierten PI controller nach 4 Sekunden.
+Lyapunov-based control is a method used to design controllers that ensure system stability by employing Lyapunov functions. A Lyapunov function is a scalar function that quantifies the system's energy and is used to assess its stability. The Lyapunov function is chosen such that its derivative along the system's trajectories is negative definite, guaranteeing that the system converges to a stable equilibrium point. (\cite{slotine_applied_1991}).
 
-Fuzzy controller
-- A fuzzy logic controller is a type of control system that uses fuzzy logic, rather than traditional binary logic, to handle uncertain, imprecise, or ambiguous data. Unlike conventional controllers, which rely on precise inputs and mathematical models, a fuzzy logic controller mimics human decision-making by interpreting inputs in a way that resembles natural language reasoning (Rehman 2017). This makes it particularly useful for complex systems where exact mathematical models are difficult to derive or where control needs to handle vagueness.
-- The basic operation of a fuzzy logic controller involves three main stages: fuzzification, inference, and defuzzification. In the fuzzification stage, the crisp (precise) input values are converted into fuzzy sets. These sets represent linguistic variables like low, medium, or high using membership functions, which define the degree to which a particular input belongs to each category (Liu et al 2009).
-- The next stage is the inference process, where the fuzzy sets are used in a set of if-then-rules to determine the control action. These rules are based on expert knowledge and are expressed in simple terms (Dahiya 2016). Multiple rules can be applied simultaneously, and the system combines them to determine the most appropriate output.
-- In the final stage, defuzzification, the fuzzy results from the inference process are converted back into crisp values to produce a specific control output (Mahmoud 2018, pp 15ff).
-- Nour et al 2007 nutzen einen Fuzzy Logic Controller um ein simuliertes Cart-Pole-System zu balancieren. Allerdings startet der Pole bereits in der oberen Position und wird nur durch Störungen aus dem Gleichgewicht gebracht. Durch Bewegen des Carts soll dann der Pole wieder in die obere Position gebracht werden. Der Fuzzy Logic Controller wird mit einem PID controller verglichen und zeigt bessere Ergebnisse. Insbesondere werden die Regelparameter für den PID controller einmal für ein bestimmtes Gewicht (1 kilogramm cart, 100 gramm pole) für das System optimiert und dann für ein anderes Gewicht übernommen. Der Fuzzy Logic Controller zeigt eine bessere Robustheit gegenüber Änderungen in den Systemparametern. Es gibt 5 fuzzy sets für den Winkel, 5 fuzzy sets für die Winkelgeschwindigkeit, 2 fuzzy sets für die Position und Geschwindigkeit des Carts und 13 fuzzy sets für die Kraft, die auf das Cart ausgeübt werden soll. Es werden 225 Regeln aufgestellt, die die Kraft bestimmen, anhand folgender Formel und den fuzzy sets, in die die Werte fallen:
+Kai and Bito (\citeyear{kai_new_2014}) combined a Lyapunov function with an LQR controller to solve the Cart-Pole problem through simulation. Additionally, they used discrete mechanics, which present fewer numerical errors while preserving some physical laws and allowing for larger sampling times (Marsden & West 2003). Their method successfully balanced the pole upright after 3.2 seconds. The Lyapunov function they used is:
 \begin{align}
-    F = \theta + (\dot{\theta}-1) + (-x+3) + (-\dot{x}+3)
+    V_k = w_1E_k^2 + w_2\left((\cos\theta_k-1)^2 + \sin^2\theta_k\right) + w_3(\theta_{k-1} - \theta_k)^2 + w_4z_k^2 \notag
 \end{align}
-In einem zweiten Schritt werden die Anzahl an Regeln reduziert, auf 16: für jeden der 4 Inputs gibt es jetzt nur 2 fuzzy sets (positiv oder negativ). Die Rechenzeit wurde dadurch reduziert und die Ergebnisse sind immer noch zufriedenstellend.
+where $w_1, w_2, w_3, w_4 > 0$ are weights, $\theta_k$ is the angle of the pole at time step $k$, $z_k$ is the position of the cart at time step $k$, and $E_k$ is a discrete energy-like function defined as:
+\begin{align}
+    E_k = \frac{1}{2}ml^2\left(\frac{\theta_k - \theta_{k-1}}{h}\right)^2 + mgl[\cos((1-\alpha)\theta_{k-1} + \alpha\theta_k) - 1] \notag
+\end{align}
+where $m$ is the mass, $l$ is the length of the pendulum, and $h$ is the sampling interval. The parameter $\alpha$ is a weighting factor between consecutive angles. A correction function $\Gamma(\theta_{k+1}, u_k)$ is introduced, which becomes zero when the optimal control input $u_k$ and the next state $\theta_{k+1}$ are substituted:
+\begin{align}
+    \Gamma(\theta_{k+1}, u_k) = V_{k+1} - V_k + p(\theta_k - \theta_{k-1})^2 = 0 \notag
+\end{align}
+Here, $p$ is a weight, and the Lyapunov function $V_k$ depends on the system state, thereby indirectly depending on $u_k$. Using the Newton method and the following update rule:
+\begin{align}
+    u_{k}^{l+1} = u_k^l - \frac{\partial\Gamma}{\partial u_k}^{-1}\Gamma \notag
+\end{align}
+the optimal control input $u_k$ is iteratively found. For stabilization, an LQR controller is activated when the pendulum's angle reaches $\frac{\pi}{4}$ radians.
 
-Sliding mode controller
-- A sliding mode controller (SMC) is a type of nonlinear control method designed to drive the system's state to a predefined surface, called the sliding surface, and keep it on that surface for all future time. The control strategy is particularly useful for systems with uncertainties or disturbances, offering robust performance by switching the control law based on the system's state (Edwards & Spurgeon 1998).
-- The working principle of an SMC is divided into two phases: the reaching phase and the sliding phase (Uswarman et al 2019). In the reaching phase, the controller drives the system's state to reach the sliding surface. Once the state reaches this surface, the sliding phase begins, where the system state slides along the surface to the desired equilibrium point. The sliding surface is chosen such that the system's behavior on the surface satisfies the control objective (Ma'arif et al 2022, Sliding Mode Control Design for Magnetic Levitation System).
-- An essential feature of SMC is its robustness to disturbances and model uncertainties. This robustness arises because the control action switches in such a way that once the system enters the sliding mode, the dynamics of the system are governed by the sliding surface and are independent of certain types of disturbances or parameter variations. However, this switching behavior can cause a phenomenon called chattering, which is rapid switching of the control signal that can be undesirable in practical implementations. To mitigate chattering, various methods, such as introducing a boundary layer around the sliding surface, are employed to smooth the control actions (Chalanga et al 2019).
-- Mathematically, the control law in SMC typically involves a discontinuous component that switches the control action based on the system's position relative to the sliding surface (Mahmoud & AlRamadhan 2021). The design of the sliding surface is crucial, as it determines the system's performance in the sliding phase.
-- (Ma'arif et al 2022, Backstepping) erweiteren diesen Controller um Backstepping, ein Verfahren um ein komplexes System in Subsysteme zu unterteilen. Sie simulieren nicht den swing-up, sondern nur das Balancieren des Pendels, dafür nutzen sie das folgende nichtlineare Modell:
+\subsection{PSO Controller}
+
+The tuning of controller parameters is often performed through trial and error or optimization algorithms. One such optimization algorithm is Particle Swarm Optimization (PSO). PSO was introduced by James Kennedy and Russell Eberhart in 1995, inspired by the social behavior of birds flocking or fish schooling. The core idea of PSO is to simulate the social dynamics of a group of individuals, called particles, that collaboratively search for the optimal solution to a problem. In this algorithm, each particle represents a potential solution. These particles move through the solution space and adjust their positions based on their own experiences and the experiences of neighboring particles (\cite{kennedy_discrete_1997}). Each particle has a position and a velocity, which are iteratively updated based on three key influences: the particle's current position, its personal best position, and the global best position discovered by the swarm (\cite{eberhart_new_1995}).
+
+Initially, a swarm of particles is randomly positioned within the search space, and their velocities are randomly assigned (\cite{shi_parameter_1998}). The fitness of each particle, indicating its closeness to the optimal solution, is evaluated using an objective function. To improve their positions, particles update their velocities by considering three factors: their inertia (current velocity), the cognitive influence (direction towards their personal best position), and the social influence (direction towards the global best position). These updates guide the particles' movement through the solution space, and over time, they converge towards better solutions. Each particle's personal best is updated whenever it finds a better position, and the global best is updated if any particle discovers a new overall best position. This process repeats until a stopping criterion is met, such as reaching a maximum number of iterations or finding a sufficiently good solution (\cite{angeline_evolutionary_1998}).
+
+Mathematically, the velocity update for each particle depends on its inertia, the difference between its personal best and current position, and the difference between the global best and current position. Random factors are included to introduce variability into the search, while certain parameters control the strength of the pull towards the personal and global best positions (\cite{ozcan_analysis_1998}).
+
+Mousa et al. (\citeyear{mousa_stabilizing_2015}) compared a PI controller with LQR against a PI controller optimized using PSO and found that the PSO-optimized PI controller outperformed the PI+LQR controller. In their simulations, the pendulum balanced in 6 seconds with the PI+LQR controller, while it balanced in only 4 seconds using the PSO-optimized PI controller.
+
+\subsection{Fuzzy Controller}
+
+A fuzzy logic controller is a type of control system that uses fuzzy logic, instead of traditional binary logic, to handle uncertain, imprecise, or ambiguous data. Unlike conventional controllers that rely on precise inputs and mathematical models, a fuzzy logic controller mimics human decision-making by interpreting inputs in a way that resembles natural language reasoning (\cite{rehman_introduction_2017}). This makes it particularly useful for complex systems where exact mathematical models are difficult to derive, or where control needs to manage vagueness.
+
+The basic operation of a fuzzy logic controller involves three main stages: fuzzification, inference, and defuzzification. In the fuzzification stage, precise input values are converted into fuzzy sets. These sets represent linguistic variables like \textit{low}, \textit{medium}, or \textit{high}, using membership functions that define the degree to which a particular input belongs to each category (\cite{liu_real-time_2009}).
+
+The next stage is the inference process, where fuzzy sets are applied to a set of if-then rules to determine the control action. These rules are based on expert knowledge and are expressed in simple, human-like terms (\cite{dahiya_introduction_2016}). Multiple rules can be applied simultaneously, and the system combines them to determine the most appropriate control output.
+
+In the final stage, defuzzification, the fuzzy results from the inference process are converted back into precise values to produce a specific control action (\cite{mahmoud_basics_2018}, pp. 15ff).
+
+Nour et al. (\citeyear{nour_fuzzy_2007}) employed a fuzzy logic controller to balance a simulated Cart-Pole system. In their setup, the pole starts in the upright position and is only destabilized by external disturbances. The control objective is to move the cart in such a way that the pole returns to its upright position. The fuzzy logic controller was compared with a PID controller, showing superior performance. Specifically, the PID controller's parameters were optimized for one set of system parameters (1-kilogram cart, 100-gram pole), but when applied to a system with different parameters, the fuzzy logic controller demonstrated greater robustness. For their fuzzy logic controller, they defined 5 fuzzy sets for the pole's angle, 5 fuzzy sets for the angular velocity, 2 fuzzy sets for the cart's position and velocity, and 13 fuzzy sets for the force to be applied to the cart. A total of 225 rules were established to determine the force, based on the following formula and the fuzzy sets into which the input values fall:
 \begin{align}
-    \dot{\theta} &= f(x,t) + g(x,t)u + d(x,t)
+    F = \theta + (\dot{\theta}-1) + (-x+3) + (-\dot{x}+3) \notag
 \end{align}
-wobei $\theta$ der Winkel des Pendels ist und $x$ ein Vektor aus $\theta$ und $\dot{\theta}$. $u$ ist die Kraft, die auf das Cart ausgeübt wird und $d(x,t)$ ist eine Störung. $f(x,t)$ und $g(x,t)$ sind nichtlineare Funktionen, die die Dynamik des Systems beschreiben.
+In a subsequent step, the number of rules was reduced to 16, with only 2 fuzzy sets (positive or negative) for each of the 4 inputs. This reduction in rule complexity decreased the computation time while still providing satisfactory results.
+
+\subsection{Sliding Mode Controller}
+
+A sliding mode controller (SMC) is a nonlinear control method designed to drive a system's state to a predefined surface, called the sliding surface, and to keep it on that surface indefinitely. This control strategy is particularly effective for systems with uncertainties or disturbances, as it offers robust performance by switching the control law based on the system's state (\cite{edwards_sliding_1998}).
+
+The operation of an SMC is divided into two phases: the reaching phase and the sliding phase (\cite{uswarman_robust_2019}). In the reaching phase, the controller drives the system's state to the sliding surface. Once the state reaches the surface, the sliding phase begins, during which the system state moves along the surface to the desired equilibrium point. The sliding surface is designed such that the system's behavior on the surface satisfies the control objectives (\cite{maarif_sliding_2022}).
+
+A key feature of SMC is its robustness to disturbances and model uncertainties. This robustness arises because, once the system enters the sliding mode, the dynamics are governed by the sliding surface, making them independent of certain types of disturbances or parameter variations. However, the switching behavior of the control signal can result in a phenomenon called chattering, where rapid switching of the control signal occurs, which can be undesirable in practical applications. To mitigate chattering, various techniques, such as introducing a boundary layer around the sliding surface, are employed to smooth the control actions (\cite{chalanga_output_2019}).
+
+Mathematically, the control law in SMC typically includes a discontinuous component that switches the control action depending on the system's position relative to the sliding surface (\cite{mahmoud_optimizing_2021}). The design of the sliding surface is critical, as it directly impacts the system's performance during the sliding phase.
+
+Ma'arif et al. (\citeyear{maarif_backstepping_2022}) extended this controller using the backstepping technique, which divides a complex system into subsystems. Their simulation focused only on balancing the pendulum and did not include the swing-up phase. They used the following nonlinear model:
 \begin{align}
-    f(x,t) &= \frac{g\sin(\theta) - \frac{ml\dot{\theta}^2\cos(\theta)\sin(\theta)}{m_c+m}}{l\left(\frac{4}{3}-\frac{m\cos^2(\theta)}{m_c+m}\right)} \\
-    g(x,t) &= \frac{\frac{\cos(\theta)}{m_c+m}}{l\left(\frac{4}{3}-\frac{m\cos^2(\theta)}{m_c+m}\right)}
+    \dot{\theta} &= f(x,t) + g(x,t)u + d(x,t) \notag
 \end{align}
-wobei $m_c$ die Masse des Carts, $m$ die Masse des Pendels, $l$ die Länge des Pendels, $g$ die Erdbeschleunigung ist (Valluru & Singh 2017). (Ma'arif et al 2022, Backstepping) define an error function $e = \theta_d - \theta$ with $\theta_d$ the desired angle and design a sliding surface $s = \dot{e} + c e$ with $c$ a positive constant. Using the Lyapunov function $V=\frac{1}{2}s$ they conclude that $\dot{V}<0$ and therefore the system is stable. They then design a control law $u = g(x,t)^{-1}(-f(x,t) +\ddot{\theta_d} + c\dot{e} + \eta\text(sgn)(s))$ to stabilize the system where $\text{sgn}(\cdot)$ is the signum function and $\eta$ a variable to elimate small oscillations in the response. The authors set the value of $\eta$ to 0.03 and later to 0.05 and archive a stabilisation in less than 1 second after the system is disturbed. This also works then the parameters (like mass or length) of the system are changed.
+where $\theta$ is the pendulum's angle, $x$ is a vector consisting of $\theta$ and $\dot{\theta}$, $u$ is the force applied to the cart, and $d(x,t)$ represents a disturbance. The functions $f(x,t)$ and $g(x,t)$ describe the system dynamics:
+\begin{align}
+    f(x,t) &= \frac{g\sin(\theta) - \frac{ml\dot{\theta}^2\cos(\theta)\sin(\theta)}{m_c+m}}{l\left(\frac{4}{3}-\frac{m\cos^2(\theta)}{m_c+m}\right)} \notag \\
+    g(x,t) &= \frac{\frac{\cos(\theta)}{m_c+m}}{l\left(\frac{4}{3}-\frac{m\cos^2(\theta)}{m_c+m}\right)} \notag
+\end{align}
+where $m_c$ is the mass of the cart, $m$ is the mass of the pendulum, $l$ is the length of the pendulum, and $g$ is gravitational acceleration (\cite{valluru_stabilization_2017}). Ma'arif et al. (\citeyear{maarif_backstepping_2022}) defined an error function $e = \theta_d - \theta$, where $\theta_d$ is the desired angle, and designed a sliding surface $s = \dot{e} + c e$ with $c$ a positive constant. Using the Lyapunov function $V=\frac{1}{2}s^2$, they demonstrated that $\dot{V}<0$, proving the system's stability. They then designed a control law:
+\begin{align}
+    u = g(x,t)^{-1}(-f(x,t) +\ddot{\theta_d} + c\dot{e} + \eta\text(sgn)(s)) \notag
+\end{align}
+to stabilize the system, where $\text{sgn}(\cdot)$ is the signum function and $\eta$ is a variable introduced to reduce small oscillations in the system's response. The authors set the value of $\eta$ to 0.03 and later to 0.05, achieving stabilization in less than 1 second after the system was disturbed. This method also worked when system parameters, such as mass or length, were changed.
