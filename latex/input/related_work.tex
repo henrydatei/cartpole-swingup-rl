@@ -183,7 +183,7 @@ for the system that Kumar and Jerome built in their laboratory. The system reach
 
 Lyapunov-based control is a method used to design controllers that ensure system stability by employing Lyapunov functions. A Lyapunov function is a scalar function that quantifies the system's energy and is used to assess its stability. The Lyapunov function is chosen such that its derivative along the system's trajectories is negative definite, guaranteeing that the system converges to a stable equilibrium point. (\cite{slotine_applied_1991}).
 
-Kai and Bito (\citeyear{kai_new_2014}) combined a Lyapunov function with an LQR controller to solve the Cart-Pole problem through simulation. Additionally, they used discrete mechanics, which present fewer numerical errors while preserving some physical laws and allowing for larger sampling times (Marsden & West 2003). Their method successfully balanced the pole upright after 3.2 seconds. The Lyapunov function they used is:
+Kai and Bito (\citeyear{kai_new_2014}) combined a Lyapunov function with an LQR controller to solve the Cart-Pole problem through simulation. Additionally, they used discrete mechanics, which present fewer numerical errors while preserving some physical laws and allowing for larger sampling times (\cite{marsden_discrete_2001}). Their method successfully balanced the pole upright after 3.2 seconds. The Lyapunov function they used is:
 \begin{align}
     V_k = w_1E_k^2 + w_2\left((\cos\theta_k-1)^2 + \sin^2\theta_k\right) + w_3(\theta_{k-1} - \theta_k)^2 + w_4z_k^2 \notag
 \end{align}
