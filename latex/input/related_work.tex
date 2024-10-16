@@ -67,7 +67,7 @@ Several notable solution approaches have been applied to the Cart-Pole problem, 
     \item Sliding Mode Controller
 \end{itemize}
 
-These approaches are often combined to achieve optimal results. Furthermore, an exemplary paper is introduced which demonstrates the application of this approach.
+These approaches are often combined to achieve optimal results. Furthermore, an exemplary paper is introduced which demonstrates the application of each approach.
 
 \subsection{PID Controller}
 
@@ -199,15 +199,13 @@ Here, $p$ is a weight, and the Lyapunov function $V_k$ depends on the system sta
 \begin{align}
     u_{k}^{l+1} = u_k^l - \frac{\partial\Gamma}{\partial u_k}^{-1}\Gamma \notag
 \end{align}
-the optimal control input $u_k$ is iteratively found. For stabilization, an LQR controller is activated when the pendulum's angle reaches $\frac{\pi}{4}$ radians.
+the optimal control input $u_k$ is iteratively found. For stabilization, the LQR controller is activated when the pendulum's angle reaches $\frac{\pi}{4}$ radians.
 
 \subsection{PSO Controller}
 
 The tuning of controller parameters is often performed through trial and error or optimization algorithms. One such optimization algorithm is Particle Swarm Optimization (PSO). PSO was introduced by James Kennedy and Russell Eberhart in 1995, inspired by the social behavior of birds flocking or fish schooling. The core idea of PSO is to simulate the social dynamics of a group of individuals, called particles, that collaboratively search for the optimal solution to a problem. In this algorithm, each particle represents a potential solution. These particles move through the solution space and adjust their positions based on their own experiences and the experiences of neighboring particles (\cite{kennedy_discrete_1997}). Each particle has a position and a velocity, which are iteratively updated based on three key influences: the particle's current position, its personal best position, and the global best position discovered by the swarm (\cite{eberhart_new_1995}).
 
-Initially, a swarm of particles is randomly positioned within the search space, and their velocities are randomly assigned (\cite{shi_parameter_1998}). The fitness of each particle, indicating its closeness to the optimal solution, is evaluated using an objective function. To improve their positions, particles update their velocities by considering three factors: their inertia (current velocity), the cognitive influence (direction towards their personal best position), and the social influence (direction towards the global best position). These updates guide the particles' movement through the solution space, and over time, they converge towards better solutions. Each particle's personal best is updated whenever it finds a better position, and the global best is updated if any particle discovers a new overall best position. This process repeats until a stopping criterion is met, such as reaching a maximum number of iterations or finding a sufficiently good solution (\cite{angeline_evolutionary_1998}).
-
-Mathematically, the velocity update for each particle depends on its inertia, the difference between its personal best and current position, and the difference between the global best and current position. Random factors are included to introduce variability into the search, while certain parameters control the strength of the pull towards the personal and global best positions (\cite{ozcan_analysis_1998}).
+Initially, a swarm of particles is randomly positioned within the search space, and their velocities are randomly assigned (\cite{shi_parameter_1998}). The fitness of each particle, indicating its closeness to the optimal solution, is evaluated using an objective function. To improve their positions, particles update their velocities by considering three factors: their inertia (current velocity), the cognitive influence (direction towards their personal best position), and the social influence (direction towards the global best position) (\cite{eberhart_new_1995}). These updates guide the particles' movement through the solution space, and over time, they converge towards better solutions. Each particle's personal best is updated whenever it finds a better position, and the global best is updated if any particle discovers a new overall best position. This process repeats until a stopping criterion is met, such as reaching a maximum number of iterations or finding a sufficiently good solution (\cite{angeline_evolutionary_1998}). Random factors are included to introduce variability into the search, while certain parameters control the strength of the pull towards the personal and global best positions (\cite{ozcan_analysis_1998}).
 
 Mousa et al. (\citeyear{mousa_stabilizing_2015}) compared a PI controller with LQR against a PI controller optimized using PSO and found that the PSO-optimized PI controller outperformed the PI+LQR controller. In their simulations, the pendulum balanced in 6 seconds with the PI+LQR controller, while it balanced in only 4 seconds using the PSO-optimized PI controller.
 
