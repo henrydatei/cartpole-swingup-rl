@@ -118,6 +118,8 @@ For an overview of the theory behind reinforcement learning (RL), refer to the p
 
 There are only a few papers that utilize a real cart-pole system for the swing-up task (e.g., \cite{nayante_reinforcement_2021, pilcolearner_cart-pole_2011, deisenroth_pilco_2011}); most studies use simulated environments, often without addressing the swing-up task, and employ similar reward functions (e.g., \cite{kumar_balancing_2020, liu_swing-up_2023, kimura_stochastic_1999}). Various approaches to reward functions are discussed in the Experimental Setup section. Notably, only one recent paper was found that uses a real cart-pole system for the swing-up task, although it applies a simple reward function (\cite{nayante_reinforcement_2021}).
 
+I chose to continue my work with the reinforcement learning (RL) controller due to its unique challenge and potential in real-world applications. Unlike other control strategies, where multiple papers have successfully demonstrated both swing-up and balancing of the pole in real-world scenarios, only one study using an RL-based approach has managed to accomplish this (\cite{nayante_reinforcement_2021}). The limited number of real-world implementations highlights the complexity of applying RL to physical systems, yet it also presents an opportunity for further exploration and innovation. By advancing this line of research, I aim to contribute to the development of RL controllers capable of performing both swing-up and stabilization in practical, real-world environments.
+
 \subsection{LQR Controller}
 
 The Linear Quadratic Regulator (LQR) was introduced by Kalman (\citeyear{kalman_contributions_1960}) and is optimal for linear systems with quadratic cost functions. The dynamics of a linear system are given by:
